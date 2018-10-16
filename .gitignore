@@ -8,3 +8,4 @@ __pycache__/
 superform/.cache/
 superform/.pytest_cache/
 .DS_Store
+superform.db
