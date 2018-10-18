@@ -4,7 +4,7 @@ from feedgen.feed import FeedGenerator
 from flask import Blueprint, url_for, request, redirect, render_template, session
 
 from superform.utils import login_required, datetime_converter, str_converter
-from superform.models import db, Publishing
+from superform.models import db, Publishing, Channel
 
 feed_page = Blueprint('feed', __name__)
 

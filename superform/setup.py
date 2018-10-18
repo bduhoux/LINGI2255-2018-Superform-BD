@@ -6,6 +6,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'flask',
+<<<<<<< HEAD
         'python3-saml',
         'sqlalchemy',
         'flask_sqlalchemy',
@@ -14,4 +15,11 @@ setup(
     ]
 
 
+=======
+        'python3-saml', 'sqlalchemy',
+        'flask-sqlalchemy',
+        'python-twitter',
+        'feedgen'
+    ],
+>>>>>>> 6d07995... Implement the RSS channel
 )
