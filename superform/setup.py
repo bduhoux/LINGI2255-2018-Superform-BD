@@ -9,5 +9,6 @@ setup(
         'python3-saml',
         'sqlalchemy',
         'flask_sqlalchemy'
+        'feedgen',
     ],
 )
