@@ -8,6 +8,7 @@ setup(
         'flask',
         'python3-saml', 'sqlalchemy',
         'flask-sqlalchemy',
-        'python-twitter'
+        'python-twitter',
+        'feedgen'
     ],
 )
