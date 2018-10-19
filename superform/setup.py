@@ -9,6 +9,7 @@ setup(
         'python3-saml',
         'sqlalchemy',
         'flask-sqlalchemy',
-        'pytest'
+        'pytest',
+        'facebook-sdk'
     ],
 )

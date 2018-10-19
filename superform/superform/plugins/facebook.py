@@ -4,13 +4,13 @@ from email.mime.text import MIMEText
 from smtplib import SMTPException
 from flask import current_app
 import json
+import facebook
 
+"""
 FIELDS_UNAVAILABLE = ['Title','Description'] #list of field names that are not used by your module
 
 CONFIG_FIELDS = ["sender","receiver"] #This lets the manager of your module enter data that are used to communicate with other services.
 
-
-# appelé dans publishings.py
 def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     json_data = json.loads(channel_config) # to a Python object
     sender = json_data['sender'] # data sur le sender ds channelconfig(= dictionnaire)
@@ -33,3 +33,22 @@ def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     except SMTPException as e:
         #TODO should add log here
         print(e)
+"""
+
+FIELDS_UNAVAILABLE = ['Title','Description'] #list of field names that are not used by your module
+
+CONFIG_FIELDS = ["page_id","access_token"] #This lets the manager of your module enter data that are used to communicate with other services.
+
+
+def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
+    cfg = {
+        "page_id": "453122048545115",  # Step 1
+        "access_token": "EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA"  # Step 3
+    }
+    api = get_api(cfg)
+    msg = "Hello, world!"
+    status = api.put_wall_post(msg)
+
+def get_api(cfg):
+    graph = facebook.GraphAPI(cfg['access_token'])
+    return graph
