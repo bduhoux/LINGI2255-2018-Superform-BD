@@ -47,7 +47,8 @@ def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     }
     api = get_api(cfg)
     msg = "Hello, world!"
-    status = api.put_wall_post(msg)
+    status = api.put_object(parent_object='me', connection_name='feed',
+                  message='Hello, world')
 
 def get_api(cfg):
     graph = facebook.GraphAPI(cfg['access_token'])
