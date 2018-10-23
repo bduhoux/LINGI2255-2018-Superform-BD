@@ -1,6 +1,6 @@
 import os
 import tempfile
-
+import json
 import pytest
 
 from superform import app, db
@@ -25,16 +25,19 @@ def client():
 
 
 def test_run_facebook(client):
+
     new_channel = Channel(config={"page_id": "453122048545115",
                                   "access_token": "EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA"})
 
-    assert facebook.get_page_id(new_channel.config) == "453122048545115"
+    json_config = json.dumps(new_channel.config)
+
+    assert facebook.get_page_id(json_config) == "453122048545115"
 
     assert facebook.get_access_token(
-        new_channel.config) == "EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA"
+        json_config) == "EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA"
 
-    assert facebook.get_config(facebook.get_page_id(new_channel.config), facebook.get_access_token(new_channel.config)) == {"page_id": "453122048545115",
-                                  "access_token": "EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA"}
+    assert facebook.get_config(facebook.get_page_id(json_config), facebook.get_access_token(json_config)) == {"page_id": "453122048545115",
+                                 "access_token": "EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA"}
 
     new_publish = Publishing(title="Coucou", description="J'aime faire des tests unitaires", link_url="https://docs.pytest.org/en/latest/index.html")
 
