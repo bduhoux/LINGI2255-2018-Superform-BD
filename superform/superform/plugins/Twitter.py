@@ -1,5 +1,6 @@
 from flask import current_app
 import twitter
+import json
 
 FIELDS_UNAVAILABLE = ['Title']
 CONFIG_FIELDS = ["Consumer key", "Consumer secret", "Access token", "Access token secret"]
@@ -13,6 +14,8 @@ def run(publishing,channel_config):
     continuation = '[...]' # String that will be appended to the messages if too many characters
     twitter_api.PostUpdate(status, continuation, **kwargs)
 
+def authentication():
+    pass
 
 def get_api(channel_config):
     """
