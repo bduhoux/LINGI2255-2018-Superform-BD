@@ -3,16 +3,31 @@ import twitter
 import json
 
 FIELDS_UNAVAILABLE = ['Title']
-CONFIG_FIELDS = ["Consumer key", "Consumer secret", "Access token", "Access token secret"]
+CONFIG_FIELDS = ["Access token", "Access token secret"]
 
 def run(publishing,channel_config):
     # Get Twitter API
     twitter_api = get_api(channel_config)
     # Create body
-    kwargs = get_update_kwargs(publishing)
-    status = publishing.description
-    continuation = '[...]' # String that will be appended to the messages if too many characters
-    twitter_api.PostUpdate(status, continuation, **kwargs)
+    status = getStatus(publishing, twitter_api)
+    print(twitter.twitter_utils.calc_expected_status_length(status, short_url_length=23))
+    # twitter_test(status, json.loads(publishing.extra)["truncated"], continuation="[...]"
+    # , **{"media": publishing.image_url})
+
+    # we don't need to deal with too long text
+    if json.loads(publishing.extra)["truncated"]:
+        if publishing.image_url is not '':
+            twitter_api.PostUpdates(status, media=publishing.image_url)
+        else:
+            twitter_api.PostUpdates(status)
+
+    # we need to deal with too long text
+    else:
+        if publishing.image_url is not '':
+            twitter_api.PostUpdates(status, continuation="[...]", **{"media": publishing.image_url})
+        else:
+            twitter_api.PostUpdates(status, continuation="[...]")
+
 
 def get_api(channel_config):
     """
@@ -21,8 +36,8 @@ def get_api(channel_config):
     :return: a Twitter.Api() object
     """
     json_data = json.loads(channel_config)
-    consumer_key = json_data['Consumer key']
-    consumer_secret = json_data['Consumer secret']
+    consumer_key = current_app.config["TWITTER_APIKEY"]
+    consumer_secret = current_app.config["TWITTER_APISECRET"]
     access_token = json_data['Access token']
     access_token_secret = json_data['Access token secret']
     return twitter.Api(consumer_key=consumer_key,
@@ -30,11 +45,22 @@ def get_api(channel_config):
                        access_token_key=access_token,
                        access_token_secret=access_token_secret)
 
-def get_update_kwargs(publishing):
-    """
-    Returns a dictionary containing the options selected in publishing
-    (see https://python-twitter.readthedocs.io/en/latest/twitter.html#twitter.api.Api.PostUpdate for the options)
-    :param publishing:
-    :return: a dictionary
-    """
-    pass
+
+def getStatus(publishing, twitter_api):
+    if json.loads(publishing.extra)["truncated"]:
+        status = publishing.description[:279]
+        if publishing.link_url is not '':
+            status = status[:279-1-twitter_api.GetShortUrlLength(https=True)] + " "+ publishing.link_url
+    else:
+        status = publishing.description
+        if publishing.link_url is not '':
+            status = status + " " + publishing.link_url
+    return status
+
+
+def twitter_test(status, truncated, continuation, **kwargs):
+    print(status)
+    print(truncated)
+    print(continuation)
+    print(kwargs["media"])
+    print()

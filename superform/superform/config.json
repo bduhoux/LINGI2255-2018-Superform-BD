@@ -7,6 +7,8 @@
   "SMTP_USERNAME": "first.name@student.uclouvain.be",
   "SMTP_PASSWORD": "",
   "SMTP_STARTTLS": "True",
+  "TWITTER_APIKEY": "eAAioUqsQJsogB2V4G3GkB2np",
+  "TWITTER_APISECRET": "WqXd4sTFws5Jv9bKcyPha37y78vRrxWbhurOrkmrbxNZtxPeTy",
   "SAML": {
     "sp": {
       "entityId": "superform-dev-arthur-style",
