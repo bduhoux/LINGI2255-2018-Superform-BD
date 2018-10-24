@@ -14,9 +14,6 @@ def run(publishing,channel_config):
     continuation = '[...]' # String that will be appended to the messages if too many characters
     twitter_api.PostUpdate(status, continuation, **kwargs)
 
-def authentication():
-    pass
-
 def get_api(channel_config):
     """
     Returns a twitter.Api() object for the Twitter account described in the channel configuration
