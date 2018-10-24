@@ -11,31 +11,63 @@
                         <input type="text" name="titlepost" id="titlepost" class="form-control" value="{{ pub.title }}">
                     </div>
                     <div class="form-group">
-                        <label for="descrpost">Description</label><br>
-                        <textarea class="form-control" rows="5" id="descrpost" name="descrpost">{{ pub.description }}</textarea>
+                        <label for="descrpost">Description {% if chan.module == "superform.plugins.Twitter" %}(<span
+                                id="textarea_feedback"
+                                name="textarea_feedback"></span> characters) {% endif %}</label><br>
+                        <textarea class="form-control" rows="5" id="descrpost"
+                                  name="descrpost">{{ pub.description }}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="linkurlpost">Link</label><br>
-                        <input type="text" name="linkurlpost" id="linkurlpost" class="form-control" value="{{ pub.link_url }}">
+                        <input type="text" name="linkurlpost" id="linkurlpost" class="form-control"
+                               value="{{ pub.link_url }}">
                     </div>
                     <div class="form-group">
                         <label for="imagepost">Image</label><br>
-                        <input type="file" name="imagepost" id="imagepost" class="form-control" value="{{ pub.image_url }}">
+                        <input type="file" name="imagepost" id="imagepost" class="form-control"
+                               value="{{ pub.image_url }}">
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="datefrompost">Publication Date</label><br>
-                                <input id="datefrompost" name="datefrompost" type="date" class="form-control" value="{{ pub.date_from }}">
+                                <input id="datefrompost" name="datefrompost" type="date" class="form-control"
+                                       value="{{ pub.date_from }}">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="dateuntilpost">Publication Until</label><br>
-                                <input id="dateuntilpost" name="dateuntilpost" type="date" class="form-control" value="{{ pub.date_until }}">
+                                <input id="dateuntilpost" name="dateuntilpost" type="date" class="form-control"
+                                       value="{{ pub.date_until }}">
                             </div>
                         </div>
                     </div>
+
+                    {% if chan.module == "superform.plugins.Twitter" %}
+                        <div class="form-group">
+                            <label for="jsp"> Publication options </label>
+                            <fieldset>
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input id="truncate" name="truncate" type="radio" value="Truncate"
+                                               class="form-check-input custom-radio checked"
+                                                {% if pub.extra["truncated"] %} checked {% endif %}>
+                                        Truncate the text to 280 caracters
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input id="NotTruncate" name="truncate" type="radio" value="NotTruncate"
+                                               class="form-check-input custom-radio checked"
+                                                {% if not pub.extra["truncated"] %} checked {% endif %}>
+                                        Publish in several tweets
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                    {% endif %}
 
                 </div>
             </div>
@@ -45,4 +77,25 @@
         Your are not logged in.
     {% endif %}
 
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        {% if chan.module == "superform.plugins.Twitter" %}
+            $(document).ready(function () {
+                $('#textarea_feedback').html(function () {
+                    var text_length = $('#descrpost').val().length;
+                    if ($('#linkurlpost').val() != '' && $('#linkurlpost').val() != null)
+                        text_length = text_length + 23
+                    $('#textarea_feedback').html(text_length + '/280');
+                });
+                $('#descrpost').keyup(function () {
+                    var text_length = $('#descrpost').val().length;
+                    if ($('#linkurlpost').val() != '' && $('#linkurlpost').val() != null)
+                        text_length = text_length + 23
+                    $('#textarea_feedback').html(text_length + '/280');
+                });
+            });
+        {% endif %}
+    </script>
 {% endblock %}
