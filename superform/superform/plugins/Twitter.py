@@ -11,7 +11,6 @@ def run(publishing, channel_config):
     twitter_api = get_api(channel_config)
     # Create body
     status = getStatus(publishing, twitter_api)
-    print(twitter.twitter_utils.calc_expected_status_length(status, short_url_length=23))
     # twitter_test(status, json.loads(publishing.extra)["truncated"], continuation="[...]"
     # , **{"media": publishing.image_url})
 
@@ -72,7 +71,6 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
         while len(word) > 280:
             newlen = 280 - len(short_status + continuation) - 1
             short_status += word[:newlen]
-            print(short_status)
             twitter_api.PostUpdate(short_status + continuation)
             word = word[newlen:]
             short_status = ''
