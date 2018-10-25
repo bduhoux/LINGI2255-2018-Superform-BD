@@ -103,7 +103,9 @@
                                                    id="{{ chan.name }}_titlepost" class="form-control">
                                         </div>
                                         <div class="form-group">
-                                            <label for="{{ chan.name }}_descriptionpost">Description (<span id="{{ chan.name }}_textarea_feedback" name="{{ chan.name }}_textarea_feedback"></span> characters)</label><br>
+                                            <label for="{{ chan.name }}_descriptionpost">Description (<span
+                                                    id="{{ chan.name }}_textarea_feedback"
+                                                    name="{{ chan.name }}_textarea_feedback"></span> characters)</label><br>
                                             <textarea class="form-control" rows="5" id="{{ chan.name }}_descriptionpost"
                                                       name="{{ chan.name }}_descriptionpost"></textarea>
                                         </div>
@@ -311,46 +313,40 @@
             {% if chan.module == "superform.plugins.Twitter" %}
                 $(document).ready(function () {
                     $('#{{ chan.name }}_textarea_feedback').html('0/280');
-
                     $('#{{ chan.name }}_descriptionpost').keyup(function () {
                         var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
                         if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
                             text_length = text_length + 23
-
                         $('#{{ chan.name }}_textarea_feedback').html(text_length + '/280');
                     });
                     $('#{{ chan.name }}_linkurlpost').keyup(function () {
                         var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
                         if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
                             text_length = text_length + 23
-
                         $('#{{ chan.name }}_textarea_feedback').html(text_length + '/280');
                     });
                     $('#descriptionpost').one("change", function (event) {
                         var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
                         if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
                             text_length = text_length + 23
-
                         $('#{{ chan.name }}_textarea_feedback').html(text_length + '/280');
                     });
                     $('#linkurlpost').one("change", function (event) {
                         var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
                         if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
                             text_length = text_length + 23
-
                         $('#{{ chan.name }}_textarea_feedback').html(text_length + '/280');
                     });
                     $('#chan_option_{{ chan.id }}').keyup(function () {
                         var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
                         if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
                             text_length = text_length + 23
-
                         $('#{{ chan.name }}_textarea_feedback').html(text_length + '/280');
                     });
                 });
             {% endif %}
-
         {% endfor %}
+
 
     </script>
 
