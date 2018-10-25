@@ -6,6 +6,7 @@ FIELDS_UNAVAILABLE = ['Title']
 CONFIG_FIELDS = ["Access token", "Access token secret"]
 
 def run(publishing,channel_config):
+
     # Get Twitter API
     twitter_api = get_api(channel_config)
     # Create body
