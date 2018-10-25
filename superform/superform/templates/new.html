@@ -94,6 +94,7 @@
                                     <label for="{{ chan.name }}_titlepost">Title</label><br>
                                     <input type="text" name="{{ chan.name }}_titlepost" id="{{ chan.name }}_titlepost" class="form-control">
                                 </div>
+                                <div id="{{ chan.name }}_textarea_feedback" name="{{ chan.name }}_textarea_feedback"></div>
                                 <div class="form-group">
                                     <label for="{{ chan.name }}_descriptionpost">Description</label><br>
                                     <textarea class="form-control" rows="5" id="{{ chan.name }}_descriptionpost" name="{{ chan.name }}_descriptionpost"></textarea>
@@ -278,6 +279,22 @@
                 })
                 .val(text);
         });
+
+        {% for chan in l_chan %}
+            {% if chan.module == "superform.plugins.Twitter" %}
+                $(document).ready(function() {
+                    $('#{{ chan.name }}_textarea_feedback').html('0/279');
+
+                    $('#{{ chan.name }}_descriptionpost').keyup(function() {
+                        var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
+
+                        $('#{{ chan.name }}_textarea_feedback').html(text_length + '/279');
+                    });
+                });
+            {% endif %}
+
+        {% endfor %}
+
 
 
 
