@@ -1,6 +1,7 @@
 from flask import current_app
 import twitter
 import json
+import re
 
 FIELDS_UNAVAILABLE = ['Title']
 CONFIG_FIELDS = ["Access token", "Access token secret"]
@@ -16,17 +17,13 @@ def run(publishing, channel_config):
     twitter_api = get_api(channel_config)
     # Create body
     status = getStatus(publishing, twitter_api)
-    # twitter_test(status, json.loads(publishing.extra)["truncated"], continuation="[...]"
-    # , **{"media": publishing.image_url})
-
-    # we don't need to deal with too long text
+    # We don't need to deal with too long text
     if json.loads(publishing.extra)["truncated"]:
         if publishing.image_url is not '':
             return twitter_api.PostUpdate(status, media=publishing.image_url)
         else:
             return twitter_api.PostUpdate(status)
-
-    # we need to deal with too long text
+    # We need to deal with too long text
     else:
         cont = "[" + u"\u2026" + "]"
         return publish_with_continuation(status, twitter_api, cont, media=None)
@@ -50,6 +47,12 @@ def get_api(channel_config):
 
 
 def getStatus(publishing, twitter_api):
+    """
+
+    :param publishing: a dictionary containing the elements of the publication
+    :param twitter_api: a Twitter.Api() object
+    :return:
+    """
     if json.loads(publishing.extra)["truncated"]:
         status = publishing.description[:280]
         if publishing.link_url is not '':
@@ -61,15 +64,16 @@ def getStatus(publishing, twitter_api):
             status = status + " " + publishing.link_url
     return status.replace('\r', '')
 
-def twitter_test(status, truncated, continuation, **kwargs):
-    print(status)
-    print(truncated)
-    print(continuation)
-    print(kwargs["media"])
-    print()
-
-
 def publish_with_continuation(status, twitter_api, continuation, media=None):
+    """
+
+    :param status:
+    :param twitter_api: a Twitter.Api() object
+    :param continuation: a String that will be put at the end of a tweet to indicate that the status spans over
+    multiple tweets
+    :param media:
+    :return:
+    """
     short_status = ''
     words = status.split(" ")
     for word in words:
