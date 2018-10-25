@@ -7,6 +7,11 @@ CONFIG_FIELDS = ["Access token", "Access token secret"]
 
 
 def run(publishing, channel_config):
+    """
+    Publishes on a Twitter channel the publication contained in publishing.
+    :param publishing: a dictionary containing the elements of the publication
+    :param channel_config: The configuration of the Twitter channel used for publishing
+    """
     # Get Twitter API
     twitter_api = get_api(channel_config)
     # Create body
@@ -86,3 +91,23 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
             short_status = word
 
     return twitter_api.PostUpdate(short_status, media=media)
+
+
+def getBadUsernames(text):
+    """ Returns a list of Twitter usernames found in text that don't refer to any Twitter account
+    :param text: A string
+    :return: A list of the nonexisting usernames in the text (if any)
+    """
+    # Get API
+    twitter_api = get_api()
+    # Find all usernames in text
+    pattern = re.compile('\B@[a-zA-Z0-9_]+')
+    tags = pattern.findall(text)
+    # Check if usernames exist
+    bad_usernames = []
+    for tag in tags:
+        try:
+            user = twitter_api.GetUser(screen_name=tag[1:])
+        except twitter.error.TwitterError:
+            bad_usernames.append(tag)
+    return bad_usernames
