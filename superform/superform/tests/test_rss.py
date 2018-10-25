@@ -11,6 +11,61 @@ from superform.feed import rss_feed
 from superform.models import db, Publishing, Channel
 
 
+def get_dict_publish(title, description, link_url, image_url, datefrom, dateuntil, channel_name):
+    """
+    Return a dictionary ready to send as data for publishing
+    :param title:
+    :param description:
+    :param link_url:
+    :param image_url:
+    :param datefrom:
+    :param dateuntil:
+    :param channel_name:
+    :return:
+    """
+    channel = Channel.query.filter_by(name=channel_name).first()
+
+    data_publish = {
+        "title": title,
+        "description": description,
+        "channel_id": channel.id,
+        "link_url": link_url,
+        "image_url": image_url,
+        "date_from": datefrom,
+        "date_until": dateuntil,
+        "datefrompost": datefrom,
+        "dateuntilpost": dateuntil,
+        "titlepost": title,
+        "descriptionpost": description,
+        "linkurlpost": link_url,
+        "imagepost": image_url,
+        "chan_option_{}".format(channel.id): '',
+        "{}_datefrompost".format(channel_name): datefrom,
+        "{}_dateuntilpost".format(channel_name): dateuntil,
+    }
+
+    return data_publish
+
+
+def moderate_pub(data_publish, client):
+    """
+    Confirm the publication and send it to the rss
+    :param data_publish:
+    :param client:
+    :return:
+    """
+    publishing = Publishing.query.filter_by(channel_id=data_publish['channel_id'], title=data_publish['title'],
+                                            state=0).first()
+
+    return client.post("/moderate/{}/{}".format(publishing.post_id, data_publish['channel_id']), data=dict(
+        titlepost=data_publish['title'],
+        descrpost=data_publish['description'],
+        linkurlpost=data_publish['link_url'],
+        imagepost=data_publish['image_url'],
+        datefrompost=data_publish['date_from'],
+        dateuntilpost=data_publish['date_until']
+    ))
+
 @pytest.fixture
 def client():
     app.app_context().push()
@@ -67,41 +122,43 @@ def test_post_to_rss(client):
     assert 'Test of rss' not in data
     assert 'RSS feed' not in data
 
-    channel = Channel.query.filter_by(name='RSS').first()
-
-    data_publish = {
-        "title": "Test of rss",
-        "description": "RSS feed",
-        "channel_id": channel.id,
-        "link_url": "http://www.test.com",
-        "image_url": "image.jpg",
-        "date_from": datetime.date(2018, 1, 1),
-        "date_until": datetime.date(2019, 7, 1),
-        "datefrompost": datetime.date(2018, 1, 1),
-        "dateuntilpost": datetime.date(2019, 7, 1),
-        "titlepost": 'Test of rss',
-        "descriptionpost": "RSS feed",
-        "linkurlpost": "http://www.test.com",
-        "imagepost": "image.jpg",
-        "chan_option_{}".format(channel.id): '',
-        "RSS_datefrompost": datetime.date(2018, 1, 1),
-        "RSS_dateuntilpost": datetime.date(2019, 7, 1),
-    }
+    data_publish = get_dict_publish('Test of rss', 'RSS feed', 'http://www.test.com', 'image.jpg',
+                                    datetime.date(2018, 1, 1), datetime.date(2019, 7, 1), 'RSS')
 
     client.post('/publish', data=data_publish)
 
-    publishing = Publishing.query.filter_by(channel_id=channel.id, title='Test of rss', state=0).first()
-
-    client.post("/moderate/{}/{}".format(publishing.post_id, channel.id), data=dict(
-        titlepost='Test of rss',
-        descrpost="RSS feed",
-        linkurlpost="http://www.test.com",
-        imagepost="image.jpg",
-        datefrompost=datetime.date(2018, 1, 1),
-        dateuntilpost=datetime.date(2019, 7, 1),
-    ))
+    moderate_pub(data_publish, client)
 
     data = client.get('/rss.xml').data.decode("utf-8")
 
     assert 'Test of rss' in data
     assert 'RSS feed' in data
+
+
+def test_post_to_rss_same_date(client):
+    """
+    You must create a channel named RSS and give moderator permission to myself for the channel
+    Posts a publication and verify if it's present in the rss feed IF the date from is the same of date until
+    :param client:
+    :return:
+    """
+
+    login(client, "myself")
+
+    data = client.get('/rss.xml').data.decode("utf-8")
+
+    assert 'Test of rss same date' not in data
+    assert 'RSS feed same date' not in data
+
+    data_publish = get_dict_publish('Test of rss same date', 'RSS feed same date', 'http://www.test.com', 'image.jpg',
+                                    datetime.datetime.now().date(), datetime.datetime.now().date(), 'RSS')
+
+    client.post('/publish', data=data_publish)
+
+    moderate_pub(data_publish, client)
+
+    data = client.get('/rss.xml').data.decode("utf-8")
+
+    assert 'Test of rss same date' in data
+    assert 'RSS feed same date' in data
+
