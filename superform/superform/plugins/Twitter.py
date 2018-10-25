@@ -18,9 +18,9 @@ def run(publishing,channel_config):
     # we don't need to deal with too long text
     if json.loads(publishing.extra)["truncated"]:
         if publishing.image_url is not '':
-            twitter_api.PostUpdates(status, media=publishing.image_url)
+            twitter_api.PostUpdate(status, media=publishing.image_url)
         else:
-            twitter_api.PostUpdates(status)
+            twitter_api.PostUpdate(status)
 
     # we need to deal with too long text
     else:
