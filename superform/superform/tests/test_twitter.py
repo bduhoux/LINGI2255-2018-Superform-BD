@@ -35,7 +35,8 @@ class TestGPlus(unittest.TestCase):
     def test_login(self):
         with app.app_context():
             twit = Twitter.get_api(cha_conf)
-            a = twit.GetUser(screen_name="SuperformD")
+            a = twit.VerifyCredentials()
+            self.assertNotEquals(a, None)
             self.assertEqual(a.name, "SuperformDev01")
 
     def test_publishing_1(self):
