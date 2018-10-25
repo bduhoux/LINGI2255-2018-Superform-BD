@@ -92,53 +92,41 @@ def test_post_to_rss(client):
     assert 'Test of rss' not in data
     assert 'RSS feed' not in data
 
-    """
-    rv = client.post('/post', data=dict(title="Test of rss",
-                                           description="RSS feed",
-                                           link_url="http://www.test.com",
-                                           image_url="image.jpg",
-                                           date_from=datetime.date(2018, 1, 1),
-                                           date_until=datetime.date(2019, 7, 1),
-                                           datefrompost=datetime.date(2018, 1, 1),
-                                           dateuntilpost=datetime.date(2019, 7, 1),
-                                           titlepost='Test of rss',
-                                           descrpost="RSS feed",
-                                           linkurlpost="http://www.test.com",
-                                           imagepost="image.jpg"
-                                           )
-                     )
+    channel = Channel.query.filter_by(name='RSS').first()
 
-    post = Post.query.filter_by(
-        title='Test of rss',
-        description="RSS feed"
-    ).first()
+    data_publish = {
+        "title": "Test of rss",
+        "description": "RSS feed",
+        "channel_id": channel.id,
+        "link_url": "http://www.test.com",
+        "image_url": "image.jpg",
+        "date_from": datetime.date(2018, 1, 1),
+        "date_until": datetime.date(2019, 7, 1),
+        "datefrompost": datetime.date(2018, 1, 1),
+        "dateuntilpost": datetime.date(2019, 7, 1),
+        "titlepost": 'Test of rss',
+        "descriptionpost": "RSS feed",
+        "linkurlpost": "http://www.test.com",
+        "imagepost": "image.jpg",
+        "chan_option_{}".format(channel.id): '',  # What The fuck here ??
+        "RSS_datefrompost": datetime.date(2018, 1, 1),
+        "RSS_dateuntilpost": datetime.date(2019, 7, 1),
+    }
 
-    print(post.id)
-    """
+    client.post('/publish', data=data_publish)
 
-    rv = client.post('/publish', data=dict(title="Test of rss",
-                                           description="RSS feed",
-                                           # post_id=post.id,
-                                           channel_id=3,
-                                           link_url="http://www.test.com",
-                                           image_url="image.jpg",
-                                           date_from=datetime.date(2018, 1, 1),
-                                           date_until=datetime.date(2019, 7, 1),
-                                           datefrompost=datetime.date(2018, 1, 1),
-                                           dateuntilpost=datetime.date(2019, 7, 1),
-                                           titlepost='Test of rss',
-                                           descrpost="RSS feed",
-                                           linkurlpost="http://www.test.com",
-                                           imagepost="image.jpg",
-                                           chan_option_={'name': 'RSS'}  # What The fuck here ?? TODO
-                                           )
-                     )
+    publishing = Publishing.query.filter_by(channel_id=channel.id, title='Test of rss', state=0).first()
 
-    assert rv.status_code == 302
+    client.post("/moderate/{}/{}".format(publishing.post_id, channel.id), data=dict(
+        titlepost='Test of rss',
+        descrpost="RSS feed",
+        linkurlpost="http://www.test.com",
+        imagepost="image.jpg",
+        datefrompost=datetime.date(2018, 1, 1),
+        dateuntilpost=datetime.date(2019, 7, 1),
+    ))
 
     data = client.get('/rss.xml').data.decode("utf-8")
-
-    print(data)
 
     assert 'Test of rss' in data
     assert 'RSS feed' in data
