@@ -87,6 +87,30 @@ class TestTwitter(unittest.TestCase):
                 self.assertEqual(c, message[:280-len_end] + c[280-len_end:])
                 self.assertEqual(len(c), 280+len_end - len_url_short)
 
+    def test_publishing_long_truncated_2(self):
+        """
+        This function will test to send long random publications with the parameter truncated at True
+        """
+        with app.app_context():
+            for i in range(20):
+                leng = int(random.random()*200+281)
+                title = "Why Twitter is better than Google+"
+                link_url = ""
+                message = ""
+                for _ in range(leng):
+                    message += "abcdefghijklmnopqrstuvwxyz"[int(random.random()*26)]
+                my_publy = Publish(i, title, message, link_url,
+                                      None, " 24-12-2018", "12-12-2222", option={"truncated": True})
+                twit = Twitter.get_api(cha_conf)
+                c = Twitter.getStatus(my_publy, twit)
+                u = my_publy.description[:280]
+                self.assertEqual(my_publy.post_id, i)
+                self.assertEqual(c, u)
+                self.assertEqual(my_publy.title, title)
+                self.assertEqual(my_publy.link_url, link_url)
+                self.assertEqual(c, message[:280] + c[280:])
+                self.assertEqual(len(c), 280)
+
     def test_publishing_long_not_truncated(self):
         """
         This function will test to send long random publications with the parameter truncated at False
@@ -119,23 +143,13 @@ class TestTwitter(unittest.TestCase):
         with app.app_context():
             twit = Twitter.get_api(cha_conf)
             my_publy = Publish(0, "Why Google+ is still relevant, even though it will soon cease to exist",
-                                  "And Jesus said : This is my body", "",
+                                 "And Jesus said : This is my body", "",
                                   None, " 24-12-2018", "12-12-2222")
             a = json.loads(str(Twitter.run(my_publy, cha_conf)))
             twit.DestroyStatus(a["id"])
             self.assertEqual(a["text"],
                              my_publy.description)  # We do not care about the www. in a tweet url
 
-    def test_run_long(self):
-        with app.app_context():
-            twit = Twitter.get_api(cha_conf)
-            my_publy = Publish(0, "Why Google+ is still relevant, even though it will soon cease to exist",
-                                  "And Jesus said : This is my body", "",
-                                  None, " 24-12-2018", "12-12-2222")
-            a = json.loads(str(Twitter.run(my_publy, cha_conf)))
-            twit.DestroyStatus(a["id"])
-            self.assertEqual(a["text"],
-                             my_publy.description)  # We do not care about the www. in a tweet url
 
 
 if __name__ == "__main__":

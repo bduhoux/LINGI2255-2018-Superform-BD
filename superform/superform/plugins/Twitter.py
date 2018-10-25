@@ -74,13 +74,14 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
     :param media:
     :return:
     """
+    list_status=[]
     short_status = ''
     words = status.split(" ")
     for word in words:
         while len(word) > 280:
             newlen = 280 - len(short_status + continuation) - 1
             short_status += word[:newlen]
-            twitter_api.PostUpdate(short_status + continuation)
+            list_status.append(twitter_api.PostUpdate(short_status + continuation))
             word = word[newlen:]
             short_status = ''
         if short_status == '':
@@ -90,10 +91,11 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
         if twitter.twitter_utils.calc_expected_status_length(new_short_status + continuation) <= 280:
             short_status = new_short_status
         else:
-            twitter_api.PostUpdate(short_status + continuation)
+            list_status.append(twitter_api.PostUpdate(short_status + continuation))
             short_status = word
 
-    return twitter_api.PostUpdate(short_status, media=media)
+        list_status.append(twitter_api.PostUpdate(short_status, media=media))
+        return list_status
 
 
 def getBadUsernames(text):
