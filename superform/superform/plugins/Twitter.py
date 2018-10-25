@@ -24,10 +24,11 @@ def run(publishing,channel_config):
 
     # we need to deal with too long text
     else:
+        cont = "[" + u"\u2026" + "]"
         if publishing.image_url is not '':
-            twitter_api.PostUpdates(status, continuation="[\u2026]", **{"media": publishing.image_url})
+            twitter_api.PostUpdates(status, continuation=cont, **{"media": publishing.image_url, "verify_status_length": False})
         else:
-            twitter_api.PostUpdates(status, continuation="[\u2026]")
+            twitter_api.PostUpdates(status, continuation=cont, **{"verify_status_length": False})
 
 
 def get_api(channel_config):
@@ -56,7 +57,7 @@ def getStatus(publishing, twitter_api):
         status = publishing.description
         if publishing.link_url is not '':
             status = status + " " + publishing.link_url
-    return status
+    return status.replace('\r', '')
 
 
 def twitter_test(status, truncated, continuation, **kwargs):
