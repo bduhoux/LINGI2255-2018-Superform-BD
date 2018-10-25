@@ -97,7 +97,7 @@ class TestTwitter(unittest.TestCase):
     def test_run_short(self):
         with app.app_context():
             twit = Twitter.get_api(cha_conf)
-            my_publy = Publishing(0, "Why Google+ is still relevant, even though it will soon cease to exist",
+            my_publy = Publish(0, "Why Google+ is still relevant, even though it will soon cease to exist",
                                   "And Jesus said : This is my body", "",
                                   None, " 24-12-2018", "12-12-2222")
             a = json.loads(str(Twitter.run(my_publy, cha_conf)))
@@ -108,7 +108,7 @@ class TestTwitter(unittest.TestCase):
     def test_run_long(self):
         with app.app_context():
             twit = Twitter.get_api(cha_conf)
-            my_publy = Publishing(0, "Why Google+ is still relevant, even though it will soon cease to exist",
+            my_publy = Publish(0, "Why Google+ is still relevant, even though it will soon cease to exist",
                                   "And Jesus said : This is my body", "",
                                   None, " 24-12-2018", "12-12-2222")
             a = json.loads(str(Twitter.run(my_publy, cha_conf)))
