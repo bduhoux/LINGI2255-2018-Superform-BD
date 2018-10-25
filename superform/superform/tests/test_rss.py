@@ -52,31 +52,6 @@ def test_get_module_rss():
     assert m == "superform.plugins.rss"
 
 
-def test_channel_rss():
-    """
-    Creation of a channel named test
-    :return:
-    """
-    channel = Channel.query.filter_by(
-        module='superform.plugins.rss',
-        name='test'
-    ).first()
-
-    assert channel is None
-
-    channel = Channel(name="test", module=get_module_full_name("rss"), config="{}")
-    db.session.add(channel)
-
-    channel = Channel.query.filter_by(
-        module='superform.plugins.rss',
-        name='test'
-    ).first()
-
-    assert channel is not None
-
-    assert channel.name == 'test'
-
-
 def test_post_to_rss(client):
     """
     You must create a channel named RSS and give moderator permission to myself for the channel
@@ -108,7 +83,7 @@ def test_post_to_rss(client):
         "descriptionpost": "RSS feed",
         "linkurlpost": "http://www.test.com",
         "imagepost": "image.jpg",
-        "chan_option_{}".format(channel.id): '',  # What The fuck here ??
+        "chan_option_{}".format(channel.id): '',
         "RSS_datefrompost": datetime.date(2018, 1, 1),
         "RSS_dateuntilpost": datetime.date(2019, 7, 1),
     }
