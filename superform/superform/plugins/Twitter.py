@@ -1,7 +1,6 @@
 from flask import current_app
 import twitter
 import json
-import re
 
 FIELDS_UNAVAILABLE = ['Title']
 CONFIG_FIELDS = ["Access token", "Access token secret"]
@@ -46,71 +45,70 @@ def get_api(channel_config):
                        access_token_secret=access_token_secret)
 
 
-def getStatus(publishing, twitter_api):
+def getStatus(publishing):
     """
-
+    Create the content of a tweet truncated if publishing.extra["truncated"] is true.
+    The content of a tweet is the description and the url (if any) separated by a space.
+    If we need to truncate the content the description is truncated an not the url
     :param publishing: a dictionary containing the elements of the publication
-    :param twitter_api: a Twitter.Api() object
-    :return:
+    :return: the content of the tweet according to the specification above
     """
+    #if we need to truncate the text
     if json.loads(publishing.extra)["truncated"]:
+        #without link we limit the description to 280 characters
         status = publishing.description[:280]
         if publishing.link_url is not '':
+            # with link we limit the description to 280 characters- the size of the link and the space
             status = status[:280 - twitter.twitter_utils.calc_expected_status_length(" " + publishing.link_url)] \
                      + " " + publishing.link_url
+    # if we don't need to truncate the text
     else:
         status = publishing.description
         if publishing.link_url is not '':
             status = status + " " + publishing.link_url
+    # \r sometimes create some problems in the count of characters so we delete all the occurence
     return status.replace('\r', '')
 
 def publish_with_continuation(status, twitter_api, continuation, media=None):
     """
-
-    :param status:
+    Publish the content of status in a tweet or more if necessary. If many tweet the first tweets are append with continuation.
+    The media is linked to the last tweet
+    (the implementation of this function in python-twitter API is buggy)
+    :param status: the text to publish with the tweet
     :param twitter_api: a Twitter.Api() object
     :param continuation: a String that will be put at the end of a tweet to indicate that the status spans over
     multiple tweets
-    :param media:
-    :return:
+    :param media: the media to attach at the end of the tweet
+    :return: the last tweet we send on twitter
     """
+    # the content of the current tweet
     short_status = ''
+    # the different words in the tweet
     words = status.split(" ")
     for word in words:
+        # deal with words with more than 280 characters
         while len(word) > 280:
             newlen = 280 - len(short_status + continuation) - 1
             short_status += word[:newlen]
             twitter_api.PostUpdate(short_status + continuation)
             word = word[newlen:]
             short_status = ''
+
+        # test to add the next word
         if short_status == '':
             new_short_status = short_status + word
         else:
             new_short_status = short_status + ' ' + word
+
+        # if we can add the next word we add it
         if twitter.twitter_utils.calc_expected_status_length(new_short_status + continuation) <= 280:
             short_status = new_short_status
+        # if we can't we publish
         else:
             twitter_api.PostUpdate(short_status + continuation)
             short_status = word
 
+    # we publish the last tweet with the media attached
     return twitter_api.PostUpdate(short_status, media=media)
 
 
-def getBadUsernames(text):
-    """ Returns a list of Twitter usernames found in text that don't refer to any Twitter account
-    :param text: A string
-    :return: A list of the nonexisting usernames in the text (if any)
-    """
-    # Get API
-    twitter_api = get_api()
-    # Find all usernames in text
-    pattern = re.compile('\B@[a-zA-Z0-9_]+')
-    tags = pattern.findall(text)
-    # Check if usernames exist
-    bad_usernames = []
-    for tag in tags:
-        try:
-            user = twitter_api.GetUser(screen_name=tag[1:])
-        except twitter.error.TwitterError:
-            bad_usernames.append(tag)
-    return bad_usernames
