@@ -7,6 +7,7 @@ setup(
     install_requires=[
         'flask',
         'python3-saml', 'sqlalchemy',
+        'flask-sqlalchemy',
         'python-twitter'
     ],
 )
