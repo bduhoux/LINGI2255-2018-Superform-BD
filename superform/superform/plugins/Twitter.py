@@ -5,8 +5,8 @@ import json
 FIELDS_UNAVAILABLE = ['Title']
 CONFIG_FIELDS = ["Access token", "Access token secret"]
 
-def run(publishing,channel_config):
 
+def run(publishing, channel_config):
     # Get Twitter API
     twitter_api = get_api(channel_config)
     # Create body
@@ -25,10 +25,7 @@ def run(publishing,channel_config):
     # we need to deal with too long text
     else:
         cont = "[" + u"\u2026" + "]"
-        if publishing.image_url is not '':
-            twitter_api.PostUpdates(status, continuation=cont, **{"media": publishing.image_url, "verify_status_length": False})
-        else:
-            twitter_api.PostUpdates(status, continuation=cont, **{"verify_status_length": False})
+        publish_with_continuation(status, twitter_api, cont, media=None)
 
 
 def get_api(channel_config):
@@ -52,7 +49,7 @@ def getStatus(publishing, twitter_api):
     if json.loads(publishing.extra)["truncated"]:
         status = publishing.description[:279]
         if publishing.link_url is not '':
-            status = status[:279-1-twitter_api.GetShortUrlLength(https=True)] + " "+ publishing.link_url
+            status = status[:279 - 1 - twitter_api.GetShortUrlLength(https=True)] + " " + publishing.link_url
     else:
         status = publishing.description
         if publishing.link_url is not '':
@@ -66,3 +63,20 @@ def twitter_test(status, truncated, continuation, **kwargs):
     print(continuation)
     print(kwargs["media"])
     print()
+
+
+def publish_with_continuation(status, twitter_api, continuation, media=None):
+    short_status = ''
+    words = status.split(" ")
+    for word in words:
+        if short_status == '':
+            new_short_status = short_status + word
+        else:
+            new_short_status = short_status + ' ' + word
+        if twitter.twitter_utils.calc_expected_status_length(new_short_status + continuation) < 280:
+            short_status = new_short_status
+        else:
+            twitter_api.PostUpdate(short_status + continuation)
+            short_status = word
+
+    twitter_api.PostUpdate(short_status, media=media)
