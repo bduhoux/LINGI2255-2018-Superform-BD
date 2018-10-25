@@ -1,4 +1,3 @@
-
 import datetime
 import os
 import tempfile
@@ -12,7 +11,7 @@ from superform import app
 import twitter
 
 cha_conf = json.dumps({"Access token": "1052533183151886336-RBoq1epkAOeRfGdd2pBrbi9uTxQBv6",
-                       "Access token secret": "vqM1nqgcst0uNDSryuMGjhCjT9ldCj4rFUpfxJfDzuTzc"}) #Getted from db
+                       "Access token secret": "vqM1nqgcst0uNDSryuMGjhCjT9ldCj4rFUpfxJfDzuTzc"})  # Getted from db
 
 
 class Publishing:
@@ -62,20 +61,20 @@ class TestTwitter(unittest.TestCase):
             link_url = "www.chretienDeTroieOlalalalala.fr"
             message = ""
             for _ in range(leng):
-                message += "abcdefghijklmnopqrstuvwxyz"[int(random.random()*26)]
+                message += "abcdefghijklmnopqrstuvwxyz"[int(random.random() * 26)]
             my_publy = Publishing(0, title, message, link_url,
                                   None, " 24-12-2018", "12-12-2222", option={"truncated": True})
             twit = Twitter.get_api(cha_conf)
             c = Twitter.getStatus(my_publy, twit)
-            u = my_publy.description[:(280-len(" ")-len(my_publy.link_url[:23]))]
+            u = my_publy.description[:(280 - len(" ") - len(my_publy.link_url[:23]))]
             self.assertEqual(c, u + " " + my_publy.link_url)
-            #self.assertLessEqual(len(c), 280)
+            # self.assertLessEqual(len(c), 280)
             self.assertEqual(my_publy.title, title)
             self.assertEqual(my_publy.link_url, link_url)
-            len_end = 1+len(link_url)
+            len_end = 1 + len(link_url)
             len_url_short = twitter.twitter_utils.calc_expected_status_length(" " + link_url)
-            self.assertEqual(c, message[:280-len_end] + c[280-len_end:])
-            self.assertEqual(len(c), 280+len_end - len_url_short)
+            self.assertEqual(c, message[:280 - len_end] + c[280 - len_end:])
+            self.assertEqual(len(c), 280 + len_end - len_url_short)
 
     def test_publishing_long_not_truncated(self):
         with app.app_context():
@@ -84,18 +83,40 @@ class TestTwitter(unittest.TestCase):
             link_url = "www.chretienDeTroieOlalalalala.fr"
             message = ""
             for _ in range(leng):
-                message += "abcdefghijklmnopqrstuvwxyz"[int(random.random()*26)]
+                message += "abcdefghijklmnopqrstuvwxyz"[int(random.random() * 26)]
             my_publy = Publishing(0, title, message, link_url,
                                   None, " 24-12-2018", "12-12-2222", option={"truncated": False})
             twit = Twitter.get_api(cha_conf)
             c = Twitter.getStatus(my_publy, twit)
             self.assertEqual(my_publy.title, title)
             self.assertEqual(my_publy.link_url, link_url)
-            len_end = 1+len(link_url)
-            self.assertEqual(c, message[:leng-len_end] + c[leng-len_end:])
-            self.assertLessEqual(len(c), leng+len_end)
+            len_end = 1 + len(link_url)
+            self.assertEqual(c, message[:leng - len_end] + c[leng - len_end:])
+            self.assertLessEqual(len(c), leng + len_end)
 
+    def test_run_short(self):
+        with app.app_context():
+            twit = Twitter.get_api(cha_conf)
+            my_publy = Publishing(0, "Why Google+ is still relevant, even though it will soon cease to exist",
+                                  "And Jesus said : This is my body",
+                                  "",
+                                  None, " 24-12-2018", "12-12-2222")
+            a = json.loads(str(Twitter.run(my_publy, cha_conf)))
+            twit.DestroyStatus(a["id"])
+            self.assertEqual(a["text"],
+                             my_publy.description)  # We do not care about the www. in a tweet url
 
+    def test_run_long(self):
+        with app.app_context():
+            twit = Twitter.get_api(cha_conf)
+            my_publy = Publishing(0, "Why Google+ is still relevant, even though it will soon cease to exist",
+                                  "And Jesus said : This is my body",
+                                  "",
+                                  None, " 24-12-2018", "12-12-2222")
+            a = json.loads(str(Twitter.run(my_publy, cha_conf)))
+            twit.DestroyStatus(a["id"])
+            self.assertEqual(a["text"],
+                             my_publy.description)  # We do not care about the www. in a tweet url
 
 
 if __name__ == "__main__":
