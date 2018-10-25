@@ -317,6 +317,12 @@
                 .val(text);
         });
 
+
+        /**
+         * Returns a function that displays the number of chars in the description field of the publication. The
+         * function also displays warnings when the number of chars is greater than 279.
+         * @param channelName: The name of the channel
+         */
         function getCharCounter(channelName) {
             function charCounter(event) {
                 var text_length = $('#'+channelName+'_descriptionpost').val().length;
@@ -338,6 +344,12 @@
             return charCounter;
         }
 
+
+        /**
+         * Initializes the listeners for the Twitter channel given as argument
+         * @param channelName: The name of the channel
+         * @param channelID: The ID of the channel
+         */
         function initializeTwitterListeners(channelName, channelID) {
             getCharCounter(channelName)(null);
             $('#'+channelName+'_textarea_feedback').html('0/279');
@@ -349,6 +361,12 @@
             $('#chan_option_'+channelID).on('keyup', getCharCounter(channelName));
         }
 
+
+        /**
+         * Removes the listeners for the Twitter channel given as argument
+         * @param channelName: The name of the channel
+         * @param channelID: The ID of the channel
+         */
         function removeTwitterListeners(channelName, channelID) {
             $('#'+channelName+'_descriptionpost').off('keyup');
             $('#'+channelName+'_linkurlpost').off('keyup');
@@ -358,8 +376,6 @@
             $('#chan_option_'+channelID).off('keyup');
             $("."+channelName+"_status_too_many_chars").remove();
         }
-
-
     </script>
 
 {% endblock %}
