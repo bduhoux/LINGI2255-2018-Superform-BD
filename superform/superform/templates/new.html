@@ -68,7 +68,7 @@
                                     {% for chan in l_chan %}
                                         <div class="form-check">
                                             <label class="form-check-label">
-                                                <input id="chan_option_{{ chan.id }}" data-namechan="{{ chan.name }}"
+                                                <input id="chan_option_{{ chan.id }}" data-module="{{ chan.module }}" data-namechan="{{ chan.name }}"
                                                        data-unavailablefields="{{ chan.unavailablefields }}"
                                                        name="chan_option_{{ chan.id }}" type="checkbox"
                                                        class="form-check-input checkbox"
@@ -81,7 +81,9 @@
 
                             <div class="card">
                                 <div class="card-header">Status</div>
-                                <div class="card-body">Content</div>
+                                <div id='card_body' class="card_body">
+                                    <div class="status_select_channel"> Please select a channel! </div>
+                                </div>
                             </div>
 
 
@@ -103,7 +105,7 @@
                                                    id="{{ chan.name }}_titlepost" class="form-control">
                                         </div>
                                         <div class="form-group">
-                                            <label for="{{ chan.name }}_descriptionpost">Description (<span id="{{ chan.name }}_textarea_feedback" name="{{ chan.name }}_textarea_feedback"></span> characters)</label><br>
+                                            <label for="{{ chan.name }}_descriptionpost">Description {% if chan.module == "superform.plugins.Twitter" %} (<span id="{{ chan.name }}_textarea_feedback" name="{{ chan.name }}_textarea_feedback"></span> characters){% endif %}</label><br>
                                             <textarea class="form-control" rows="5" id="{{ chan.name }}_descriptionpost"
                                                       name="{{ chan.name }}_descriptionpost"></textarea>
                                         </div>
@@ -180,7 +182,7 @@
 
                                 <div class="card">
                                     <div class="card-header">Status</div>
-                                    <div class="card-body">Content</div>
+                                    <div id='{{ chan.name }}_card_body' class="card_body"></div>
                                 </div>
 
 
@@ -220,11 +222,16 @@
             var nbselected = $('input.checkbox:checked').length;
             if (nbselected == 0) {
                 $("#publish-button").prop('disabled', true);
+                $("#card_body").append('<div class="status_select_channel"> Please select a channel! </div>')
+
             } else {
                 $("#publish-button").prop('disabled', false);
+                $(".status_select_channel").remove();
             }
 
             nameC = $(this).attr('data-namechan');
+            idC = $(this).attr('value');
+            module = $(this).attr('data-module');
             fields = $(this).attr('data-unavailablefields');
             split = fields.split(',');
             if ($(this).is(':checked')) {
@@ -237,10 +244,13 @@
                     $("label[for='" + nameC + "_" + $('#' + split[i].toLowerCase() + 'post').attr('id') + "']").append('<a href="#" data-toggle="popover" title="Unavailable field" data-content="This field is unavailable for channel ' + nameC + '"><i class="fas fa-exclamation-circle" style="color:orange"></i></a>');
 
                 }
+
                 $('[data-toggle="popover"]').popover();
                 $('#li_' + nameC).show();
+                initializeTwitterListeners(nameC, idC);
             } else {
                 //If the channel is not selected
+                removeTwitterListeners(nameC, idC);
                 $(this).removeClass('checked');
                 for (var i = 0; i < split.length; i++) {
                     $("input[id='" + nameC + "_" + $('#' + split[i].toLowerCase() + 'post').attr('id') + "']").prop('disabled', false);
@@ -307,50 +317,48 @@
                 .val(text);
         });
 
-        {% for chan in l_chan %}
-            {% if chan.module == "superform.plugins.Twitter" %}
-                $(document).ready(function () {
-                    $('#{{ chan.name }}_textarea_feedback').html('0/279');
+        function getCharCounter(channelName) {
+            function charCounter(event) {
+                var text_length = $('#'+channelName+'_descriptionpost').val().length;
+                if ($('#'+channelName+'_linkurlpost').val() != '' && $('#'+channelName+'_linkurlpost').val() != null)
+                    text_length = text_length + 23;
+                if (text_length >= 280) {
+                    $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
+                    $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "']").append('<a href="#" data-toggle="popover" title="Content too long" data-content="Too many characters for one tweet"><i class="fas fa-exclamation-circle" style="color:orange"></i></a>');
+                    $("."+channelName+"_status_too_many_chars").remove();
+                    $("#"+channelName+"_card_body").append('<div class="'+channelName+'_status_too_many_chars"> Too many characters for one tweet! </div>');
+                    $("#card_body").append('<div class="'+channelName+'_status_too_many_chars">'+channelName+': Too many characters for one tweet! </div>');
+                    $('[data-toggle="popover"]').popover();
+                } else {
+                    $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
+                    $("."+channelName+"_status_too_many_chars").remove();
+                }
+                $('#'+channelName+'_textarea_feedback').html(text_length + '/279');
+            }
+            return charCounter;
+        }
 
-                    $('#{{ chan.name }}_descriptionpost').keyup(function () {
-                        var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
-                        if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
-                            text_length = text_length + 23
+        function initializeTwitterListeners(channelName, channelID) {
+            getCharCounter(channelName)(null);
+            $('#'+channelName+'_textarea_feedback').html('0/279');
+            $('#'+channelName+'_descriptionpost').on('keyup', getCharCounter(channelName));
+            $('#'+channelName+'_linkurlpost').on('keyup', getCharCounter(channelName));
+            $('#descriptionpost').on('keyup', getCharCounter(channelName));
+            $('#linkurlpost').on('keyup', getCharCounter(channelName));
+            $('#li_'+channelName).on('click', getCharCounter(channelName));
+            $('#chan_option_'+channelID).on('keyup', getCharCounter(channelName));
+        }
 
-                        $('#{{ chan.name }}_textarea_feedback').html(text_length + '/279');
-                    });
-                    $('#{{ chan.name }}_linkurlpost').keyup(function () {
-                        var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
-                        if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
-                            text_length = text_length + 23
+        function removeTwitterListeners(channelName, channelID) {
+            $('#'+channelName+'_descriptionpost').off('keyup');
+            $('#'+channelName+'_linkurlpost').off('keyup');
+            $('#descriptionpost').off('keyup');
+            $('#linkurlpost').off('keyup');
+            $('#li_'+channelName).off('click');
+            $('#chan_option_'+channelID).off('keyup');
+            $("."+channelName+"_status_too_many_chars").remove();
+        }
 
-                        $('#{{ chan.name }}_textarea_feedback').html(text_length + '/279');
-                    });
-                    $('#descriptionpost').one("change", function (event) {
-                        var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
-                        if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
-                            text_length = text_length + 23
-
-                        $('#{{ chan.name }}_textarea_feedback').html(text_length + '/279');
-                    });
-                    $('#linkurlpost').one("change", function (event) {
-                        var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
-                        if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
-                            text_length = text_length + 23
-
-                        $('#{{ chan.name }}_textarea_feedback').html(text_length + '/279');
-                    });
-                    $('#chan_option_{{ chan.id }}').keyup(function () {
-                        var text_length = $('#{{ chan.name }}_descriptionpost').val().length;
-                        if ($('#{{ chan.name }}_linkurlpost').val() != '' && $('#{{ chan.name }}_linkurlpost').val() != null)
-                            text_length = text_length + 23
-
-                        $('#{{ chan.name }}_textarea_feedback').html(text_length + '/279');
-                    });
-                });
-            {% endif %}
-
-        {% endfor %}
 
     </script>
 
