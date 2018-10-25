@@ -44,7 +44,7 @@ class TestTwitter(unittest.TestCase):
             self.assertIsNotNone(a)
             self.assertEqual(a.name, "SuperformDev01")
 
-    def test_publishing_1(self):
+    def test_publishing_short(self):
         with app.app_context():
             my_publy = Publishing(0, "Why Google+ is still relevant, even though it will soon cease to exist",
                                   "And Jesus said : This is my body",
@@ -55,9 +55,9 @@ class TestTwitter(unittest.TestCase):
             self.assertEqual(c, my_publy.description + " " + my_publy.link_url)
             self.assertLessEqual(len(c), 280)
 
-    def test_publishing_2(self):
+    def test_publishing_long_truncated(self):
         with app.app_context():
-            leng = 500
+            leng = 280
             title = "Why Twitter is better than Google+"
             link_url = "www.chretienDeTroieOlalalalala.fr"
             message = ""
@@ -69,8 +69,29 @@ class TestTwitter(unittest.TestCase):
             c = Twitter.getStatus(my_publy, twit)
             self.assertEqual(my_publy.title, title)
             self.assertEqual(my_publy.link_url, link_url)
-            len_end = 1+self.twit.GetShortUrlLength(https=True)
+            len_end = 1+len(link_url)
+            len_url_short = twitter.twitter_utils.calc_expected_status_length(" " + link_url)
             self.assertEqual(c, message[:280-len_end] + c[280-len_end:])
+            self.assertEqual(len(c), 280+len_end - len_url_short)
+
+    def test_publishing_long_not_truncated(self):
+        with app.app_context():
+            leng = 500
+            title = "Why Twitter is better than Google+"
+            link_url = "www.chretienDeTroieOlalalalala.fr"
+            message = ""
+            for _ in range(leng):
+                message += "abcdefghijklmnopqrstuvwxyz"[int(random.random()*26)]
+            my_publy = Publishing(0, title, message, link_url,
+                                  None, " 24-12-2018", "12-12-2222", option={"truncated": False})
+            twit = Twitter.get_api(cha_conf)
+            c = Twitter.getStatus(my_publy, twit)
+            self.assertEqual(my_publy.title, title)
+            self.assertEqual(my_publy.link_url, link_url)
+            len_end = 1+len(link_url)
+            self.assertEqual(c, message[:leng-len_end] + c[leng-len_end:])
+            self.assertLessEqual(len(c), leng+len_end)
+
 
 
 
