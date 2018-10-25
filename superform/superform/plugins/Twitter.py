@@ -47,9 +47,9 @@ def get_api(channel_config):
 
 def getStatus(publishing, twitter_api):
     if json.loads(publishing.extra)["truncated"]:
-        status = publishing.description[:279]
+        status = publishing.description[:280]
         if publishing.link_url is not '':
-            status = status[:279 - 1 - twitter_api.GetShortUrlLength(https=True)] + " " + publishing.link_url
+            status = status[:280 - 1 - twitter_api.GetShortUrlLength(https=True)] + " " + publishing.link_url
     else:
         status = publishing.description
         if publishing.link_url is not '':
@@ -69,11 +69,18 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
     short_status = ''
     words = status.split(" ")
     for word in words:
+        while len(word) > 280:
+            newlen = 280 - len(short_status + continuation) - 1
+            short_status += word[:newlen]
+            print(short_status)
+            twitter_api.PostUpdate(short_status + continuation)
+            word = word[newlen:]
+            short_status = ''
         if short_status == '':
             new_short_status = short_status + word
         else:
             new_short_status = short_status + ' ' + word
-        if twitter.twitter_utils.calc_expected_status_length(new_short_status + continuation) < 280:
+        if twitter.twitter_utils.calc_expected_status_length(new_short_status + continuation) <= 280:
             short_status = new_short_status
         else:
             twitter_api.PostUpdate(short_status + continuation)
