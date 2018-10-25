@@ -11,11 +11,11 @@
                         <input type="text" name="titlepost" id="titlepost" class="form-control" value="{{ pub.title }}">
                     </div>
                     <div class="form-group">
-                        <label for="descriptionpost">Description {% if chan.module == "superform.plugins.Twitter" %}(<span
+                        <label for="descrpost">Description {% if chan.module == "superform.plugins.Twitter" %}(<span
                                 id="textarea_feedback"
                                 name="textarea_feedback"></span> characters) {% endif %}</label><br>
-                        <textarea class="form-control" rows="5" id="descriptionpost"
-                                  name="descriptionpost"></textarea>
+                        <textarea class="form-control" rows="5" id="descrpost"
+                                  name="descrpost">{{ pub.description }}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="linkurlpost">Link</label><br>
@@ -83,9 +83,14 @@
     <script>
         {% if chan.module == "superform.plugins.Twitter" %}
             $(document).ready(function () {
-                $('#textarea_feedback').html('0/280');
-                $('#descriptionpost').keyup(function () {
-                    var text_length = $('#descriptionpost').val().length;
+                $('#textarea_feedback').html(function () {
+                    var text_length = $('#descrpost').val().length;
+                    if ($('#linkurlpost').val() != '' && $('#linkurlpost').val() != null)
+                        text_length = text_length + 23
+                    $('#textarea_feedback').html(text_length + '/280');
+                });
+                $('#descrpost').keyup(function () {
+                    var text_length = $('#descrpost').val().length;
                     if ($('#linkurlpost').val() != '' && $('#linkurlpost').val() != null)
                         text_length = text_length + 23
                     $('#textarea_feedback').html(text_length + '/280');
