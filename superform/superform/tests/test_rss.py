@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import pytest
-=======
->>>>>>> f9bb783... wip(test) : add test_post_to_rss
-=======
-import pytest
->>>>>>> 2bb013c... wip(test) : test post rss
 import datetime
 import os
 import tempfile
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-import pytest
->>>>>>> f9bb783... wip(test) : add test_post_to_rss
-=======
->>>>>>> 2bb013c... wip(test) : test post rss
 from superform.utils import datetime_converter, str_converter, get_module_full_name
 from superform import app, db, Post, User
 from superform.models import Authorization, Channel
