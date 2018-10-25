@@ -48,7 +48,8 @@ def getStatus(publishing, twitter_api):
     if json.loads(publishing.extra)["truncated"]:
         status = publishing.description[:280]
         if publishing.link_url is not '':
-            status = status[:280 - 1 - twitter_api.GetShortUrlLength(https=True)] + " " + publishing.link_url
+            status = status[:280 - twitter.twitter_utils.calc_expected_status_length(" " + publishing.link_url)] \
+                     + " " + publishing.link_url
     else:
         status = publishing.description
         if publishing.link_url is not '':
