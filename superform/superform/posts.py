@@ -36,7 +36,6 @@ def create_a_publishing(post, chn, form):
     date_until = datetime_converter(form.get(chan + '_dateuntilpost')) if datetime_converter(
         form.get(chan + '_dateuntilpost')) is not None else post.date_until
     extra = dict()
-    print(form)
     if chn.module == "superform.plugins.Twitter":
         extra['truncated'] = form.get(chan + "_truncate") == "Truncate"
 

@@ -103,9 +103,9 @@
                                                    id="{{ chan.name }}_titlepost" class="form-control">
                                         </div>
                                         <div class="form-group">
-                                            <label for="{{ chan.name }}_descriptionpost">Description (<span
+                                            <label for="{{ chan.name }}_descriptionpost">Description {% if chan.module == "superform.plugins.Twitter" %}(<span
                                                     id="{{ chan.name }}_textarea_feedback"
-                                                    name="{{ chan.name }}_textarea_feedback"></span> characters)</label><br>
+                                                    name="{{ chan.name }}_textarea_feedback"></span> characters) {% endif %}</label><br>
                                             <textarea class="form-control" rows="5" id="{{ chan.name }}_descriptionpost"
                                                       name="{{ chan.name }}_descriptionpost"></textarea>
                                         </div>
