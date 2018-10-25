@@ -24,9 +24,9 @@ def run(publishing,channel_config):
     # we need to deal with too long text
     else:
         if publishing.image_url is not '':
-            twitter_api.PostUpdates(status, continuation="[...]", **{"media": publishing.image_url})
+            twitter_api.PostUpdates(status, continuation="[\u2026]", **{"media": publishing.image_url})
         else:
-            twitter_api.PostUpdates(status, continuation="[...]")
+            twitter_api.PostUpdates(status, continuation="[\u2026]")
 
 
 def get_api(channel_config):
