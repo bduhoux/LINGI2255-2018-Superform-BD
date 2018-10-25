@@ -35,12 +35,22 @@ class TestTwitter(unittest.TestCase):
             self.twit = Twitter.get_api(cha_conf)  # We'll need this variable for other tests
 
     def test_login(self):
+        """
+        This function tests the login to the application
+        """
         with app.app_context():
             a = self.twit.VerifyCredentials()
             self.assertIsNotNone(a)
             self.assertEqual(a.name, "SuperformDev01")
 
+
+    """
+    The following functions will test the getStatus() function in Twitter module.
+    """
     def test_publishing_short(self):
+        """
+        This function will test a short publication
+        """
         with app.app_context():
             my_publy = Publish(0, "Why Google+ is still relevant, even though it will soon cease to exist",
                                   "And Jesus said : This is my body",
@@ -52,6 +62,9 @@ class TestTwitter(unittest.TestCase):
             self.assertLessEqual(len(c), 280)
 
     def test_publishing_long_truncated(self):
+        """
+        This function will test to send long random publications with the parameter truncated at True
+        """
         with app.app_context():
             for i in range(20):
                 leng = int(random.random()*200+281)
@@ -75,6 +88,9 @@ class TestTwitter(unittest.TestCase):
                 self.assertEqual(len(c), 280+len_end - len_url_short)
 
     def test_publishing_long_not_truncated(self):
+        """
+        This function will test to send long random publications with the parameter truncated at False
+        """
         with app.app_context():
             for i in range(20):
                 leng = int(random.random()*200+281)
@@ -94,6 +110,11 @@ class TestTwitter(unittest.TestCase):
                 self.assertEqual(c, message[:leng-len_end] + c[leng-len_end:])
                 self.assertLessEqual(len(c), leng+len_end)
 
+
+    """
+    The following functions will test the run() and publish_with_continuation() (since it is used by run() )
+    functions in Twitter module.
+    """
     def test_run_short(self):
         with app.app_context():
             twit = Twitter.get_api(cha_conf)
