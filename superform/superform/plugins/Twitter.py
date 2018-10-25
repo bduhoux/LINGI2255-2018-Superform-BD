@@ -24,7 +24,7 @@ def run(publishing, channel_config):
     # we need to deal with too long text
     else:
         cont = "[" + u"\u2026" + "]"
-        publish_with_continuation(status, twitter_api, cont, media=None)
+        return publish_with_continuation(status, twitter_api, cont, media=None)
 
 
 def get_api(channel_config):
@@ -85,4 +85,4 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
             twitter_api.PostUpdate(short_status + continuation)
             short_status = word
 
-    twitter_api.PostUpdate(short_status, media=media)
+    return twitter_api.PostUpdate(short_status, media=media)
