@@ -95,6 +95,7 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
 
     return twitter_api.PostUpdate(short_status, media=media)
 
+
 def getBadUsernames(text):
     """ Returns a list of Twitter usernames found in text that don't refer to any Twitter account
     :param text: A string
@@ -109,7 +110,7 @@ def getBadUsernames(text):
     bad_usernames = []
     for tag in tags:
         try:
-            user = twitter_api.GetUser(screen_name = tag[1:])
+            user = twitter_api.GetUser(screen_name=tag[1:])
         except twitter.error.TwitterError:
             bad_usernames.append(tag)
     return bad_usernames
