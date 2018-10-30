@@ -12,7 +12,7 @@ pub_page = Blueprint('publishings', __name__)
 @login_required()
 def moderate_publishing(id, idc):
     pub = db.session.query(Publishing).filter(Publishing.post_id == id, Publishing.channel_id == idc).first()
-    chan = db.session.query(Channel).filter(Channel.name == idc).first()
+    chan = db.session.query(Channel).filter(Channel.id == idc).first()
     pub.date_from = str_converter(pub.date_from)
     pub.date_until = str_converter(pub.date_until)
     if request.method == "GET":
@@ -30,9 +30,11 @@ def moderate_publishing(id, idc):
         if chan.module == "superform.plugins.Twitter":
             extra['truncated'] = request.form.get("truncate") == "Truncate"
             pub.extra = json.dumps(extra)
-
+    #state is shared & validated
+        pub.state = 1
+        db.session.commit()
         # running the plugin here
-        c = db.session.query(Channel).filter(Channel.name == pub.channel_id).first()
+        c = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
         plugin_name = c.module
         c_conf = c.config
         from importlib import import_module

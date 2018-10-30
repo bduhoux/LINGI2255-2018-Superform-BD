@@ -77,7 +77,7 @@ class Channel(db.Model):
     config = db.Column(db.Text, nullable=False)
 
     publishings = db.relationship("Publishing", backref="channel", lazy=True)
-    authorizations = db.relationship("Authorization", backref="channel", lazy=True)
+    authorizations = db.relationship("Authorization", cascade="all, delete", backref="channel", lazy=True)
 
     __table_args__ = ({"sqlite_autoincrement": True},)
 
