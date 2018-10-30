@@ -15,7 +15,7 @@ def run(publishing, channel_config):
     # Get Twitter API
     twitter_api = get_api(channel_config)
     # Create body
-    status = getStatus(publishing, twitter_api)
+    status = getStatus(publishing)
     # We don't need to deal with too long text
     if json.loads(publishing.extra)["truncated"]:
         if publishing.image_url is not '':

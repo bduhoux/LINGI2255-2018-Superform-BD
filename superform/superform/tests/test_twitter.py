@@ -57,7 +57,7 @@ class TestTwitter(unittest.TestCase):
                                   "www.chretienDeTroie.fr",
                                   None, " 24-12-2018", "12-12-2222")
             twit = Twitter.get_api(cha_conf)
-            c = Twitter.getStatus(my_publy, twit)
+            c = Twitter.getStatus(my_publy)
             self.assertEqual(c, my_publy.description + " " + my_publy.link_url)
             self.assertLessEqual(len(c), 280)
 
@@ -76,7 +76,7 @@ class TestTwitter(unittest.TestCase):
                 my_publy = Publish(i, title, message, link_url,
                                       None, " 24-12-2018", "12-12-2222", option={"truncated": True})
                 twit = Twitter.get_api(cha_conf)
-                c = Twitter.getStatus(my_publy, twit)
+                c = Twitter.getStatus(my_publy)
                 u = my_publy.description[:(280-len(" ")-len(my_publy.link_url[:23]))]
                 self.assertEqual(my_publy.post_id, i)
                 self.assertEqual(c, u + " " + my_publy.link_url)
@@ -102,7 +102,7 @@ class TestTwitter(unittest.TestCase):
                 my_publy = Publish(i, title, message, link_url,
                                       None, " 24-12-2018", "12-12-2222", option={"truncated": True})
                 twit = Twitter.get_api(cha_conf)
-                c = Twitter.getStatus(my_publy, twit)
+                c = Twitter.getStatus(my_publy)
                 u = my_publy.description[:280]
                 self.assertEqual(my_publy.post_id, i)
                 self.assertEqual(c, u)
@@ -126,7 +126,7 @@ class TestTwitter(unittest.TestCase):
                 my_publy = Publish(i, title, message, link_url,
                                       None, " 24-12-2018", "12-12-2222", option={"truncated": False})
                 twit = Twitter.get_api(cha_conf)
-                c = Twitter.getStatus(my_publy, twit)
+                c = Twitter.getStatus(my_publy)
                 self.assertEqual(my_publy.post_id, i)
                 self.assertEqual(my_publy.title, title)
                 self.assertEqual(my_publy.link_url, link_url)
