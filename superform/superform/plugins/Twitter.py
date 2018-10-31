@@ -3,6 +3,7 @@ import twitter
 import json
 
 FIELDS_UNAVAILABLE = ['Title']
+FILES_MANDATORY = ['Description']
 CONFIG_FIELDS = ["Access token", "Access token secret"]
 
 
@@ -112,3 +113,7 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
     return twitter_api.PostUpdate(short_status, media=media)
 
 
+def publish_list(statuslist, twitter_api, continuation, media=None):
+    for status in statuslist[:-1]:
+        twitter_api.PostUpdate(status + continuation)
+    twitter_api.PostUpdate(status + continuation, media)
