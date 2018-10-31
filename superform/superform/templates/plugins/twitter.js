@@ -9,6 +9,7 @@ $('input.checkbox').change(function () {
         removeTwitterListeners(nameC, idC);
     }
 });
+
 /**
  * Returns a function that displays the number of chars in the description field of the publication. The
  * function also displays warnings when the number of chars is greater than 279.
@@ -66,4 +67,56 @@ function removeTwitterListeners(channelName, channelID) {
     $('#li_'+channelName).off('click');
     $('#chan_option_'+channelID).off('keyup');
     $("."+channelName+"_status_too_many_chars").remove();
+}
+
+function twitterUpdatePreview(channelName) {
+    var text = $('#'+channelName+'_descriptionpost').val();
+    var url = $('#'+channelName+'_linkurlpost').val();
+    var tweets = splitTweet(text, url);
+    var preview_container = $('#'+channelName+'_preview');
+    var numberOfTweets = tweets.length;
+    console.log(tweets);
+    $('.tweet-preview').remove();
+    for (var i = 1; i <= numberOfTweets; i++) {
+        var tweet = tweets[i-1];
+        console.log(tweet);
+        var html = `<div class="form-group tweet-preview"><label for="${channelName}_$tweet_{i}">Tweet ${i}/${numberOfTweets}</label><br> <textarea class="form-control" rows="5" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${tweet}</textarea></div>`;
+        preview_container.append(html);
+    }
+}
+
+function splitTweet(text, url) {
+    // the content of the current tweet
+    var tweet_list = [];
+    var tweet = '';
+    var continuationLength = 8;
+    // get the different words in the tweet
+    words = text.split(" ");
+    for (var word of words) {
+        // test to add the next word
+        var test_tweet = '';
+        if (tweet == '') {
+            test_tweet = tweet + word;
+        } else {
+            test_tweet = tweet + ' ' + word;
+        }
+        // if we can add the next word we add it
+        if (test_tweet.length + continuationLength + 3 <= 280) {
+            tweet = test_tweet;
+        }
+        // if we can't publish
+        else {
+            tweet_list.push(tweet + '\u2026');
+            tweet = word;
+        }
+    }
+    tweet_list.push(tweet);
+    var numberOfTweets = tweet_list.length;
+    if (numberOfTweets > 1) {
+        for (var i = 1; i <= numberOfTweets; i++) {
+            tweet_list[i-1] = `[${i}/${numberOfTweets}] ` + tweet_list[i-1];
+        }
+    }
+    return tweet_list;
+
 }

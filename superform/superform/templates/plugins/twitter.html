@@ -21,5 +21,13 @@
             </label>
         </div>
     </fieldset>
-
+</div>
+<div>
+    <b>Preview</b>
+</div>
+<input type="button" value="Update preview" onclick="twitterUpdatePreview('{{ chan.name }}')">
+<div id="{{ chan.name }}_preview">
+    <div class="form-group tweet-preview">
+        No preview yet.
+    </div>
 </div>
