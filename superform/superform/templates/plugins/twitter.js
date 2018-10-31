@@ -83,10 +83,14 @@ function removeTwitterListeners(channelName, channelID) {
 function twitterUpdatePreview(channelName) {
     var text = $('#' + channelName + '_descriptionpost').val();
     var url = $('#' + channelName + '_linkurlpost').val();
-    var tweets = splitTweet(text, url);
+    var tweets;
+    if ($('#' + channelName + '_truncate').prop('checked')) {
+        tweets = [truncateTweet(text, url)];
+    } else {
+        tweets = splitTweet(text, url);
+    }
     var preview_container = $('#' + channelName + '_preview');
     var numberOfTweets = tweets.length;
-    console.log(tweets);
     $('.tweet-preview').remove();
     for (var i = 1; i <= numberOfTweets; i++) {
         var tweet = tweets[i - 1];
@@ -96,13 +100,44 @@ function twitterUpdatePreview(channelName) {
     }
 }
 
+function truncateTweet(text, url) {
+    var tweet = '';
+    var words = text.split(" ");
+    console.log(words)
+    var endingLength;
+    if (url.length != 0) {
+        endingLength = 6;
+    } else {
+        endingLength = 5;
+    }
+    for (var word of words) {
+        var test_tweet = '';
+        if (tweet == '') {
+            test_tweet = tweet + word;
+        } else {
+            test_tweet = tweet + ' ' + word;
+        }
+        if (test_tweet.length + Math.min(url.length, 23) + endingLength <= 280) {
+            tweet = test_tweet;
+        } else {
+            break;
+        }
+    }
+    if (url.length != 0) {
+        tweet = tweet + ' [\u2026] ' + url;
+    } else {
+        tweet = tweet + ' [\u2026]';
+    }
+    return tweet;
+}
+
 function splitTweet(text, url) {
     // the content of the current tweet
     var tweet_list = [];
     var tweet = '';
     var continuationLength = 8;
     // get the different words in the tweet
-    words = text.split(" ");
+    var words = text.split(" ");
     for (var word of words) {
         // test to add the next word
         var test_tweet = '';
@@ -112,7 +147,7 @@ function splitTweet(text, url) {
             test_tweet = tweet + ' ' + word;
         }
         // if we can add the next word we add it
-        if (test_tweet.length + continuationLength + 3 <= 280) {
+        if (test_tweet.length + continuationLength + 2 <= 280) {
             tweet = test_tweet;
         }
         // if we can't publish
