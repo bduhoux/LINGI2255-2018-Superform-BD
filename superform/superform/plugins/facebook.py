@@ -12,6 +12,9 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     page_id = get_page_id(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
     access_token = get_access_token(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
 
+    print(page_id)
+    print(access_token)
+
     cfg = get_config(page_id, access_token)
     api = get_api(cfg)
 
