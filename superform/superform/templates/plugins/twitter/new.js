@@ -28,20 +28,6 @@ function getCharCounter(channelName) {
             $("#" + channelName + "_card_body").append('<div class="' + channelName + '_status_too_many_chars"> Too many characters for one tweet! </div>');
             $("#card_body").append('<div class="' + channelName + '_status_too_many_chars">' + channelName + ': Too many characters for one tweet! </div>');
             $('[data-toggle="popover"]').popover();
-        }
-        else if (text_length == 0) {
-            $("." + channelName + "_empty_description").remove();
-            $("#" + channelName + "_card_body").append('<div class="' + channelName + '_empty_description"> Twitter publishings must contain a description! </div>');
-            $("#card_body").append('<div class="' + channelName + '_empty_description">' + channelName + ': Twitter publishings must contain a description! </div>');
-            $("#publish-button").prop('disabled', true);
-            block_submit = true;
-        }
-        else if (text_length != 0) {
-            block_submit = false;
-            $("." + channelName + "_empty_description").remove();
-            if (!invalid_input()) {
-                $("#publish-button").prop('disabled', false);
-            }
         } else {
             $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
             $("." + channelName + "_status_too_many_chars").remove();
@@ -53,27 +39,45 @@ function getCharCounter(channelName) {
 
 /**
  * Counts the number of chars in a tweet preview and displays it.
- * @param event: an event
+ * @param channelName: The name of the channel
  */
-function tweetCharCounter(event) {
-    var tweetTextarea = $(this);
-    var tweetContainer = tweetTextarea.parent();
-    var text = tweetTextarea.val();
-    var text_length = text.length;
-    var re_url = /\(?(?:(http|https|ftp):\/\/)?(?:((?:[^\W\s]|\.|-|[:]{1})+)@{1})?((?:www.)?(?:[^\W\s]|\.|-)+[\.][^\W\s]{2,4}|localhost(?=\/)|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::(\d*))?([\/]?[^\s\?]*[\/]{1})*(?:\/?([^\s\n\?\[\]\{\}\#]*(?:(?=\.)){1}|[^\s\n\?\[\]\{\}\.\#]*)?([\.]{1}[^\s\?\#]*)?)?(?:\?{1}([^\s\n\#\[\]]*))?([\#][^\s\n]*)?\)?/gi;
-    var urls = text.match(re_url);
-    if (urls != null) {
-        for (url of urls) {
-            text_length -= url.length;
-            text_length += 23;
+function getTweetCharCounter(channelName) {
+    function tweetCharCounter(event) {
+        var tweetTextarea = $(this);
+        var tweetContainer = tweetTextarea.parent();
+        var text = tweetTextarea.val();
+        var text_length = text.length;
+        var re_url = /\(?(?:(http|https|ftp):\/\/)?(?:((?:[^\W\s]|\.|-|[:]{1})+)@{1})?((?:www.)?(?:[^\W\s]|\.|-)+[\.][^\W\s]{2,4}|localhost(?=\/)|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::(\d*))?([\/]?[^\s\?]*[\/]{1})*(?:\/?([^\s\n\?\[\]\{\}\#]*(?:(?=\.)){1}|[^\s\n\?\[\]\{\}\.\#]*)?([\.]{1}[^\s\?\#]*)?)?(?:\?{1}([^\s\n\#\[\]]*))?([\#][^\s\n]*)?\)?/gi;
+        var urls = text.match(re_url);
+        if (urls != null) {
+            for (url of urls) {
+                text_length -= url.length;
+                text_length += 23;
+            }
         }
+        var re_special_chars = /\u2026/gi;
+        var special_chars = text.match(re_special_chars);
+        if (special_chars != null) {
+            text_length += special_chars.length;
+        }
+        if (text_length == 0) {
+            $("." + channelName + "_empty_description").remove();
+            $("#" + channelName + "_card_body").append('<div class="' + channelName + '_empty_description"> Tweets cannot be empty! </div>');
+            $("#card_body").append('<div class="' + channelName + '_empty_description">' + channelName + ': Tweets cannot be empty! </div>');
+            $("#publish-button").prop('disabled', true);
+            block_submit = true;
+        }
+        else {
+            block_submit = false;
+            $("." + channelName + "_empty_description").remove();
+            if (!invalid_input()) {
+                $("#publish-button").prop('disabled', false);
+            }
+        }
+        tweetContainer.find('.tweet-char-counter').html('(' + text_length + ' out of 280 characters)');
     }
-    var re_special_chars = /\u2026/gi;
-    var special_chars = text.match(re_special_chars);
-    if (special_chars != null) {
-        text_length += special_chars.length;
-    }
-    tweetContainer.find('.tweet-char-counter').html('(' + text_length + ' out of 280 characters)');
+
+    return tweetCharCounter;
 }
 
 /**
@@ -98,6 +102,7 @@ function getTweetHtml(text, channelName, i, numberOfTweets) {
  * @param channelName: the name of this Twitter channel
  */
 function addPreviewTweet(channelName) {
+    var tweetCharCounter = getTweetCharCounter(channelName);
     var preview_container = $('#' + channelName + '_preview');
     $('#' + channelName + '_no_preview').remove();
     var numberOfTweets = preview_container.children().length + 1;
@@ -164,6 +169,7 @@ function getTwitterPreviewUpdater(channelName) {
  * @param channelName: the name of this Twitter channel
  */
 function addTweetsToHtml(tweets, channelName) {
+    var tweetCharCounter = getTweetCharCounter(channelName);
     var preview_container = $('#' + channelName + '_preview');
     $('#' + channelName + '_no_preview').remove();
     var numberOfTweets = tweets.length;

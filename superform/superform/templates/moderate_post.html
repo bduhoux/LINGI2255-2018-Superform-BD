@@ -55,27 +55,3 @@
     {% endif %}
 
 {% endblock %}
-
-{% block scripts %}
-    <script>
-        {% if chan.module == "superform.plugins.Twitter" %}
-            $(document).ready(function () {
-                $('#textarea_feedback').html(function () {
-                    var text_length = $('#descrpost').val().length;
-                    if ($('#linkurlpost').val() != '' && $('#linkurlpost').val() != null)
-                        text_length = text_length + 23
-                    $('#textarea_feedback').html(text_length + '/280');
-                });
-                $('#descrpost').keyup(function () {
-                    var text_length = $('#descrpost').val().length;
-                    if ($('#linkurlpost').val() != '' && $('#linkurlpost').val() != null)
-                        text_length = text_length + 23
-                    $('#textarea_feedback').html(text_length + '/280');
-                });
-            });
-        {% endif %}
-        {% set module_name = chan.module.split('.')[2].lower() %}
-        {% set template = 'plugins/' + module_name + '/moderate.js'%}
-        {% include template ignore missing %}
-    </script>
-{% endblock %}
