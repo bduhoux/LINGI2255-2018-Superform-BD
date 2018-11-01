@@ -43,7 +43,8 @@ def get_api(channel_config):
     return twitter.Api(consumer_key=consumer_key,
                        consumer_secret=consumer_secret,
                        access_token_key=access_token,
-                       access_token_secret=access_token_secret)
+                       access_token_secret=access_token_secret,
+                       tweet_mode='extended')
 
 
 def getStatus(publishing):
@@ -80,18 +81,19 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
     :param continuation: a String that will be put at the end of a tweet to indicate that the status spans over
     multiple tweets
     :param media: the media to attach at the end of the tweet
-    :return: the last tweet we send on twitter
+    :return: a list of all sended tweet
     """
     # the content of the current tweet
     short_status = ''
     # the different words in the tweet
     words = status.split(" ")
+    list = []
     for word in words:
         # deal with words with more than 280 characters
         while len(word) > 280:
             newlen = 280 - len(short_status + continuation) - 1
             short_status += word[:newlen]
-            twitter_api.PostUpdate(short_status + continuation)
+            list.append(twitter_api.PostUpdate(short_status + continuation))
             word = word[newlen:]
             short_status = ''
 
@@ -106,11 +108,12 @@ def publish_with_continuation(status, twitter_api, continuation, media=None):
             short_status = new_short_status
         # if we can't we publish
         else:
-            twitter_api.PostUpdate(short_status + continuation)
+            list.append(twitter_api.PostUpdate(short_status + continuation))
             short_status = word
 
     # we publish the last tweet with the media attached
-    return twitter_api.PostUpdate(short_status, media=media)
+    list.append(twitter_api.PostUpdate(short_status, media=media))
+    return list
 
 
 def publish_list(statuslist, twitter_api, continuation, media=None):
