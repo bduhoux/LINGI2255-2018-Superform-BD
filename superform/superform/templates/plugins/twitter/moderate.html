@@ -4,7 +4,7 @@
 <div id="preview">
     {% for tweet in pub.extra['tweet_list'] %}
         <div class="form-group tweet-preview">
-            <label for="tweet_{{ tweet[0] }}">Tweet {{ tweet[0] }}/{{ pub.extra['tweet_list']|length }}</label>
+            <label for="tweet_{{ tweet[0] }}"><span class="tweet-number">Tweet {{ tweet[0] }}/{{ pub.extra['tweet_list']|length }}</span> <span class="tweet-char-counter" style="font-style: italic"></span> </label>
             <input type="button" value="Remove" onclick="removePreviewTweet({{ tweet[0] }})"><br>
             <textarea class="form-control" rows="4" maxlength="280" id="tweet_{{ tweet[0] }}"
               name="tweet_{{ tweet[0] }}">{{ tweet[1] }}</textarea>

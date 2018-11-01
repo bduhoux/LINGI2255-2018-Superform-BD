@@ -11,9 +11,7 @@
                         <input type="text" name="titlepost" id="titlepost" class="form-control" value="{{ pub.title }}">
                     </div>
                     <div class="form-group">
-                        <label for="descrpost">Description {% if chan.module == "superform.plugins.Twitter" %}(<span
-                                id="textarea_feedback"
-                                name="textarea_feedback"></span> characters) {% endif %}</label><br>
+                        <label for="descrpost">Description</label><br>
                         <textarea class="form-control" rows="5" id="descrpost"
                                   name="descrpost">{{ pub.description }}</textarea>
                     </div>

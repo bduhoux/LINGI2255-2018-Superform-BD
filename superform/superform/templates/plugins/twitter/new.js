@@ -73,7 +73,7 @@ function tweetCharCounter(event) {
 
 function getTweetHtml(text, channelName, i, numberOfTweets) {
     var html = `<div class="form-group tweet-preview">
-                    <label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets} <span class="tweet-char-counter" style="font-style: italic"></span></label>
+                    <label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets} <span class="${channelName}-tweet-number"> </span> <span class="tweet-char-counter" style="font-style: italic"></span></label>
                     <input type="button" value="Remove" onclick="removePreviewTweet('${channelName}', ${i})"><br> 
                     <textarea class="form-control" rows="4" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${text}</textarea>
                 </div>`;
@@ -82,19 +82,18 @@ function getTweetHtml(text, channelName, i, numberOfTweets) {
 
 function addPreviewTweet(channelName) {
     var preview_container = $('#' + channelName + '_preview');
+    $('#' + channelName + '_no_preview').remove();
     var numberOfTweets = preview_container.children().length + 1;
-    if (numberOfTweets == 1) {
-        $('.tweet-preview').remove();
-    }
     var i = 1;
     preview_container.children().each(function () {
-        $(this).find('label').html(`Tweet ${i}/${numberOfTweets}`);
+        $(this).find('.' + channelName + '-tweet-number').html(`Tweet ${i}/${numberOfTweets}`);
         i++;
     });
     var html = getTweetHtml('', channelName, numberOfTweets, numberOfTweets);
     preview_container.append(html);
-    preview_container.on('keyup', tweetCharCounter);
-    preview_container.trigger('keyup', 'update char count');
+    var tweetContainer = $('#' + channelName + '_tweet_' + numberOfTweets);
+    tweetContainer.on('keyup', tweetCharCounter);
+    tweetContainer.trigger('keyup', 'update char count');
 }
 
 function removePreviewTweet(channelName, tweetNumber) {
@@ -133,6 +132,7 @@ function getTwitterPreviewUpdater(channelName) {
 
 function addTweetsToHtml(tweets, channelName) {
     var preview_container = $('#' + channelName + '_preview');
+    $('#' + channelName + '_no_preview').remove();
     var numberOfTweets = tweets.length;
     $('.tweet-preview').remove();
     for (var i = 1; i <= numberOfTweets; i++) {
@@ -144,7 +144,7 @@ function addTweetsToHtml(tweets, channelName) {
         tweetContainer.trigger('keyup', 'update char count');
     }
     if (numberOfTweets == 0) {
-        var html = '<div class="form-group tweet-preview"> No preview yet. </div>';
+        var html = `<div class="form-group tweet-preview" id="${channelName}_no_preview"> No preview yet. </div>`;
         preview_container.append(html);
     }
 }
