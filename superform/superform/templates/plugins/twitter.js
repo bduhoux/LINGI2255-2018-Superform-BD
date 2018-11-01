@@ -78,6 +78,7 @@ function removeTwitterListeners(channelName, channelID) {
     $('#li_' + channelName).off('click');
     $('#chan_option_' + channelID).off('keyup');
     $("." + channelName + "_status_too_many_chars").remove();
+    $("." + channelName + "_empty_description").remove();
 }
 
 function twitterUpdatePreview(channelName) {
