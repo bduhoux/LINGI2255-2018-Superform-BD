@@ -26,11 +26,16 @@ def moderate_publishing(id, idc):
         pub.image_url = request.form.get('imagepost')
         pub.date_from = datetime_converter(request.form.get('datefrompost'))
         pub.date_until = datetime_converter(request.form.get('dateuntilpost'))
+
         extra = dict()
-        if chan.module == "superform.plugins.Twitter":
-            extra['truncated'] = request.form.get("truncate") == "Truncate"
-            pub.extra = json.dumps(extra)
-    #state is shared & validated
+        plugin_name = chan.module
+        from importlib import import_module
+        plugin = import_module(plugin_name)
+        if 'get_channel_fields' in dir(plugin):
+            extra = plugin.get_channel_fields(request.form, str(chan.name))
+        extra=json.dumps(extra)
+
+        # state is shared & validated
         pub.state = 1
         db.session.commit()
         # running the plugin here
@@ -42,14 +47,9 @@ def moderate_publishing(id, idc):
         try:
             plugin.run(pub, c_conf)
         except KeyError:
-            return render_template('error.html', message="The channel is not configured. Configure the channel and try again")
-        except twitter.error.TwitterError:
-            pub.state = 1
+            pub.state = 0
             db.session.commit()
-            return render_template('error.html', message="An error occured: one or more of your tweet(s) haven't been posted.\n Please make sure to not duplicate your tweets")
-
-        # state is shared & validated
-        pub.state = 1
-        db.session.commit()
+            return render_template('error.html',
+                                   message="The channel is not configured. Configure the channel and try again")
 
         return redirect(url_for('index'))
