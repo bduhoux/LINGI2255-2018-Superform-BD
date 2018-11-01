@@ -25,6 +25,7 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     )
 
 
+
 def get_api(cfg):
     graph = facebook.GraphAPI(cfg['access_token'])
     return graph
