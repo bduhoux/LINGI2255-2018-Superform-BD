@@ -2,7 +2,7 @@ $('input.checkbox').change(function () {
     nameC = $(this).attr('data-namechan');
     idC = $(this).attr('value');
     module = $(this).attr('data-module');
-    if ($(this).is(':checked')) {
+    if ($(this).is(':checked') && module == 'superform.plugins.Twitter') {
         initializeTwitterListeners(nameC, idC);
     } else {
         //If the channel is not selected
@@ -86,7 +86,11 @@ function twitterUpdatePreview(channelName) {
     var url = $('#' + channelName + '_linkurlpost').val();
     var tweets;
     if ($('#' + channelName + '_truncate').prop('checked')) {
-        tweets = [truncateTweet(text, url)];
+        if (text.length + Math.min(url.length, 23) + 1 > 280) {
+            tweets = [truncateTweet(text, url)];
+        } else {
+            tweets = [text + ' ' + url];
+        }
     } else {
         tweets = splitTweet(text, url);
     }
