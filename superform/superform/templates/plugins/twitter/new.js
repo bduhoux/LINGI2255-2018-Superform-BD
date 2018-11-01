@@ -42,17 +42,37 @@ function getCharCounter(channelName) {
             $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
             $("." + channelName + "_status_too_many_chars").remove();
         }
-        $('#' + channelName + '_textarea_feedback').html(text_length + '/279');
     }
 
     return charCounter;
 }
 
+function tweetCharCounter(event) {
+    var tweetTextarea = $(this);
+    var tweetContainer = tweetTextarea.parent();
+    var text = tweetTextarea.val();
+    var text_length = text.length;
+    var re_url = /\(?(?:(http|https|ftp):\/\/)?(?:((?:[^\W\s]|\.|-|[:]{1})+)@{1})?((?:www.)?(?:[^\W\s]|\.|-)+[\.][^\W\s]{2,4}|localhost(?=\/)|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::(\d*))?([\/]?[^\s\?]*[\/]{1})*(?:\/?([^\s\n\?\[\]\{\}\#]*(?:(?=\.)){1}|[^\s\n\?\[\]\{\}\.\#]*)?([\.]{1}[^\s\?\#]*)?)?(?:\?{1}([^\s\n\#\[\]]*))?([\#][^\s\n]*)?\)?/gi;
+    var urls = text.match(re_url);
+    if (urls != null) {
+        for (url of urls) {
+            text_length -= url.length;
+            text_length += Math.min(url.length, 23);
+        }
+    }
+    var re_special_chars = /\u2026/gi;
+    var special_chars = text.match(re_special_chars);
+    if (special_chars != null) {
+        text_length += special_chars.length;
+    }
+    tweetContainer.find('.tweet-char-counter').html('(' + text_length + ' out of 280 characters)');
+}
+
 function getTweetHtml(text, channelName, i, numberOfTweets) {
     var html = `<div class="form-group tweet-preview">
-                    <label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets}</label>
+                    <label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets} <span class="tweet-char-counter" style="font-style: italic"></span></label>
                     <input type="button" value="Remove" onclick="removePreviewTweet('${channelName}', ${i})"><br> 
-                    <textarea class="form-control" rows="4" maxlength="280" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${text}</textarea>
+                    <textarea class="form-control" rows="4" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${text}</textarea>
                 </div>`;
     return html;
 }
@@ -60,7 +80,7 @@ function getTweetHtml(text, channelName, i, numberOfTweets) {
 function addPreviewTweet(channelName) {
     var preview_container = $('#' + channelName + '_preview');
     var numberOfTweets = preview_container.children().length + 1;
-    if (numberOfTweets == 0) {
+    if (numberOfTweets == 1) {
         $('.tweet-preview').remove();
     }
     var i = 1;
@@ -70,6 +90,8 @@ function addPreviewTweet(channelName) {
     });
     var html = getTweetHtml('', channelName, numberOfTweets, numberOfTweets);
     preview_container.append(html);
+    preview_container.on('keyup', tweetCharCounter);
+    preview_container.trigger('keyup', 'update char count');
 }
 
 function removePreviewTweet(channelName, tweetNumber) {
@@ -78,18 +100,12 @@ function removePreviewTweet(channelName, tweetNumber) {
     var tweets = [];
     preview_container.children().each(function () {
         if (i != tweetNumber) {
-            tweets.push($(this).find('textarea').text());
+            tweets.push($(this).find('textarea').val());
+            console.log($(this).find('textarea').val());
         }
         i++;
     });
-    var numberOfTweets = preview_container.children().length - 1;
-    $('.tweet-preview').remove();
-    for (var i = 1; i <= numberOfTweets; i++) {
-        var tweet = tweets[i - 1];
-        console.log(tweet);
-        var html = getTweetHtml(tweet, channelName, i, numberOfTweets);
-        preview_container.append(html);
-    }
+    addTweetsToHtml(tweets, channelName);
 }
 
 function getTwitterPreviewUpdater(channelName) {
@@ -106,17 +122,27 @@ function getTwitterPreviewUpdater(channelName) {
         } else {
             tweets = splitTweet(text, url);
         }
-        var preview_container = $('#' + channelName + '_preview');
-        var numberOfTweets = tweets.length;
-        $('.tweet-preview').remove();
-        for (var i = 1; i <= numberOfTweets; i++) {
-            var tweet = tweets[i - 1];
-            console.log(tweet);
-            var html = getTweetHtml(tweet, channelName, i, numberOfTweets);
-            preview_container.append(html);
-        }
+        addTweetsToHtml(tweets, channelName);
     }
     return twitterUpdatePreview;
+}
+
+function addTweetsToHtml(tweets, channelName) {
+    var preview_container = $('#' + channelName + '_preview');
+    var numberOfTweets = tweets.length;
+    $('.tweet-preview').remove();
+    for (var i = 1; i <= numberOfTweets; i++) {
+        var tweet = tweets[i - 1];
+        var html = getTweetHtml(tweet, channelName, i, numberOfTweets);
+        preview_container.append(html);
+        var tweetContainer = $('#' + channelName + '_tweet_' + i);
+        tweetContainer.on('keyup', tweetCharCounter);
+        tweetContainer.trigger('keyup', 'update char count');
+    }
+    if (numberOfTweets == 0) {
+        var html = '<div class="form-group tweet-preview"> No preview yet. </div>';
+        preview_container.append(html);
+    }
 }
 
 /**
@@ -164,7 +190,6 @@ function removeTwitterListeners(channelName, channelID) {
 function truncateTweet(text, url) {
     var tweet = '';
     var words = text.split(" ");
-    console.log(words)
     var endingLength;
     if (url.length != 0) {
         endingLength = 6;
