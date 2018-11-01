@@ -7,6 +7,10 @@ tweets.each(function() {
     tweetContainer.trigger('keyup', 'update char count');
 });
 
+/**
+ * Counts the number of chars in a tweet preview and displays it.
+ * @param event: an event
+ */
 function tweetCharCounter(event) {
     var tweetTextarea = $(this);
     var tweetContainer = tweetTextarea.parent();
@@ -28,6 +32,13 @@ function tweetCharCounter(event) {
     tweetContainer.find('.tweet-char-counter').html('(' + text_length + ' out of 280 characters)');
 }
 
+/**
+ * Returns a formatted tweet preview.
+ * @param text: the text to put in the tweet preview
+ * @param i: the number of this tweet
+ * @param numberOfTweets: the total number of tweets
+ * @returns a {string} containing the tweet preview formatted in html
+ */
 function getTweetHtml(text, i, numberOfTweets) {
     var html = `<div class="form-group tweet-preview">
                     <label for="tweet_${i}"> <span class="tweet-number">Tweet ${i}/${numberOfTweets}</span> <span class="tweet-char-counter" style="font-style: italic"></span></label>
@@ -37,6 +48,9 @@ function getTweetHtml(text, i, numberOfTweets) {
     return html;
 }
 
+/**
+ * Adds a new tweet preview in the preview container.
+ */
 function addPreviewTweet() {
     var preview_container = $('#preview');
     $('#no_preview').remove();
@@ -53,6 +67,10 @@ function addPreviewTweet() {
     tweetContainer.trigger('keyup', 'update char count');
 }
 
+/**
+ * Removes the tweet preview given as argument from the preview container and updates the numbering of the tweets accordingly.
+ * @param tweetNumber: the number of the tweet preview to delete
+ */
 function removePreviewTweet(tweetNumber) {
     var preview_container = $('#preview');
     var i = 1;
@@ -67,6 +85,10 @@ function removePreviewTweet(tweetNumber) {
     addTweetsToHtml(tweets);
 }
 
+/**
+ * Adds the tweets given as argument to the preview container.
+ * @param tweets: a list of {strings} containing the text of the tweets
+ */
 function addTweetsToHtml(tweets) {
     var preview_container = $('#preview');
     $('#no_preview').remove();
