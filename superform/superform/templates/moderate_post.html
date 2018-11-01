@@ -44,30 +44,9 @@
                         </div>
                     </div>
 
-                    {% if chan.module == "superform.plugins.Twitter" %}
-                        <div class="form-group">
-                            <label for="jsp"> Publication options </label>
-                            <fieldset>
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input id="truncate" name="truncate" type="radio" value="Truncate"
-                                               class="form-check-input custom-radio checked"
-                                                {% if pub.extra["truncated"] %} checked {% endif %}>
-                                        Truncate the text to 280 caracters
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input id="NotTruncate" name="truncate" type="radio" value="NotTruncate"
-                                               class="form-check-input custom-radio checked"
-                                                {% if not pub.extra["truncated"] %} checked {% endif %}>
-                                        Publish in several tweets
-                                    </label>
-                                </div>
-                            </fieldset>
-                        </div>
-
-                    {% endif %}
+                    {% set module_name = chan.module.split('.')[2].lower() %}
+                    {% set template = 'plugins/' + module_name + '/moderate.html' %}
+                    {% include template ignore missing %}
 
                 </div>
             </div>
@@ -97,5 +76,8 @@
                 });
             });
         {% endif %}
+        {% set module_name = chan.module.split('.')[2].lower() %}
+        {% set template = 'plugins/' + module_name + '/moderate.js'%}
+        {% include template ignore missing %}
     </script>
 {% endblock %}
