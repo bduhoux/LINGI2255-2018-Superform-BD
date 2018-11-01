@@ -1,3 +1,4 @@
+
 $('input.checkbox').change(function () {
     nameC = $(this).attr('data-namechan');
     idC = $(this).attr('value');
@@ -47,18 +48,49 @@ function getCharCounter(channelName) {
     return charCounter;
 }
 
+function getTweetHtml(text, channelName, i, numberOfTweets) {
+    var html = `<div class="form-group tweet-preview">
+                    <label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets}</label>
+                    <input type="button" value="Remove" onclick="removePreviewTweet('${channelName}', ${i})"><br> 
+                    <textarea class="form-control" rows="4" maxlength="280" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${text}</textarea>
+                </div>`;
+    return html;
+}
+
 function addPreviewTweet(channelName) {
     var preview_container = $('#' + channelName + '_preview');
     var numberOfTweets = preview_container.children().length + 1;
+    if (numberOfTweets == 0) {
+        $('.tweet-preview').remove();
+    }
     var i = 1;
     preview_container.children().each(function () {
         $(this).find('label').html(`Tweet ${i}/${numberOfTweets}`);
         i++;
     });
-    var html = `<div class="form-group tweet-preview"><label for="${channelName}_tweet_${numberOfTweets}">Tweet ${numberOfTweets}/${numberOfTweets}</label><br> <textarea class="form-control" rows="4" maxlength="280" id="${channelName}_tweet_${numberOfTweets}" name="${channelName}_tweet_${numberOfTweets}"></textarea></div>`;
+    var html = getTweetHtml('', channelName, numberOfTweets, numberOfTweets);
     preview_container.append(html);
 }
 
+function removePreviewTweet(channelName, tweetNumber) {
+    var preview_container = $('#' + channelName + '_preview');
+    var i = 1;
+    var tweets = [];
+    preview_container.children().each(function () {
+        if (i != tweetNumber) {
+            tweets.push($(this).find('textarea').text());
+        }
+        i++;
+    });
+    var numberOfTweets = preview_container.children().length - 1;
+    $('.tweet-preview').remove();
+    for (var i = 1; i <= numberOfTweets; i++) {
+        var tweet = tweets[i - 1];
+        console.log(tweet);
+        var html = getTweetHtml(tweet, channelName, i, numberOfTweets);
+        preview_container.append(html);
+    }
+}
 
 function getTwitterPreviewUpdater(channelName) {
     function twitterUpdatePreview() {
@@ -80,7 +112,7 @@ function getTwitterPreviewUpdater(channelName) {
         for (var i = 1; i <= numberOfTweets; i++) {
             var tweet = tweets[i - 1];
             console.log(tweet);
-            var html = `<div class="form-group tweet-preview"><label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets}</label><br> <textarea class="form-control" rows="4" maxlength="280" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${tweet}</textarea></div>`;
+            var html = getTweetHtml(tweet, channelName, i, numberOfTweets);
             preview_container.append(html);
         }
     }
