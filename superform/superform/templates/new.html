@@ -296,7 +296,7 @@
             var date2 = document.getElementById('dateuntilpost').value;
             var yesterday = new Date();
             yesterday.setDate(new Date().getDate() - 1);
-            if (invalide_input()) {
+            if (invalid_input()) {
                 if (nbselected == 0) {
                     $("#publish-button").prop('disabled', true)
                     $(".status_select_channel").remove();
@@ -316,7 +316,7 @@
                     if (is_before(date1, yesterday) || is_before(date2, date1)) {
                         $("#publish-button").prop('disabled', true);
                         $(".status_valid_date").remove();
-                        $("#card_body").append('<div class="status_valid_date"> Please select a valide date! </div>')
+                        $("#card_body").append('<div class="status_valid_date"> Please select a valid date! </div>')
                     }
                     else {
                         $(".status_valid_date").remove();
@@ -332,7 +332,7 @@
             }
         }
 
-        function invalide_input() {
+        function invalid_input() {
             var nbselected = $('input.checkbox:checked').length;
             var date1 = document.getElementById('datefrompost').value;
             var date2 = document.getElementById('dateuntilpost').value;
