@@ -1,3 +1,5 @@
+
+// Initialize listeners
 $('input.checkbox').change(function () {
     nameC = $(this).attr('data-namechan');
     idC = $(this).attr('value');
