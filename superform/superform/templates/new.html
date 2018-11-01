@@ -190,6 +190,7 @@
 
 {% block scripts %}
     <script>
+        var block_submit = false
         // This manage if a channel is selected or not:
         //  it hides/shows a tab for a channel
         //  it adds an information bullet to unavailable fields for each channel
@@ -341,7 +342,8 @@
                 date1 == '' || date1 == null ||
                 date2 == '' || date2 == null ||
                 is_before(date1, yesterday) ||
-                is_before(date2, date1);
+                is_before(date2, date1) ||
+                block_submit;
         }
 
         function is_before(date1, date2) {
