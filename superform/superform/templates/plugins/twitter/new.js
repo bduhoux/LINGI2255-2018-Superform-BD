@@ -38,7 +38,7 @@ function getCharCounter(channelName) {
         else if (text_length != 0) {
             block_submit = false;
             $("." + channelName + "_empty_description").remove();
-            if (!invalide_input()) {
+            if (!invalid_input()) {
                 $("#publish-button").prop('disabled', false);
             }
         } else {
