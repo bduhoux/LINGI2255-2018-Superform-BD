@@ -107,11 +107,7 @@
                                                    id="{{ chan.name }}_titlepost" class="form-control">
                                         </div>
                                         <div class="form-group">
-                                            <label for="{{ chan.name }}_descriptionpost">Description
-                                                {% if chan.module == "superform.plugins.Twitter" %} (
-                                                    <span id="{{ chan.name }}_textarea_feedback"
-                                                          name="{{ chan.name }}_textarea_feedback"></span>
-                                                    characters){% endif %}</label><br>
+                                            <label for="{{ chan.name }}_descriptionpost">Description</label><br>
                                             <textarea class="form-control" rows="5" id="{{ chan.name }}_descriptionpost"
                                                       name="{{ chan.name }}_descriptionpost"></textarea>
                                         </div>
@@ -190,7 +186,11 @@
 
 {% block scripts %}
     <script>
-        var block_submit = false
+        var block_submit
+        window.onload = reset_block;
+        function reset_block() {
+            block_submit=false
+        }
         // This manage if a channel is selected or not:
         //  it hides/shows a tab for a channel
         //  it adds an information bullet to unavailable fields for each channel
