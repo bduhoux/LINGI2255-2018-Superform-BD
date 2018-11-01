@@ -1,3 +1,5 @@
+
+// Initialize listeners
 $('input.checkbox').change(function () {
     nameC = $(this).attr('data-namechan');
     idC = $(this).attr('value');
@@ -11,8 +13,7 @@ $('input.checkbox').change(function () {
 });
 
 /**
- * Returns a function that displays the number of chars in the description field of the publication. The
- * function also displays warnings when the number of chars is greater than 279.
+ * Returns a function that displays warnings when the number of chars is greater than 280.
  * @param channelName: The name of the channel
  */
 function getCharCounter(channelName) {
@@ -50,6 +51,10 @@ function getCharCounter(channelName) {
     return charCounter;
 }
 
+/**
+ * Counts the number of chars in a tweet preview and displays it.
+ * @param event: an event
+ */
 function tweetCharCounter(event) {
     var tweetTextarea = $(this);
     var tweetContainer = tweetTextarea.parent();
@@ -71,32 +76,48 @@ function tweetCharCounter(event) {
     tweetContainer.find('.tweet-char-counter').html('(' + text_length + ' out of 280 characters)');
 }
 
+/**
+ * Returns a formatted tweet preview.
+ * @param text: the text to put in the tweet preview
+ * @param channelName: the name of this Twitter channel
+ * @param i: the number of this tweet
+ * @param numberOfTweets: the total number of tweets
+ * @returns a {string} containing the tweet preview formatted in html
+ */
 function getTweetHtml(text, channelName, i, numberOfTweets) {
     var html = `<div class="form-group tweet-preview">
-                    <label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets} <span class="tweet-char-counter" style="font-style: italic"></span></label>
+                    <label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets} <span class="${channelName}-tweet-number"> </span> <span class="tweet-char-counter" style="font-style: italic"></span></label>
                     <input type="button" value="Remove" onclick="removePreviewTweet('${channelName}', ${i})"><br> 
                     <textarea class="form-control" rows="4" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${text}</textarea>
                 </div>`;
     return html;
 }
 
+/**
+ * Adds a new tweet preview in the preview container and updates the numbering of the tweets accordingly.
+ * @param channelName: the name of this Twitter channel
+ */
 function addPreviewTweet(channelName) {
     var preview_container = $('#' + channelName + '_preview');
+    $('#' + channelName + '_no_preview').remove();
     var numberOfTweets = preview_container.children().length + 1;
-    if (numberOfTweets == 1) {
-        $('.tweet-preview').remove();
-    }
     var i = 1;
     preview_container.children().each(function () {
-        $(this).find('label').html(`Tweet ${i}/${numberOfTweets}`);
+        $(this).find('.' + channelName + '-tweet-number').html(`Tweet ${i}/${numberOfTweets}`);
         i++;
     });
     var html = getTweetHtml('', channelName, numberOfTweets, numberOfTweets);
     preview_container.append(html);
-    preview_container.on('keyup', tweetCharCounter);
-    preview_container.trigger('keyup', 'update char count');
+    var tweetContainer = $('#' + channelName + '_tweet_' + numberOfTweets);
+    tweetContainer.on('keyup', tweetCharCounter);
+    tweetContainer.trigger('keyup', 'update char count');
 }
 
+/**
+ * Removes the tweet preview given as argument from the preview container and updates the numbering of the tweets accordingly.
+ * @param channelName: the name of this Twitter channel
+ * @param tweetNumber: the number of the tweet preview to delete
+ */
 function removePreviewTweet(channelName, tweetNumber) {
     var preview_container = $('#' + channelName + '_preview');
     var i = 1;
@@ -111,6 +132,12 @@ function removePreviewTweet(channelName, tweetNumber) {
     addTweetsToHtml(tweets, channelName);
 }
 
+/**
+ * Returns a function that updates the preview of the tweets according to the parameters selected by the user
+ * of the app.
+ * @param channelName: the name of this Twitter channel
+ * @returns a function {twitterUpdatePreview}
+ */
 function getTwitterPreviewUpdater(channelName) {
     function twitterUpdatePreview() {
         var text = $('#' + channelName + '_descriptionpost').val();
@@ -131,8 +158,14 @@ function getTwitterPreviewUpdater(channelName) {
     return twitterUpdatePreview;
 }
 
+/**
+ * Adds the tweets given as argument to the preview container.
+ * @param tweets: a list of {strings} containing the text of the tweets
+ * @param channelName: the name of this Twitter channel
+ */
 function addTweetsToHtml(tweets, channelName) {
     var preview_container = $('#' + channelName + '_preview');
+    $('#' + channelName + '_no_preview').remove();
     var numberOfTweets = tweets.length;
     $('.tweet-preview').remove();
     for (var i = 1; i <= numberOfTweets; i++) {
@@ -144,7 +177,7 @@ function addTweetsToHtml(tweets, channelName) {
         tweetContainer.trigger('keyup', 'update char count');
     }
     if (numberOfTweets == 0) {
-        var html = '<div class="form-group tweet-preview"> No preview yet. </div>';
+        var html = `<div class="form-group tweet-preview" id="${channelName}_no_preview"> No preview yet. </div>`;
         preview_container.append(html);
     }
 }
@@ -193,6 +226,13 @@ function removeTwitterListeners(channelName, channelID) {
     $("." + channelName + "_empty_description").remove();
 }
 
+/**
+ * Truncates the text given as argument to make it fit into a single tweet (if necessary). The url is never truncated
+ * but will be put a the end of the tweet.
+ * @param text: the content of the tweet (non truncated)
+ * @param url: the url to add to the tweet (if not null)
+ * @returns a {string} containing the text and url of the tweet
+ */
 function truncateTweet(text, url) {
     var tweet = '';
     var words = text.split(" ");
@@ -223,6 +263,12 @@ function truncateTweet(text, url) {
     return tweet;
 }
 
+/**
+ * Splits the text given as argument into blocks of less than 280 characters.
+ * @param text: the content of the tweet(s)
+ * @param url: the url to add to the tweet (if not null)
+ * @returns an {Array} containing the tweet(s) created
+ */
 function splitTweet(text, url) {
     // the content of the current tweet
     var tweet_list = [];
@@ -261,5 +307,4 @@ function splitTweet(text, url) {
         }
     }
     return tweet_list;
-
 }

@@ -28,20 +28,19 @@ def moderate_publishing(id, idc):
         pub.date_until = datetime_converter(request.form.get('dateuntilpost'))
 
         extra = dict()
-        plugin_name = chan.module
+        c = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
+        plugin_name = c.module
+        c_conf = c.config
         from importlib import import_module
         plugin = import_module(plugin_name)
         if 'get_channel_fields' in dir(plugin):
-            extra = plugin.get_channel_fields(request.form, str(chan.name))
-        extra=json.dumps(extra)
+            extra = plugin.get_channel_fields(request.form, None)
+        pub.extra = json.dumps(extra)
 
         # state is shared & validated
         pub.state = 1
         db.session.commit()
         # running the plugin here
-        c = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
-        plugin_name = c.module
-        c_conf = c.config
         from importlib import import_module
         plugin = import_module(plugin_name)
         try:
