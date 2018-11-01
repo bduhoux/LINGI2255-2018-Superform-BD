@@ -60,7 +60,7 @@ function tweetCharCounter(event) {
     if (urls != null) {
         for (url of urls) {
             text_length -= url.length;
-            text_length += Math.min(url.length, 23);
+            text_length += 23;
         }
     }
     var re_special_chars = /\u2026/gi;
@@ -117,7 +117,7 @@ function getTwitterPreviewUpdater(channelName) {
         var url = $('#' + channelName + '_linkurlpost').val();
         var tweets;
         if ($('#' + channelName + '_truncate').prop('checked')) {
-            if (text.length + Math.min(url.length, 23) + 1 > 280) {
+            if (text.length + 23 + 1 > 280) {
                 tweets = [truncateTweet(text, url)];
             } else {
                 tweets = [text + ' ' + url];
@@ -209,7 +209,7 @@ function truncateTweet(text, url) {
         } else {
             test_tweet = tweet + ' ' + word;
         }
-        if (test_tweet.length + Math.min(url.length, 23) + endingLength <= 280) {
+        if (test_tweet.length + 23 + endingLength <= 280) {
             tweet = test_tweet;
         } else {
             break;
@@ -248,7 +248,7 @@ function splitTweet(text, url) {
             tweet = word;
         }
     }
-    if (tweet.length + 1 + Math.min(url.length, 23) <= 280) {
+    if (tweet.length + 1 + 23 <= 280) {
         tweet_list.push(tweet + ' ' + url);
     } else {
         tweet_list.push(tweet + '\u2026');
