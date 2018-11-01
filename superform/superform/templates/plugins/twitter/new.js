@@ -33,10 +33,14 @@ function getCharCounter(channelName) {
             $("#" + channelName + "_card_body").append('<div class="' + channelName + '_empty_description"> Twitter publishings must contain a description! </div>');
             $("#card_body").append('<div class="' + channelName + '_empty_description">' + channelName + ': Twitter publishings must contain a description! </div>');
             $("#publish-button").prop('disabled', true);
+            block_submit = true;
         }
         else if (text_length != 0) {
+            block_submit = false;
             $("." + channelName + "_empty_description").remove();
-            $("#publish-button").prop('disabled', false);
+            if (!invalid_input()) {
+                $("#publish-button").prop('disabled', false);
+            }
         } else {
             $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
             $("." + channelName + "_status_too_many_chars").remove();
@@ -47,6 +51,77 @@ function getCharCounter(channelName) {
     return charCounter;
 }
 
+function getTweetHtml(text, channelName, i, numberOfTweets) {
+    var html = `<div class="form-group tweet-preview">
+                    <label for="${channelName}_tweet_${i}">Tweet ${i}/${numberOfTweets}</label>
+                    <input type="button" value="Remove" onclick="removePreviewTweet('${channelName}', ${i})"><br> 
+                    <textarea class="form-control" rows="4" maxlength="280" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${text}</textarea>
+                </div>`;
+    return html;
+}
+
+function addPreviewTweet(channelName) {
+    var preview_container = $('#' + channelName + '_preview');
+    var numberOfTweets = preview_container.children().length + 1;
+    if (numberOfTweets == 0) {
+        $('.tweet-preview').remove();
+    }
+    var i = 1;
+    preview_container.children().each(function () {
+        $(this).find('label').html(`Tweet ${i}/${numberOfTweets}`);
+        i++;
+    });
+    var html = getTweetHtml('', channelName, numberOfTweets, numberOfTweets);
+    preview_container.append(html);
+}
+
+function removePreviewTweet(channelName, tweetNumber) {
+    var preview_container = $('#' + channelName + '_preview');
+    var i = 1;
+    var tweets = [];
+    preview_container.children().each(function () {
+        if (i != tweetNumber) {
+            tweets.push($(this).find('textarea').text());
+        }
+        i++;
+    });
+    var numberOfTweets = preview_container.children().length - 1;
+    $('.tweet-preview').remove();
+    for (var i = 1; i <= numberOfTweets; i++) {
+        var tweet = tweets[i - 1];
+        console.log(tweet);
+        var html = getTweetHtml(tweet, channelName, i, numberOfTweets);
+        preview_container.append(html);
+    }
+}
+
+function getTwitterPreviewUpdater(channelName) {
+    function twitterUpdatePreview() {
+        var text = $('#' + channelName + '_descriptionpost').val();
+        var url = $('#' + channelName + '_linkurlpost').val();
+        var tweets;
+        if ($('#' + channelName + '_truncate').prop('checked')) {
+            if (text.length + Math.min(url.length, 23) + 1 > 280) {
+                tweets = [truncateTweet(text, url)];
+            } else {
+                tweets = [text + ' ' + url];
+            }
+        } else {
+            tweets = splitTweet(text, url);
+        }
+        var preview_container = $('#' + channelName + '_preview');
+        var numberOfTweets = tweets.length;
+        $('.tweet-preview').remove();
+        for (var i = 1; i <= numberOfTweets; i++) {
+            var tweet = tweets[i - 1];
+            console.log(tweet);
+            var html = getTweetHtml(tweet, channelName, i, numberOfTweets);
+            preview_container.append(html);
+        }
+    }
+
+    return twitterUpdatePreview;
+}
 
 /**
  * Initializes the listeners for the Twitter channel given as argument
@@ -54,14 +129,22 @@ function getCharCounter(channelName) {
  * @param channelID: The ID of the channel
  */
 function initializeTwitterListeners(channelName, channelID) {
-    getCharCounter(channelName)(null);
+    var charCounter = getCharCounter(channelName);
+    charCounter();
     $('#' + channelName + '_textarea_feedback').html('0/279');
-    $('#' + channelName + '_descriptionpost').on('keyup', getCharCounter(channelName));
-    $('#' + channelName + '_linkurlpost').on('keyup', getCharCounter(channelName));
-    $('#descriptionpost').on('keyup', getCharCounter(channelName));
-    $('#linkurlpost').on('keyup', getCharCounter(channelName));
-    $('#li_' + channelName).on('click', getCharCounter(channelName));
-    $('#chan_option_' + channelID).on('keyup', getCharCounter(channelName));
+    $('#' + channelName + '_descriptionpost').on('keyup', charCounter);
+    $('#' + channelName + '_linkurlpost').on('keyup', charCounter);
+    $('#descriptionpost').on('keyup', charCounter);
+    $('#linkurlpost').on('keyup', charCounter);
+    $('#li_' + channelName).on('click', charCounter);
+    $('#chan_option_' + channelID).on('keyup', charCounter);
+
+    var twitterUpdatePreview = getTwitterPreviewUpdater(channelName)
+    twitterUpdatePreview()
+    $('#' + channelName + '_descriptionpost').on("change", twitterUpdatePreview);
+    $('#' + channelName + '_truncate').on("change", twitterUpdatePreview);
+    $('#' + channelName + '_NotTruncate').on("change", twitterUpdatePreview);
+    $('#' + channelName + '_linkurlpost').on("change", twitterUpdatePreview);
 }
 
 
@@ -72,6 +155,7 @@ function initializeTwitterListeners(channelName, channelID) {
  */
 function removeTwitterListeners(channelName, channelID) {
     $('#' + channelName + '_descriptionpost').off('keyup');
+    $('#' + channelName + '_descriptionpost').off('change');
     $('#' + channelName + '_linkurlpost').off('keyup');
     $('#descriptionpost').off('keyup');
     $('#linkurlpost').off('keyup');
@@ -79,30 +163,6 @@ function removeTwitterListeners(channelName, channelID) {
     $('#chan_option_' + channelID).off('keyup');
     $("." + channelName + "_status_too_many_chars").remove();
     $("." + channelName + "_empty_description").remove();
-}
-
-function twitterUpdatePreview(channelName) {
-    var text = $('#' + channelName + '_descriptionpost').val();
-    var url = $('#' + channelName + '_linkurlpost').val();
-    var tweets;
-    if ($('#' + channelName + '_truncate').prop('checked')) {
-        if (text.length + Math.min(url.length, 23) + 1 > 280) {
-            tweets = [truncateTweet(text, url)];
-        } else {
-            tweets = [text + ' ' + url];
-        }
-    } else {
-        tweets = splitTweet(text, url);
-    }
-    var preview_container = $('#' + channelName + '_preview');
-    var numberOfTweets = tweets.length;
-    $('.tweet-preview').remove();
-    for (var i = 1; i <= numberOfTweets; i++) {
-        var tweet = tweets[i - 1];
-        console.log(tweet);
-        var html = `<div class="form-group tweet-preview"><label for="${channelName}_$tweet_{i}">Tweet ${i}/${numberOfTweets}</label><br> <textarea class="form-control" rows="5" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${tweet}</textarea></div>`;
-        preview_container.append(html);
-    }
 }
 
 function truncateTweet(text, url) {
@@ -161,7 +221,12 @@ function splitTweet(text, url) {
             tweet = word;
         }
     }
-    tweet_list.push(tweet);
+    if (tweet.length + 1 + Math.min(url.length, 23) <= 280) {
+        tweet_list.push(tweet + ' ' + url);
+    } else {
+        tweet_list.push(tweet + '\u2026');
+        tweet_list.push(url);
+    }
     var numberOfTweets = tweet_list.length;
     if (numberOfTweets > 1) {
         for (var i = 1; i <= numberOfTweets; i++) {

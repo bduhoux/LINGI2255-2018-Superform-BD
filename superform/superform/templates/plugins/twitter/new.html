@@ -6,8 +6,7 @@
                 <input id="{{ chan.name }}_truncate"
                        name="{{ chan.name }}_truncate" type="radio"
                        value="Truncate"
-                       class="form-check-input custom-radio checked"
-                       checked>
+                       class="form-check-input custom-radio checked">
                 Truncate the text to 280 caracters
             </label>
         </div>
@@ -16,7 +15,8 @@
                 <input id="{{ chan.name }}_NotTruncate"
                        name="{{ chan.name }}_truncate" type="radio"
                        value="NotTruncate"
-                       class="form-check-input custom-radio checked">
+                       class="form-check-input custom-radio checked"
+                       checked>
                 Publish in several tweets
             </label>
         </div>
@@ -25,9 +25,9 @@
 <div>
     <b>Preview</b>
 </div>
-<input type="button" value="Update preview" onclick="twitterUpdatePreview('{{ chan.name }}')">
 <div id="{{ chan.name }}_preview">
     <div class="form-group tweet-preview">
         No preview yet.
     </div>
 </div>
+<input type="button" value="Add tweet" onclick="addPreviewTweet('{{ chan.name }}')">

@@ -29,6 +29,25 @@ def run(publishing, channel_config):
         return publish_with_continuation(status, twitter_api, cont, media=None)
 
 
+def get_channel_fields(form, chan):
+    """
+    :param form:
+    :return:
+    """
+    tweet_list = []
+    end = False
+    i = 1
+    while not end:
+        tweet = form.get(chan + '_tweet_' + str(i))
+        if tweet is not None:
+            tweet_list.append(tweet)
+        else:
+            end = True
+        i += 1
+    extra = dict()
+    extra['tweet_list'] = tweet_list
+    return extra
+
 def get_api(channel_config):
     """
     Returns a twitter.Api() object for the Twitter account described in the channel configuration
