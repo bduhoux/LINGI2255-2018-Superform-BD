@@ -1,4 +1,3 @@
-
 $('input.checkbox').change(function () {
     nameC = $(this).attr('data-namechan');
     idC = $(this).attr('value');
@@ -34,10 +33,14 @@ function getCharCounter(channelName) {
             $("#" + channelName + "_card_body").append('<div class="' + channelName + '_empty_description"> Twitter publishings must contain a description! </div>');
             $("#card_body").append('<div class="' + channelName + '_empty_description">' + channelName + ': Twitter publishings must contain a description! </div>');
             $("#publish-button").prop('disabled', true);
+            block_submit = true;
         }
         else if (text_length != 0) {
+            block_submit = false;
             $("." + channelName + "_empty_description").remove();
-            $("#publish-button").prop('disabled', false);
+            if (!invalid_input()) {
+                $("#publish-button").prop('disabled', false);
+            }
         } else {
             $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
             $("." + channelName + "_status_too_many_chars").remove();
@@ -124,6 +127,7 @@ function getTwitterPreviewUpdater(channelName) {
         }
         addTweetsToHtml(tweets, channelName);
     }
+
     return twitterUpdatePreview;
 }
 

@@ -29,6 +29,26 @@ def run(publishing, channel_config):
         return publish_with_continuation(status, twitter_api, cont, media=None)
 
 
+def get_channel_fields(form, chan):
+    """
+    :param form:
+    :return:
+    """
+    tweet_list = []
+    end = False
+    i = 1
+    while not end:
+        tweet = form.get(chan + '_tweet_' + str(i))
+        if tweet is not None:
+            tweet_list.append((str(i), tweet))
+        else:
+            end = True
+        i += 1
+    extra = dict()
+    extra['tweet_list'] = tweet_list
+    return extra
+
+
 def get_api(channel_config):
     """
     Returns a twitter.Api() object for the Twitter account described in the channel configuration
@@ -54,9 +74,9 @@ def getStatus(publishing):
     :param publishing: a dictionary containing the elements of the publication
     :return: the content of the tweet according to the specification above
     """
-    #if we need to truncate the text
+    # if we need to truncate the text
     if json.loads(publishing.extra)["truncated"]:
-        #without link we limit the description to 280 characters
+        # without link we limit the description to 280 characters
         status = publishing.description[:280]
         if publishing.link_url is not '':
             # with link we limit the description to 280 characters- the size of the link and the space
@@ -69,6 +89,7 @@ def getStatus(publishing):
             status = status + " " + publishing.link_url
     # \r sometimes create some problems in the count of characters so we delete all the occurence
     return status.replace('\r', '')
+
 
 def publish_with_continuation(status, twitter_api, continuation, media=None):
     """
