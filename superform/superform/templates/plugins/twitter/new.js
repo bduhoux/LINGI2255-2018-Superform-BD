@@ -171,6 +171,8 @@ function initializeTwitterListeners(channelName, channelID) {
     $('#' + channelName + '_truncate').on("change", twitterUpdatePreview);
     $('#' + channelName + '_NotTruncate').on("change", twitterUpdatePreview);
     $('#' + channelName + '_linkurlpost').on("change", twitterUpdatePreview);
+    $('#descriptionpost').one("change", twitterUpdatePreview);
+    $('#linkurlpost').one("change", twitterUpdatePreview);
 }
 
 
