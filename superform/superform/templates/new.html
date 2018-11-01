@@ -186,7 +186,11 @@
 
 {% block scripts %}
     <script>
-        var block_submit = false
+        var block_submit
+        window.onload = reset_block;
+        function reset_block() {
+            block_submit=false
+        }
         // This manage if a channel is selected or not:
         //  it hides/shows a tab for a channel
         //  it adds an information bullet to unavailable fields for each channel
