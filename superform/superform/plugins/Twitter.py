@@ -32,13 +32,17 @@ def run(publishing, channel_config):
 def get_channel_fields(form, chan):
     """
     :param form:
+    :param chan:
     :return:
     """
     tweet_list = []
     end = False
     i = 1
     while not end:
-        tweet = form.get(chan + '_tweet_' + str(i))
+        if chan is None:
+            tweet = form.get('tweet_' + str(i))
+        else:
+            tweet = form.get(chan + '_tweet_' + str(i))
         if tweet is not None:
             tweet_list.append((str(i), tweet))
         else:
