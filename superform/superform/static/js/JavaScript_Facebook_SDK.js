@@ -1,4 +1,21 @@
 
+function statusChangeCallBack(response){
+    console.log('statusChangeCallback');
+    console.log(response);
+
+    if (response.status == 'connected'){
+        testAPI();
+    } else {
+        document.getElementById('status').innerHTML = "Please Log into this app.";
+    }
+}
+
+function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+        statusChangeCallBack(response);
+    });
+}
+
 window.fbAsyncInit = function() {
 FB.init({
   appId      : '317664895679756',
@@ -9,6 +26,9 @@ FB.init({
 
 FB.AppEvents.logPageView();
 
+FB.getLoginStatus(function(response) {
+    statusChangeCallBack(response);
+});
 };
 
 (function(d, s, id){
@@ -18,3 +38,12 @@ FB.AppEvents.logPageView();
  js.src = "https://connect.facebook.net/en_US/sdk.js";
  fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';
+    });
+  }
