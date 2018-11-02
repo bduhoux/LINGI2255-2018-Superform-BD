@@ -18,9 +18,9 @@ def run(publishing, channel_config):
 
     statuslist = [y for x, y in json.loads(publishing.extra)['tweet_list']]
     if publishing.image_url is not '':
-        publish_list(statuslist, twitter_api, media=publishing.image_url)
+        return publish_list(statuslist, twitter_api, media=publishing.image_url)
     else:
-        publish_list(statuslist, twitter_api)
+        return publish_list(statuslist, twitter_api)
 
 
 def get_channel_fields(form, chan):
@@ -65,8 +65,9 @@ def get_api(channel_config):
                        tweet_mode='extended')
 
 
-
 def publish_list(statuslist, twitter_api, media=None):
+    a = []
     for status in statuslist[:-1]:
-        twitter_api.PostUpdate(status)
-    twitter_api.PostUpdate(statuslist[len(statuslist)-1], media)
+        a.append(twitter_api.PostUpdate(status))
+    a.append(twitter_api.PostUpdate(statuslist[len(statuslist) - 1], media))
+    return a
