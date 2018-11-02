@@ -30,7 +30,7 @@ def moderate_publishing(id, idc):
 
         print(pub.date_until.strftime("%d/%m%y"))
 
-        if(pub.date_until <= datetime.now() - timedelta(days=1)):
+        if pub.date_until <= datetime.now() - timedelta(days=1):
             flash('Too late dude')
             pub.date_from = str_converter(pub.date_from)
             pub.date_until = str_converter(pub.date_until)

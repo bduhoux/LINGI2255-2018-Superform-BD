@@ -186,11 +186,13 @@
 
 {% block scripts %}
     <script>
-        var block_submit
+        var block_submit;
         window.onload = reset_block;
+
         function reset_block() {
-            block_submit=false
+            block_submit = false
         }
+
         // This manage if a channel is selected or not:
         //  it hides/shows a tab for a channel
         //  it adds an information bullet to unavailable fields for each channel
@@ -297,7 +299,7 @@
             var yesterday = new Date();
             yesterday.setDate(new Date().getDate() - 1);
             if (invalid_input()) {
-                if (nbselected == 0) {
+                if (nbselected === 0) {
                     $("#publish-button").prop('disabled', true)
                     $(".status_select_channel").remove();
                     $("#card_body").append('<div class="status_select_channel"> Please select a channel! </div>')
@@ -305,7 +307,7 @@
                 else {
                     $(".status_select_channel").remove();
                 }
-                if (date1 == '' || date1 == null || date2 == '' || date2 == null) {
+                if (date1 === '' || date1 == null || date2 === '' || date2 == null) {
                     $("#publish-button").prop('disabled', true);
                     $(".status_valid_date").remove();
                     $(".status_select_date").remove();
@@ -338,9 +340,9 @@
             var date2 = document.getElementById('dateuntilpost').value;
             var yesterday = new Date();
             yesterday.setDate(new Date().getDate() - 1);
-            return nbselected == 0 ||
-                date1 == '' || date1 == null ||
-                date2 == '' || date2 == null ||
+            return nbselected === 0 ||
+                date1 === '' || date1 == null ||
+                date2 === '' || date2 == null ||
                 is_before(date1, yesterday) ||
                 is_before(date2, date1) ||
                 block_submit;

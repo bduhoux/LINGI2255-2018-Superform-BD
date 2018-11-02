@@ -1,7 +1,6 @@
-
 // Set handler functions
 var tweets = $('.tweet-preview');
-tweets.each(function() {
+tweets.each(function () {
     var tweetContainer = $(this).find('textarea');
     tweetContainer.on('keyup', tweetCharCounter);
     tweetContainer.trigger('keyup', 'update char count');
@@ -76,7 +75,7 @@ function removePreviewTweet(tweetNumber) {
     var i = 1;
     var tweets = [];
     preview_container.children().each(function () {
-        if (i != tweetNumber) {
+        if (i !== tweetNumber) {
             tweets.push($(this).find('textarea').val());
             console.log($(this).find('textarea').val());
         }
@@ -102,7 +101,7 @@ function addTweetsToHtml(tweets) {
         tweetContainer.on('keyup', tweetCharCounter);
         tweetContainer.trigger('keyup', 'update char count');
     }
-    if (numberOfTweets == 0) {
+    if (numberOfTweets === 0) {
         var html = '<div class="form-group tweet-preview" id="no_preview"> No preview yet. </div>';
         preview_container.append(html);
     }
