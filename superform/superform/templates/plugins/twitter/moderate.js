@@ -40,7 +40,7 @@ function tweetCharCounter(event) {
  */
 function getTweetHtml(text, i, numberOfTweets) {
     var html = `<div class="form-group tweet-preview">
-                    <label for="tweet_${i}"> <span class="tweet-number">Tweet ${i}/${numberOfTweets}</span> <span class="tweet-char-counter" style="font-style: italic"></span></label>
+                    <label for="tweet_${i}"> <span class="tweet-number"> Tweet ${i}/${numberOfTweets} </span> <span class="tweet-char-counter" style="font-style: italic"></span></label>
                     <input type="button" value="Remove" onclick="removePreviewTweet(${i})"><br> 
                     <textarea class="form-control" rows="4" id="tweet_${i}" name="tweet_${i}">${text}</textarea>
                 </div>`;
