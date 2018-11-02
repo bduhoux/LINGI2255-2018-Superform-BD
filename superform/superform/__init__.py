@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session
+from flask import Flask, render_template, session, send_from_directory
 import pkgutil
 import importlib
 
@@ -47,9 +47,10 @@ def index():
     return render_template("index.html", user=user,posts=posts,publishings = flattened_list_pubs)
 
 
-@app.route('/channel_not_configured')
-def not_configured():
-    return render_template("error.html", message="The channel is not configured. Configure the channel and try again")
+@app.route('/uploads/<path:filename>')
+def download_file(filename):
+    print("test")
+    return send_from_directory('superform/superform/plugins/twitter', filename, as_attachment=True)
 
 @app.errorhandler(403)
 def forbidden(error):
