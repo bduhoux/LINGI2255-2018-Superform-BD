@@ -47,10 +47,6 @@ def index():
     return render_template("index.html", user=user,posts=posts,publishings = flattened_list_pubs)
 
 
-@app.route('/channel_not_configured')
-def not_configured():
-    return render_template("error.html", message="The channel is not configured. Configure the channel and try again")
-
 @app.errorhandler(403)
 def forbidden(error):
     return render_template('403.html'), 403
