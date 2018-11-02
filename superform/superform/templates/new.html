@@ -73,7 +73,15 @@
                                                        data-unavailablefields="{{ chan.unavailablefields }}"
                                                        name="chan_option_{{ chan.id }}" type="checkbox"
                                                        class="form-check-input checkbox"
-                                                       value="{{ chan.id }}">{{ chan.name }}
+                                                       value="{{ chan.id }}">
+                                                {% set module_name = chan.module.split('.')[2].lower() %}
+                                                {% set img_path = "plugins/" + module_name + "/logo.png" %}
+                                                {% if img_path %}
+                                                    <img src="{{ url_for('static', filename = img_path) }}"
+                                                         id="img_{{ chan.id }}" name="img_{{ chan.id }}"
+                                                         width="15" height="15" alt="">
+                                                {% endif %}
+                                                {{ chan.name }}
                                             </label>
                                         </div>
                                     {% endfor %}
