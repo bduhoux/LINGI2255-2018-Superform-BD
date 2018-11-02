@@ -67,9 +67,16 @@ function getTweetCharCounter(channelName) {
             $("#publish-button").prop('disabled', true);
             block_submit = true;
         }
-        else {
+        else if (text_length > 280) {
+            $("." + channelName + "_tweet_too_many_chars").remove();
+            $("#" + channelName + "_card_body").append('<div class="' + channelName + '_tweet_too_many_chars"> Tweets cannot contain more than 280 characters! </div>');
+            $("#card_body").append('<div class="' + channelName + '_tweet_too_many_chars"> ' + channelName + ': Tweets cannot contain more than 280 characters! </div>');
+            $("#publish-button").prop('disabled', true);
+            block_submit = true;
+        } else {
             block_submit = false;
             $("." + channelName + "_empty_description").remove();
+            $("." + channelName + "_tweet_too_many_chars").remove();
             if (!invalid_input()) {
                 $("#publish-button").prop('disabled', false);
             }
@@ -184,6 +191,8 @@ function addTweetsToHtml(tweets, channelName) {
     }
     if (numberOfTweets == 0) {
         var html = `<div class="form-group tweet-preview" id="${channelName}_no_preview"> No preview yet. </div>`;
+        $("." + channelName + "_empty_description").remove();
+        $("." + channelName + "_tweet_too_many_chars").remove();
         preview_container.append(html);
     }
 }
