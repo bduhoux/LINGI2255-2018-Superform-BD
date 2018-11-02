@@ -21,18 +21,22 @@
             <button class="btn btn-success" type="submit">Save Configuration</button>
             <a type="button" class="btn btn-outline-primary" href="{{ url_for('channels.channel_list') }}">Abort</a>
         </form>
-    {% else %}
-        Your are not logged in.
-    {% endif %}
 
+            <!--
     <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
     </fb:login-button>
     </br>
 
     <button type="button" onclick="getPageToken()"> click me!
     </button>
-
     <div id="status"></div>
+
+    -->
+    {% else %}
+        Your are not logged in.
+    {% endif %}
+
+
 
     {% block scripts %}
         <script src="../static/js/JavaScript_Facebook_SDK.js">

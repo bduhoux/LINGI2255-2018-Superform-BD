@@ -54,7 +54,9 @@ function getPageToken(){
         console.log('response received');
         response.data.forEach(function(item, index, array) {
             if (item.name == "Test"){
-                console.log(document.getElementById("access_token").value);
+                document.getElementById("access_token").value = item.access_token; //marche??
+                console.log(item.access_token);
+                return item.access_token;
             }
         });
     });
