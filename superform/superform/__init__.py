@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, send_from_directory
+from flask import Flask, render_template, session
 import pkgutil
 import importlib
 
@@ -46,11 +46,6 @@ def index():
 
     return render_template("index.html", user=user,posts=posts,publishings = flattened_list_pubs)
 
-
-@app.route('/uploads/<path:filename>')
-def download_file(filename):
-    print("test")
-    return send_from_directory('superform/superform/plugins/twitter', filename, as_attachment=True)
 
 @app.errorhandler(403)
 def forbidden(error):
