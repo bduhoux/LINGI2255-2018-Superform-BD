@@ -163,6 +163,7 @@ function getTwitterPreviewUpdater(channelName) {
             }
         } else {
             tweets = splitTweet(text, url);
+            console.log("hoy;" + tweets + ";")
         }
         addTweetsToHtml(tweets, channelName);
     }
@@ -294,7 +295,7 @@ function splitTweet(text, url) {
     for (var word of words) {
         // test to add the next word
         var test_tweet = '';
-        if (tweet == '') {
+        if (tweet === '') {
             test_tweet = tweet + word;
         } else {
             test_tweet = tweet + ' ' + word;
@@ -310,7 +311,11 @@ function splitTweet(text, url) {
         }
     }
     if (tweet.length + 1 + 23 <= 280) {
-        tweet_list.push(tweet + ' ' + url);
+        if (url.length > 0) {
+            tweet_list.push(tweet + ' ' + url);
+        } else {
+            tweet_list.push(tweet);
+        }
     } else {
         tweet_list.push(tweet + '\u2026');
         tweet_list.push(url);
