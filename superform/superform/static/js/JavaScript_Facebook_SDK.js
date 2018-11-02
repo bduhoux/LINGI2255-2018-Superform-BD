@@ -46,4 +46,18 @@ function testAPI() {
       document.getElementById('status').innerHTML =
         'Thanks for logging in, ' + response.name;
     });
-  }
+}
+
+function getPageToken(){
+    console.log('getting page token.... ');
+    FB.api('/me/accounts?type=page', function(response) {
+        console.log('response received');
+        response.data.forEach(function(item, index, array) {
+            if (item.name == "Test"){
+                document.getElementById("access_token").value = item.access_token;
+                console.log(item.access_token);
+                return item.access_token;
+            }
+        });
+    });
+}
