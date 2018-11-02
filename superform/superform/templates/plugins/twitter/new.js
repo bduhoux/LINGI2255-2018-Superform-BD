@@ -163,7 +163,6 @@ function getTwitterPreviewUpdater(channelName) {
             }
         } else {
             tweets = splitTweet(text, url);
-            console.log("hoy;" + tweets + ";")
         }
         addTweetsToHtml(tweets, channelName);
     }
