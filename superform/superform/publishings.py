@@ -28,15 +28,6 @@ def moderate_publishing(id, idc):
         pub.date_from = datetime_converter(request.form.get('datefrompost'))
         pub.date_until = datetime_converter(request.form.get('dateuntilpost'))
 
-        print(pub.date_until.strftime("%d/%m%y"))
-
-        if pub.date_until <= datetime.now() - timedelta(days=1):
-            flash('Too late dude')
-            pub.date_from = str_converter(pub.date_from)
-            pub.date_until = str_converter(pub.date_until)
-            if pub.extra is not None:
-                pub.extra = json.loads(pub.extra)
-            return render_template('moderate_post.html', pub=pub, chan=chan)
         extra = dict()
         c = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
         plugin_name = c.module
@@ -51,6 +42,15 @@ def moderate_publishing(id, idc):
         pub.state = 1
         db.session.commit()
         # running the plugin here
+        if (pub.date_until <= datetime.now() - timedelta(days=1)):
+            pub.state = 0
+            db.session.commit()
+            flash('Too late to publish')
+            pub.date_from = str_converter(pub.date_from)
+            pub.date_until = str_converter(pub.date_until)
+            if pub.extra is not None:
+                pub.extra = json.loads(pub.extra)
+            return render_template('moderate_post.html', pub=pub, chan=chan)
         from importlib import import_module
         plugin = import_module(plugin_name)
         try:
@@ -58,7 +58,11 @@ def moderate_publishing(id, idc):
         except KeyError:
             pub.state = 0
             db.session.commit()
-            return render_template('error.html',
-                                   message="The channel is not configured. Configure the channel and try again")
+            flash('Please configure the channel first')
+            pub.date_from = str_converter(pub.date_from)
+            pub.date_until = str_converter(pub.date_until)
+            if pub.extra is not None:
+                pub.extra = json.loads(pub.extra)
+            return render_template('moderate_post.html', pub=pub, chan=chan)
 
         return redirect(url_for('index'))
