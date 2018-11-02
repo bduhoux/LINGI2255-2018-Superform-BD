@@ -2,6 +2,13 @@
 {% block title %}Moderate{% endblock %}
 {% block content %}
     <h1>Moderate this publication</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger"><strong>Warning!: </strong>{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     {% if session.logged_in %}
         <form method="POST" action="">
             <div class="row">
@@ -53,5 +60,12 @@
     {% else %}
         Your are not logged in.
     {% endif %}
+{% endblock %}
+{% block scripts %}
+    <script>
+        {% set module_name = chan.module.split('.')[2].lower() %}
+        {% set template = 'plugins/' + module_name + '/moderate.js'%}
+        {% include template ignore missing %}
+    </script>
 
 {% endblock %}
