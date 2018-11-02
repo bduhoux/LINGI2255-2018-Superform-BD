@@ -4,7 +4,7 @@ import importlib
 
 import superform.plugins
 from superform.publishings import pub_page
-from superform.models import db, User, Post,Publishing
+from superform.models import db, User, Post, Publishing
 from superform.authentication import authentication_page
 from superform.authorizations import authorizations_page
 from superform.channels import channels_page
@@ -47,6 +47,7 @@ def index():
         flattened_list_pubs = [y for x in pubs_per_chan for y in x]
 
     return render_template("index.html", user=user,posts=posts,publishings = flattened_list_pubs)
+
 
 @app.errorhandler(403)
 def forbidden(error):

@@ -10,5 +10,8 @@ setup(
         'sqlalchemy',
         'flask_sqlalchemy'
         'feedgen',
-    ],
+        'python-twitter'
+    ]
+
+
 )
