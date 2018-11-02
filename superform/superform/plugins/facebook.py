@@ -27,7 +27,9 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
         link=link
     )
     """
-    page_access_token = "EAAEg6h9DvQwBAKlNUhF4NGa69OYGlgLJZAZBFDZBbZAk0gFScTX2f0EG0ZAkaiVPEWlRBXePLXgy2d8rnE21GI7Ru4mvZAJ8STI0xIaVN0jOGH5xCE6MIIBr3l9jNQVUSo8XafSdZC6KzomTnMiFGcFsGZB7xaGZChZBpL4VJgpnaC2b8fRQltnmZA91qXXlc6gcdcvZB7DF4ZAeWkhAMuVDY9hlJ"
+
+    # page_access_token = "EAAEg6h9DvQwBAKlNUhF4NGa69OYGlgLJZAZBFDZBbZAk0gFScTX2f0EG0ZAkaiVPEWlRBXePLXgy2d8rnE21GI7Ru4mvZAJ8STI0xIaVN0jOGH5xCE6MIIBr3l9jNQVUSo8XafSdZC6KzomTnMiFGcFsGZB7xaGZChZBpL4VJgpnaC2b8fRQltnmZA91qXXlc6gcdcvZB7DF4ZAeWkhAMuVDY9hlJ"
+    page_access_token = "EAAEg6h9DvQwBAJyZCGilAa2aZAi1xByeEeZCoLM3vYoOywfgz908aZCwKrG96ipvBZCHZBCIrHO9MkM3HAQ6WDWLPTuENAHAlVxloFEz4ZBWnhNsiqZA2IkQOhfgyw4kRgztCLHzVbFy8bzg7TKpynTbG37aPuBY2ox0n8GeHEjTqbENNY9cm3bjEyjaWWLor6uN5FIZAHzfAFwZDZD"
     api = facebook.GraphAPI(access_token=page_access_token)
     msg = "penis"
 
