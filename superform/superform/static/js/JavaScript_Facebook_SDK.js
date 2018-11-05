@@ -46,7 +46,7 @@ function testAPI() {
       document.getElementById('status').innerHTML =
         'Thanks for logging in, ' + response.name;
     });
-}
+
 
 function getPageToken(){
     console.log('getting page token.... ');
@@ -55,7 +55,6 @@ function getPageToken(){
         response.data.forEach(function(item, index, array) {
             if (item.name == "Test"){
                 document.getElementById("access_token").value = item.access_token;
-                console.log(item.access_token);
                 return item.access_token;
             }
         });

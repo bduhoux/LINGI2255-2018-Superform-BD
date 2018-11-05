@@ -22,6 +22,8 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     )
     """
 
+
+
     page_id = get_page_id(channel_config)
     app_id = get_app_id(channel_config)
 
