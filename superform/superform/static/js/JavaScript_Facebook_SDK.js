@@ -41,19 +41,19 @@ FB.getLoginStatus(function(response) {
 
 function testAPI() {
     console.log('Welcome!  Fetching your information.... ');
-    FB.api('/me', function(response) {
-      console.log('Successful login for: ' + response.name);
-      document.getElementById('status').innerHTML =
-        'Thanks for logging in, ' + response.name;
+    FB.api('/me', function (response) {
+        console.log('Successful login for: ' + response.name);
+        document.getElementById('status').innerHTML =
+            'Thanks for logging in, ' + response.name;
     });
+}
 
-
-function getPageToken(){
+function getPageToken() {
     console.log('getting page token.... ');
-    FB.api('/me/accounts?type=page', function(response) {
+    FB.api('/me/accounts?type=page', function (response) {
         console.log('response received');
-        response.data.forEach(function(item, index, array) {
-            if (item.name == "Test"){
+        response.data.forEach(function (item, index, array) {
+            if (item.name == "Test") {
                 document.getElementById("access_token").value = item.access_token;
                 return item.access_token;
             }
