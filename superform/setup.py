@@ -10,6 +10,7 @@ setup(
         'sqlalchemy',
         'flask-sqlalchemy',
         'pytest',
-        'facebook-sdk'
+        'facebook-sdk',
+        'bond'
     ],
 )
