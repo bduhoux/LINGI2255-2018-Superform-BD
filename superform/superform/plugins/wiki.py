@@ -12,7 +12,7 @@ def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     link = publishing.link_url
 
     int = title.replace(" ","")
-    url = "https://www.pmwiki.org/wiki/PmWiki/" + int
+    url = "http://localhost:8000/pmwiki.php?n=" + int
 
     page = urllib.request.urlopen(url)
 
