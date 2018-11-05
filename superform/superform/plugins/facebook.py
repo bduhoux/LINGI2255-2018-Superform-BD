@@ -24,22 +24,27 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
 
 
 
-    page_id = get_page_id(channel_config)
-    app_id = get_app_id(channel_config)
-
-    cfg = get_config(page_id, app_id)
+    page_id = get_page_id(channel_config)  #correct
+    app_id = get_app_id(channel_config)  #correct
+    print(page_id)
+    print(app_id)
 
     # login le user todo
 
     # publie sur page possedée par cet user
     #api1 = facebook.GraphAPI(access_token="trouvée au dessus")
-    api1 = facebook.GraphAPI(access_token="EAAEg6h9DvQwBALKixA48eCqk6G7baxSzZBkBVcdifTra4FqhJlasQfxKzKrVuZCLEZCSjHGLhoMukcbmHTcOZCwTZBXLzUBeEdDYctuDsAPN9svmPIsTmJlnPE6akX5dPzEJLHPg7N6ZAZCofARAuiPIZAt2zea0SFI5XZBhegA6boAogk9YZBzFXKrk4zbzV3GwzvqZA9RqqoCaWoHR5o7qG74xsRiTEXaXj0ZD")
+    print("ici0!!!")
+    api1 = facebook.GraphAPI(access_token="EAAEg6h9DvQwBAPFagZC296KfWAnOeKZC2st0FzJKEZAylqX1dnRC6YEZCKP7qVVeh05xj4IZAzvQbfcZBNcOR9k4vXPKunsuicguWI91B9ZCahQuQTDnbELZA3tWJZBrb7JL91P5y0RwJ0GCy8F6ej6rK1AC2OTZBPL9vI01ZCm0OJRQezUE7vvrZCp7DRNwxHft4maCLLB6ikZBvyzyGtJFJLZATgYz46kTWEu0AZD")
     response = api1.request('/me/accounts?type=page')  # recoit liste des pages gérée par le user et leurs page tokens
+    print("ici1!!!")
+
     pages = json.loads(response)
     for page in pages['data']:
         print(page["access_token"])
 
     api = -1
+
+    print("ici2!!!")
 """
     msg = get_message(publishing)
     link = get_link(publishing)
