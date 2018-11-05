@@ -8,9 +8,7 @@ FIELDS_UNAVAILABLE = ['Title', 'Description']  # list of field names that are no
 CONFIG_FIELDS = ["page_id",
                  "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.
 
-
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
-
     page_id = get_page_id(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
     js = bond.make_bond('JavaScript')
     js.eval_block('function getPageToken(){console.log("getting page token.... ");FB.api("/me/accounts?type=page", function(response) {console.log("response received");response.data.forEach(function(item, index, array) {if (item.name == "Test"){document.getElementById("access_token").value = item.access_token;console.log(item.access_token);return item.access_token;}});});}}')
@@ -29,7 +27,6 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
         message=msg,
         link=link
     )
-
 
 def get_api(cfg):
     graph = facebook.GraphAPI(cfg['access_token'])
@@ -53,10 +50,8 @@ def get_config(page_id, access_token):
     }
     return cfg
 
-
 def get_message(publishing):
     return publishing.title + "\n\n" + publishing.description
-
 
 def get_link(publishing):
     return publishing.link_url

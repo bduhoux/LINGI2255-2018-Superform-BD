@@ -1,7 +1,6 @@
 import json
 import urllib.request
 
-
 FIELDS_UNAVAILABLE = ['Title','Description'] #list of field names that are not used by your module
 
 # appelé dans publishings.py

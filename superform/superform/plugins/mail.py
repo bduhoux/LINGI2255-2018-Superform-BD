@@ -9,7 +9,6 @@ FIELDS_UNAVAILABLE = ['Title','Description'] #list of field names that are not u
 
 CONFIG_FIELDS = ["sender","receiver"] #This lets the manager of your module enter data that are used to communicate with other services.
 
-
 # appelé dans publishings.py
 def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     json_data = json.loads(channel_config) # to a Python object
