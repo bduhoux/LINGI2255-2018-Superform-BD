@@ -1,7 +1,6 @@
 from flask import current_app
 import json
 import facebook
-import bond
 
 FIELDS_UNAVAILABLE = ['Title', 'Description']  # list of field names that are not used by your module
 
@@ -12,9 +11,7 @@ CONFIG_FIELDS = ["page_id",
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
 
     page_id = get_page_id(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
-    js = bond.make_bond('JavaScript')
-    js.eval_block('function getPageToken(){console.log("getting page token.... ");FB.api("/me/accounts?type=page", function(response) {console.log("response received");response.data.forEach(function(item, index, array) {if (item.name == "Test"){document.getElementById("access_token").value = item.access_token;console.log(item.access_token);return item.access_token;}});});}}')
-    access_token = js.call('getPageToken()')  # data sur le receiver ds channelconfig(= dictionnaire)
+    access_token = get_app_id(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
 
     cfg = get_config(page_id, access_token)
     api = get_api(cfg)
