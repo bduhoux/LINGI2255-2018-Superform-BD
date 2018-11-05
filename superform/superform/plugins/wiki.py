@@ -11,5 +11,9 @@ def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     picture = publishing.image_url
     link = publishing.link_url
 
+    int = title.replace(" ","")
+    url = "https://www.pmwiki.org/wiki/PmWiki/" + int
 
-    page = urllib.request.urlopen("https://www.pmwiki.org/wiki/PmWiki/")
+    page = urllib.request.urlopen(url)
+
+    title = "(:Title " + title + ":)"
