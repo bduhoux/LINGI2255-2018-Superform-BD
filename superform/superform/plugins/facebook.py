@@ -2,7 +2,7 @@ from flask import current_app
 import json
 import facebook
 
-FIELDS_UNAVAILABLE = ['Title', 'Description']  # list of field names that are not used by your module
+FIELDS_UNAVAILABLE = []  # list of field names that are not used by your module
 
 CONFIG_FIELDS = ["page_id",
                  "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.

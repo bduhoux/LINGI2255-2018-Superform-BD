@@ -1,19 +1,22 @@
 import json
-import urllib.request
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 
-FIELDS_UNAVAILABLE = ['Title','Description'] #list of field names that are not used by your module
+FIELDS_UNAVAILABLE = [] #list of field names that are not used by your module
+
+CONFIG_FIELDS = ["author"]  # This lets the manager of your module enter data that are used to communicate with other services.
+
 
 # appelé dans publishings.py
 def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     title = publishing.title
-    body = publishing.description
+    page = "PmWiki."+title
+
     picture = publishing.image_url
     link = publishing.link_url
 
-    int = title.replace(" ","")
-    url = "http://localhost:8000/pmwiki.php?n=" + int
+    url = "http://localhost:8000/pmwiki.php"
+    post_fields = ({'page':page},{'body':publishing.description}, {'action':"edit"},{'post':1})
 
-    page = urllib.request.urlopen(url)
-
-    title = "(:Title " + title + ":)"
+    request = Request(url, urlencode(post_fields).encode())
