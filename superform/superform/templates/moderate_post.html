@@ -2,6 +2,13 @@
 {% block title %}Moderate{% endblock %}
 {% block content %}
     <h1>Moderate this publication</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger"><strong>Warning!: </strong>{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     {% if session.logged_in %}
         <form method="POST" action="">
             <div class="row">
@@ -11,9 +18,7 @@
                         <input type="text" name="titlepost" id="titlepost" class="form-control" value="{{ pub.title }}">
                     </div>
                     <div class="form-group">
-                        <label for="descrpost">Description {% if chan.module == "superform.plugins.Twitter" %}(<span
-                                id="textarea_feedback"
-                                name="textarea_feedback"></span> characters) {% endif %}</label><br>
+                        <label for="descrpost">Description</label><br>
                         <textarea class="form-control" rows="5" id="descrpost"
                                   name="descrpost">{{ pub.description }}</textarea>
                     </div>
@@ -44,30 +49,9 @@
                         </div>
                     </div>
 
-                    {% if chan.module == "superform.plugins.Twitter" %}
-                        <div class="form-group">
-                            <label for="jsp"> Publication options </label>
-                            <fieldset>
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input id="truncate" name="truncate" type="radio" value="Truncate"
-                                               class="form-check-input custom-radio checked"
-                                                {% if pub.extra["truncated"] %} checked {% endif %}>
-                                        Truncate the text to 280 caracters
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input id="NotTruncate" name="truncate" type="radio" value="NotTruncate"
-                                               class="form-check-input custom-radio checked"
-                                                {% if not pub.extra["truncated"] %} checked {% endif %}>
-                                        Publish in several tweets
-                                    </label>
-                                </div>
-                            </fieldset>
-                        </div>
-
-                    {% endif %}
+                    {% set module_name = chan.module.split('.')[2].lower() %}
+                    {% set template = 'plugins/' + module_name + '/moderate.html' %}
+                    {% include template ignore missing %}
 
                 </div>
             </div>
@@ -76,26 +60,12 @@
     {% else %}
         Your are not logged in.
     {% endif %}
-
 {% endblock %}
-
 {% block scripts %}
     <script>
-        {% if chan.module == "superform.plugins.Twitter" %}
-            $(document).ready(function () {
-                $('#textarea_feedback').html(function () {
-                    var text_length = $('#descrpost').val().length;
-                    if ($('#linkurlpost').val() != '' && $('#linkurlpost').val() != null)
-                        text_length = text_length + 23
-                    $('#textarea_feedback').html(text_length + '/280');
-                });
-                $('#descrpost').keyup(function () {
-                    var text_length = $('#descrpost').val().length;
-                    if ($('#linkurlpost').val() != '' && $('#linkurlpost').val() != null)
-                        text_length = text_length + 23
-                    $('#textarea_feedback').html(text_length + '/280');
-                });
-            });
-        {% endif %}
+        {% set module_name = chan.module.split('.')[2].lower() %}
+        {% set template = 'plugins/' + module_name + '/moderate.js'%}
+        {% include template ignore missing %}
     </script>
+
 {% endblock %}

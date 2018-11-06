@@ -68,11 +68,20 @@
                                     {% for chan in l_chan %}
                                         <div class="form-check">
                                             <label class="form-check-label">
-                                                <input id="chan_option_{{ chan.id }}" data-module="{{ chan.module }}" data-namechan="{{ chan.name }}"
+                                                <input id="chan_option_{{ chan.id }}" data-module="{{ chan.module }}"
+                                                       data-namechan="{{ chan.name }}"
                                                        data-unavailablefields="{{ chan.unavailablefields }}"
                                                        name="chan_option_{{ chan.id }}" type="checkbox"
                                                        class="form-check-input checkbox"
-                                                       value="{{ chan.id }}">{{ chan.name }}
+                                                       value="{{ chan.id }}">
+                                                {% set module_name = chan.module.split('.')[2].lower() %}
+                                                {% set img_path = "plugins/" + module_name + "/logo.png" %}
+                                                {% if img_path %}
+                                                    <img src="{{ url_for('static', filename = img_path) }}"
+                                                         id="img_{{ chan.id }}" name="img_{{ chan.id }}"
+                                                         width="15" height="15" alt="">
+                                                {% endif %}
+                                                {{ chan.name }}
                                             </label>
                                         </div>
                                     {% endfor %}
@@ -82,7 +91,8 @@
                             <div class="card">
                                 <div class="card-header">Status</div>
                                 <div id='card_body' class="card_body">
-                                    <div class="status_select_channel"> Please select a channel! </div>
+                                    <div class="status_select_channel"> Please select a channel!</div>
+                                    <div class="status_select_date"> Please select a date!</div>
                                 </div>
                             </div>
 
@@ -105,7 +115,7 @@
                                                    id="{{ chan.name }}_titlepost" class="form-control">
                                         </div>
                                         <div class="form-group">
-                                            <label for="{{ chan.name }}_descriptionpost">Description {% if chan.module == "superform.plugins.Twitter" %} (<span id="{{ chan.name }}_textarea_feedback" name="{{ chan.name }}_textarea_feedback"></span> characters){% endif %}</label><br>
+                                            <label for="{{ chan.name }}_descriptionpost">Description</label><br>
                                             <textarea class="form-control" rows="5" id="{{ chan.name }}_descriptionpost"
                                                       name="{{ chan.name }}_descriptionpost"></textarea>
                                         </div>
@@ -126,7 +136,7 @@
                                                         Date</label><br>
                                                     <input id="{{ chan.name }}_datefrompost"
                                                            name="{{ chan.name }}_datefrompost" type="date"
-                                                           class="form-control">
+                                                           class="form-control" readonly="readonly">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -134,39 +144,13 @@
                                                     <label for="{{ chan.name }}_dateuntilpost">Publication Until</label><br>
                                                     <input id="{{ chan.name }}_dateuntilpost"
                                                            name="{{ chan.name }}_dateuntilpost" type="date"
-                                                           class="form-control">
+                                                           class="form-control" readonly="readonly">
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {% if chan.module == "superform.plugins.Twitter" %}
-                                            <div class="form-group">
-                                                <label for="jsp"> Publication options </label>
-                                                <fieldset>
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input id="{{ chan.name }}_truncate"
-                                                                   name="{{ chan.name }}_truncate" type="radio"
-                                                                   value="Truncate"
-                                                                   class="form-check-input custom-radio checked"
-                                                                   checked>
-                                                            Truncate the text to 280 caracters
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input id="{{ chan.name }}_NotTruncate"
-                                                                   name="{{ chan.name }}_truncate" type="radio"
-                                                                   value="NotTruncate"
-                                                                   class="form-check-input custom-radio checked">
-                                                            Publish in several tweets
-                                                        </label>
-                                                    </div>
-                                                </fieldset>
-                                            </div>
-
-                                        {% endif %}
-
+                                        {% set module_name = chan.module.split('.')[2].lower() %}
+                                        {% set template = 'plugins/' + module_name + '/new.html' %}
+                                        {% include template ignore missing %}
                                     </div>
                                 </div>
                             </div>
@@ -184,13 +168,8 @@
                                     <div class="card-header">Status</div>
                                     <div id='{{ chan.name }}_card_body' class="card_body"></div>
                                 </div>
-
-
                             </div>
-
                         </div>
-
-
                     </div>
                 {% endfor %}
             </div>
@@ -204,8 +183,8 @@
                 </button>
                 <button class="btn btn-outline-primary" type="reset">Abort</button>
             </div>
-
         </form>
+
     {% else %}
         Your are not logged in.
     {% endif %}
@@ -215,19 +194,18 @@
 
 {% block scripts %}
     <script>
+        var block_submit;
+        window.onload = reset_block;
+
+        function reset_block() {
+            block_submit = false
+        }
+
         // This manage if a channel is selected or not:
         //  it hides/shows a tab for a channel
         //  it adds an information bullet to unavailable fields for each channel
         $('input.checkbox').change(function () {
-            var nbselected = $('input.checkbox:checked').length;
-            if (nbselected == 0) {
-                $("#publish-button").prop('disabled', true);
-                $("#card_body").append('<div class="status_select_channel"> Please select a channel! </div>')
-
-            } else {
-                $("#publish-button").prop('disabled', false);
-                $(".status_select_channel").remove();
-            }
+            verify_input()
 
             nameC = $(this).attr('data-namechan');
             idC = $(this).attr('value');
@@ -247,10 +225,8 @@
 
                 $('[data-toggle="popover"]').popover();
                 $('#li_' + nameC).show();
-                initializeTwitterListeners(nameC, idC);
             } else {
                 //If the channel is not selected
-                removeTwitterListeners(nameC, idC);
                 $(this).removeClass('checked');
                 for (var i = 0; i < split.length; i++) {
                     $("input[id='" + nameC + "_" + $('#' + split[i].toLowerCase() + 'post').attr('id') + "']").prop('disabled', false);
@@ -259,6 +235,12 @@
                 }
                 $('#li_' + nameC).hide();
             }
+        });
+        $('#dateuntilpost').on("change", function (event) {
+            verify_input();
+        });
+        $('#datefrompost').on("change", function (event) {
+            verify_input();
         });
         // From here, I copy a field ONCE from general to all the equivalent fields of each channel
         //It works but it's not really sexy to rewrite this for all fields of general tab
@@ -298,7 +280,7 @@
                 })
                 .val(text);
         });
-        $('#dateuntilpost').one("change", function (event) {
+        $('#dateuntilpost').on("change", function (event) {
             text = ($(this).val());
             //This is a subselect of input that match with the regex .*dateuntilpost
             $('input')
@@ -307,7 +289,7 @@
                 })
                 .val(text);
         });
-        $('#datefrompost').one("change", function (event) {
+        $('#datefrompost').on("change", function (event) {
             text = ($(this).val());
             //This is a subselect of input that match with the regex .*datefrompost
             $('input')
@@ -318,64 +300,74 @@
         });
 
 
-        /**
-         * Returns a function that displays the number of chars in the description field of the publication. The
-         * function also displays warnings when the number of chars is greater than 279.
-         * @param channelName: The name of the channel
-         */
-        function getCharCounter(channelName) {
-            function charCounter(event) {
-                var text_length = $('#'+channelName+'_descriptionpost').val().length;
-                if ($('#'+channelName+'_linkurlpost').val() != '' && $('#'+channelName+'_linkurlpost').val() != null)
-                    text_length = text_length + 23;
-                if (text_length >= 280) {
-                    $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
-                    $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "']").append('<a href="#" data-toggle="popover" title="Content too long" data-content="Too many characters for one tweet"><i class="fas fa-exclamation-circle" style="color:orange"></i></a>');
-                    $("."+channelName+"_status_too_many_chars").remove();
-                    $("#"+channelName+"_card_body").append('<div class="'+channelName+'_status_too_many_chars"> Too many characters for one tweet! </div>');
-                    $("#card_body").append('<div class="'+channelName+'_status_too_many_chars">'+channelName+': Too many characters for one tweet! </div>');
-                    $('[data-toggle="popover"]').popover();
-                } else {
-                    $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
-                    $("."+channelName+"_status_too_many_chars").remove();
+        function verify_input() {
+            var nbselected = $('input.checkbox:checked').length;
+            var date1 = document.getElementById('datefrompost').value;
+            var date2 = document.getElementById('dateuntilpost').value;
+            var yesterday = new Date();
+            yesterday.setDate(new Date().getDate() - 1);
+            if (invalid_input()) {
+                if (nbselected === 0) {
+                    $("#publish-button").prop('disabled', true)
+                    $(".status_select_channel").remove();
+                    $("#card_body").append('<div class="status_select_channel"> Please select a channel! </div>')
                 }
-                $('#'+channelName+'_textarea_feedback').html(text_length + '/279');
+                else {
+                    $(".status_select_channel").remove();
+                }
+                if (date1 === '' || date1 == null || date2 === '' || date2 == null) {
+                    $("#publish-button").prop('disabled', true);
+                    $(".status_valid_date").remove();
+                    $(".status_select_date").remove();
+                    $("#card_body").append('<div class="status_select_date"> Please select a date! </div>')
+                }
+                else {
+                    $(".status_select_date").remove();
+                    if (is_before(date1, yesterday) || is_before(date2, date1)) {
+                        $("#publish-button").prop('disabled', true);
+                        $(".status_valid_date").remove();
+                        $("#card_body").append('<div class="status_valid_date"> Please select a valid date! </div>')
+                    }
+                    else {
+                        $(".status_valid_date").remove();
+                    }
+                }
+
             }
-            return charCounter;
+            else {
+                $(".status_select_channel").remove();
+                $(".status_select_date").remove();
+                $(".status_valid_date").remove();
+                $("#publish-button").prop('disabled', false);
+            }
         }
 
-
-        /**
-         * Initializes the listeners for the Twitter channel given as argument
-         * @param channelName: The name of the channel
-         * @param channelID: The ID of the channel
-         */
-        function initializeTwitterListeners(channelName, channelID) {
-            getCharCounter(channelName)(null);
-            $('#'+channelName+'_textarea_feedback').html('0/279');
-            $('#'+channelName+'_descriptionpost').on('keyup', getCharCounter(channelName));
-            $('#'+channelName+'_linkurlpost').on('keyup', getCharCounter(channelName));
-            $('#descriptionpost').on('keyup', getCharCounter(channelName));
-            $('#linkurlpost').on('keyup', getCharCounter(channelName));
-            $('#li_'+channelName).on('click', getCharCounter(channelName));
-            $('#chan_option_'+channelID).on('keyup', getCharCounter(channelName));
+        function invalid_input() {
+            var nbselected = $('input.checkbox:checked').length;
+            var date1 = document.getElementById('datefrompost').value;
+            var date2 = document.getElementById('dateuntilpost').value;
+            var yesterday = new Date();
+            yesterday.setDate(new Date().getDate() - 1);
+            return nbselected === 0 ||
+                date1 === '' || date1 == null ||
+                date2 === '' || date2 == null ||
+                is_before(date1, yesterday) ||
+                is_before(date2, date1) ||
+                block_submit;
         }
 
-
-        /**
-         * Removes the listeners for the Twitter channel given as argument
-         * @param channelName: The name of the channel
-         * @param channelID: The ID of the channel
-         */
-        function removeTwitterListeners(channelName, channelID) {
-            $('#'+channelName+'_descriptionpost').off('keyup');
-            $('#'+channelName+'_linkurlpost').off('keyup');
-            $('#descriptionpost').off('keyup');
-            $('#linkurlpost').off('keyup');
-            $('#li_'+channelName).off('click');
-            $('#chan_option_'+channelID).off('keyup');
-            $("."+channelName+"_status_too_many_chars").remove();
+        function is_before(date1, date2) {
+            var d1 = new Date(date1);
+            var d2 = new Date(date2);
+            return d1 < d2;
         }
+
+        {% for chan in l_chan %}
+            {% set module_name = chan.module.split('.')[2].lower() %}
+            {% set template = 'plugins/' + module_name + '/new.js'%}
+            {% include template ignore missing %}
+        {% endfor %}
+
     </script>
 
 {% endblock %}
