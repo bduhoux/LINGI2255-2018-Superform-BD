@@ -7,9 +7,7 @@ FIELDS_UNAVAILABLE = []  # list of field names that are not used by your module
 CONFIG_FIELDS = ["page_id",
                  "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.
 
-
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
-
     page_id = get_page_id(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
     access_token = get_app_id(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
 
@@ -26,7 +24,6 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
         message=msg,
         link=link
     )
-
 
 def get_api(cfg):
     graph = facebook.GraphAPI(cfg['access_token'])
@@ -50,10 +47,8 @@ def get_config(page_id, access_token):
     }
     return cfg
 
-
 def get_message(publishing):
     return publishing.title + "\n\n" + publishing.description
-
 
 def get_link(publishing):
     return publishing.link_url
