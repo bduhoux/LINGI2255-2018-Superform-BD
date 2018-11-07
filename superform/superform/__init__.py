@@ -10,6 +10,7 @@ from superform.authorizations import authorizations_page
 from superform.channels import channels_page
 from superform.posts import posts_page
 from superform.users import get_moderate_channels_for_user, is_moderator
+from superform.search import search_page
 
 app = Flask(__name__)
 app.config.from_json("config.json")
@@ -17,6 +18,7 @@ app.config.from_json("config.json")
 # Register blueprints
 app.register_blueprint(authentication_page)
 app.register_blueprint(authorizations_page)
+app.register_blueprint(search_page)
 app.register_blueprint(channels_page)
 app.register_blueprint(posts_page)
 app.register_blueprint(pub_page)
