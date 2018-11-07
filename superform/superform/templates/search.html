@@ -2,35 +2,257 @@
 {% block title %}Search{% endblock %}
 {% block content %}
     <h1>Search</h1>
-
-    <p> Life sucks</p>
-
     <form method="post" id="search_form" action="">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="form-group">
-                    <label for="search_word">Searching pattern</label>
-                    <input type="text" name="search_word" id="search_word" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="search_loc">Searching fields</label><br>
-                    <div class="row justify-content-center">
-                        <div class="col-md-6">
-                            <input type="checkbox" value="title">Title</input><br>
-                            <input type="checkbox" value="description">Description</input><br>
-                            <input type="checkbox" value="date created">Date created</input><br>
-                            <input type="checkbox" value="url">Url</input><br>
-                            <input type="checkbox" value="image">Image</input>
+        <div class="tab-content">
+            <div class="tab-pane container-fluid active">
+                <div class="row justify-content-left">
+                    <!--<div class="col-md-3"></div>-->
+                    <div class="col-md-8">
+                        <div class="form-group" style="width: 100%">
+                            <input type="text" name="search_word" style="width: 75%" id="search_word"
+                                   class="search-query">
+                            <button type="submit" style="width: 14%" name="submit_search" id="submit_search"
+                                    class="btn">
+                                Search
+                            </button>
+
                         </div>
+                        <div style="width: 80%">
+                            <div class="row" style="width: 100%">
+                                <div class="col-md-6" style="width: 100%">
+                                    <div class="form-group">
+                                        <label for="order_loc">Order field</label><br>
+                                        <select class="select-order-loc" style="width: 100%" name="order_loc"
+                                                id="order_loc">
+                                            <option value="title">Title</option>
+                                            <option value="date_from">Date</option>
+                                            <option value="description">Description</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="date_from">Date from</label>
+                                        <input type="date" name="date_from" id="date_from" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="search_chan">Searching channels </label><br>
+                                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+                                        <select data-select="false" multiple class="select-chan" style="width: 100%"
+                                                name="search_chan"
+                                                id="search_chan"
+                                                multiple>
+                                            {% for chan in l_chan %}
+                                                <option value="{{ chan.id }}" selected>{{ chan.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="search_loc">Searching fields</label><br>
+                                        <select class="select-loc" style="width: 100%" name="search_loc"
+                                                id="search_loc"
+                                                multiple>
+                                            <option value="title" selected>Title</option>
+                                            <option value="description" selected>Description</option>
+                                            <option value="url">Url</option>
+                                        </select>
+                                    </div>
+
+
+                                </div>
+                                <div class="col-md-6" style="width: 100%">
+                                    <div class="form-group">
+                                        <label for="search_order">Searching order</label><br>
+                                        <select class="select-order" style="width: 100%" name="search_order"
+                                                id="search_order">
+                                            <option value="ascending">Ascending</option>
+                                            <option value="descending">Descending</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="date_until">Date until</label>
+                                        <input type="date" name="date_until" id="date_until" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="post_status">Post status</label><br>
+                                        <select class="select-status" style="width: 100%" name="post_status"
+                                                id="post_status"
+                                                multiple>
+                                            <option value="2" selected>Archived</option>
+                                            <option value="1" selected>Published</option>
+                                            <option value="0" selected>Waiting for approval</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="search_type">Search type</label><br>
+                                        <select class="select-search-type" style="width: 100%" name="search_type"
+                                                id="search_type" >
+                                            <option value="keyword">Search by keyword</option>
+                                            <option value="complete">Complete search</option>
+                                        </select>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="reset_search"></label>
+                            <button type="reset" name="reset_search" id="reset_search" onclick="clear_form()"
+                                    class="form-control" style="width: 15%">Clear search
+                            </button>
+                        </div>
+
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="submit_search"></label>
-                    <input type="submit" name="submit_search" id="submit_search" class="form-control">
                 </div>
             </div>
         </div>
     </form>
+    {% if post %}
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Search results</h2>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>
+                            Channel
+                        </th>
+                        <th>
+                            Subject
+                        </th>
+                        <th>
+                            Body
+                        </th>
+                        <th>
+                            Author
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for p in publishing %}
+                        <tr>
+                            <td>
+                                {{ p.channel.name }}
+                            </td>
+                            <td>
+                                {{ p.title }}
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col">{{ p.description }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                {{ p.get_author() }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% if publishing ==[] %}
+                    No results found.
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
 
 
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        let fields = [
+            'search_word',
+            'search_chan',
+            'post_status',
+            'search_loc',
+            'search_type',
+            'order_loc',
+            'search_order',
+            'date_from',
+            'date_until'
+        ];
+        let multiple_fields = {
+            'search_word': false,
+            'search_chan': true,
+            'post_status': true,
+            'search_loc': true,
+            'search_type': false,
+            'order_loc': false,
+            'search_order': false,
+            'date_from': false,
+            'date_until': false
+        }; // key is the id of the element and the value is true only if the element is multiple select
+        let clear_data = {
+            'search_chan': {{ id_chan }},
+            'post_status': [2, 1, 0],
+            'search_loc': ['title', 'description'],
+            'search_type:': 'keyword',
+            'order_loc': 'title',
+            'search_order': 'ascending'
+        };
+        $(function () {
+            $('.select-chan').select2();
+            $('.select-status').select2();
+            $('.select-loc').select2();
+            $('.select-search-type').select2();
+            $('.select-order').select2();
+            $('.select-order-loc').select2();
+
+            preselect(); // preselect all options selected in a previous post request
+
+            //localStorage.clear();
+
+            $('#search_form').submit(function () {
+                fields.forEach(function (e) {
+                    localStorage.setItem(e, $('#' + e).val())
+                })
+            }); // stocks local
+        });
+
+        function preselect() {
+            if ('search_word' in localStorage) {
+                fields.forEach(function (e) {
+                    let selector = $('#' + e);
+                    multiple_fields[e] ? selector.val(get_array(it(e))).trigger('change') : selector.val(it(e)).trigger('change')
+                });
+                /*$('#search_word').val(it('search_word')).trigger('change');
+                $('#search_chan').val(get_array(it('search_chan'))).trigger('change');
+                $('#post_status').val(get_array(it('post_status'))).trigger('change');
+                $('#search_loc').val(get_array(it('search_loc'))).trigger('change');
+                $('#search_type').val(it('search_type')).trigger('change');
+                $('#order_loc').val(it('order_loc')).trigger('change');
+                $('#search_order').val(it('search_order')).trigger('change');
+                $('#date_from').val(it('date_from')).trigger('change');
+                $('#date_until').val(it('date_until')).trigger('change');*/
+            }
+        }
+
+        function it(key) {
+            return localStorage.getItem(key);
+        }
+
+        function get_array(str) {
+            let tab = str.split(',');
+            let res = [];
+            tab.forEach(function (e) {
+                res.push(e)
+            });
+            return res
+        }
+
+        function clear_form() {
+            localStorage.clear();
+            fields.forEach(function (e) {
+                e in clear_data ? $('#' + e).val(clear_data[e]).trigger('change') : {};
+            })
+        }
+    </script>
+{% endblock %}
+
+
+

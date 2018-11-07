@@ -55,8 +55,9 @@ def moderate_publishing(id, idc):
             return render_template('moderate_post.html', pub=pub, chan=chan)
         from importlib import import_module
         plugin = import_module(plugin_name)
+        plugin.run(pub, c_conf)
         try:
-            plugin.run(pub, c_conf)
+            pass
         except KeyError:
             pub.state = 0
             db.session.commit()
