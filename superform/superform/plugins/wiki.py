@@ -22,4 +22,3 @@ def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     request = Request(url, urlencode(post_fields).encode())
 
     response = urlopen(request)
-    print(response.read())
