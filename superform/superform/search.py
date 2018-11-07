@@ -1,8 +1,9 @@
 
-from flask import session
+from flask import session, Blueprint
 from superform.models import db, User, Post, Publishing
 from  superform.users import get_moderate_channels_for_user, is_moderator
 
+search_page = Blueprint('search', __name__)
 
 def get_accessible_publications_of_user(user):
     """
