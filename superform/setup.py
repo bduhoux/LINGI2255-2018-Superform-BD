@@ -7,6 +7,9 @@ setup(
     install_requires=[
         'flask',
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 24d8ff7... End of Module Search Team 1
         'python3-saml',
         'sqlalchemy',
         'flask_sqlalchemy',
@@ -15,6 +18,7 @@ setup(
     ]
 
 
+<<<<<<< HEAD
 =======
         'python3-saml', 'sqlalchemy',
         'flask-sqlalchemy',
@@ -22,4 +26,6 @@ setup(
         'feedgen'
     ],
 >>>>>>> 6d07995... Implement the RSS channel
+=======
+>>>>>>> 24d8ff7... End of Module Search Team 1
 )
