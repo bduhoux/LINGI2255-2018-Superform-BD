@@ -17,9 +17,9 @@ def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     link = publishing.link_url
 
     url = "http://localhost:8001/pmwiki.php"
-    post_fields = {'n':page,'body':publishing.description,'action':'edit','post':1}
+    post_fields = {'n':page,'text':publishing.description,'action':'edit','post':1}
 
     request = Request(url, urlencode(post_fields).encode())
 
     response = urlopen(request)
-    print response.read()
+    print(response.read())
