@@ -1,10 +1,18 @@
 
-from flask import session
+from flask import session, Blueprint, url_for, render_template
+from superform.utils import login_required
 from superform.models import db, User, Post, Publishing
 from  superform.users import get_moderate_channels_for_user, is_moderator
 
+search_page = Blueprint('search', __name__)
 
-def get_accessible_publication_of_user(user):
+
+@search_page.route('/search', methods=["GET", "POST"])
+@login_required()
+def search():
+    return render_template('search.html', lol=1)
+
+def get_accessible_publications_of_user(user):
     """
     Defining publication access as such for a user:
         -all publication published on superform for a Admin
@@ -31,7 +39,13 @@ def get_accessible_publication_of_user(user):
 
     return flattened_publication
 
-def search_in_publications(searched_sequence, searched_publications):
-    return searched_publications
 
+"""
+remarque:
 
+    db.session.query(Publishing).filter(f1(c), f2(...)...)
+    def f1(c):
+        return (Publishing.channel_Id == c.id) & (Publishing.state ==0)
+
+    ->accumuller tout les filters, puis les grouper.
+"""
