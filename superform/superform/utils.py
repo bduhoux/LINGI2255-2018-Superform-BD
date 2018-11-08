@@ -2,6 +2,7 @@ from datetime import datetime
 from functools import wraps
 from flask import render_template, session, current_app
 from models import db, Post, Publishing
+from sqlalchemy import or_, asc, desc
 
 from superform.models import Authorization, Channel
 
@@ -51,41 +52,46 @@ def add_q_filter_accessible_publications(query, user):
     #else: return all the posts user published || all the posts we can moderate
     post_user_wrote = db.session.query(Post).filter(Post.user_id == user.id)
 
-    print("We wrote: ", post_user_wrote);
-
     post_ids = [post.id for post in post_user_wrote]
     publications_query = Publishing.post_id.in_(post_ids)
 
-    return publications_query
+    return query.filter(Publishing.post_id.in_(post_ids))
 
-def add_q_filter_channel(query, status):
-    """ Query will be a tuple of filters."""
-
+def add_q_filter_state(query, status):
     """
-    example of use:
-     query = '((),)
-     query = add_q_filter_accessible_publications(query, user)
-     query = add_q_filter_channel(query, status)
-     ...
-     bd.session.query(Publishing).filter(query)
+    status: either int (corresponing to requested status), or None (no status request)
     """
-    return query + Publishing.state == status
+    if status != None:
+        return query.filter(Publishing.state == status)
+    else:
+        return query
 
-def add_q_filter_title_content(query, title, content, words, split_words=False):
-    "still need to test this"
+def add_q_filter_title_content(query, title, content):
+    """
+    Initial signature: query, title, content, words, split_words.
+    If title == content, search for publishing that have either the title set to title, or the content set to content.
+    Otherwise, filters for posts that contains exactly title(if present) and content(if present).
+    """
+    if title == content and title != None:
+        """We search if the file contains the s"""
+        return query.filter(or_(Publishing.title == title, Publishing.description.contains(content)))
 
-    return query + or_(Publishing.title == title, Publishing.description.contains(content))
+    if title:
+        query = query.filter(Publishing.title == title)
+    if content:
+        query = query.filter(Publishing.description.contains(content))
 
-def add_q_order(query, asc, arg):
     return query
 
+def add_q_order(query, is_asc, arg):
+    """
+    We can order by: date, author, channel
+    @pre: is_asc either true/false/None, arg = channel/date.
+    @post: order the query by is_asc?asc:desc of channel/date (defaults: desc, date)
+    """
 
-"""
-def search(..., ...):
-    query = "SELECT * FROM PUBLICATIONS WHERE ";
-    add_q_filter_accessbile_publications(query, current_user);
-    ...
-    db.apply_query(query);
-    ->voir comment combiner: , vs &.
-
-"""
+    known_arg  = {"channel": Publishing.channel_id, "date":Publishing.date_from}
+    if is_asc:
+        return query.order_by(asc(known_arg.get(arg, Publishing.date_from)))
+    else:
+        return query.order_by(desc(known_arg.get(arg, Publishing.date_from)))
