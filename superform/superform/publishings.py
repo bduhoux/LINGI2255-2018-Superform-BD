@@ -26,7 +26,6 @@ def moderate_publishing(id, idc):
         pub.image_url = request.form.get('imagepost')
         pub.date_from = datetime_converter(request.form.get('datefrompost'))
         pub.date_until = datetime_converter(request.form.get('dateuntilpost'))
-
         extra = dict()
         c = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
         plugin_name = c.module
