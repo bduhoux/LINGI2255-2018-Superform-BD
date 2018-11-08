@@ -99,4 +99,13 @@ def publish_from_new_post():
 def records():
     posts = db.session.query(Post).filter(Post.user_id == session.get("user_id", ""))
     records = [(p) for p in posts if p.is_a_record()]
-    return render_template('records.html', records=records)
+    # Added code ----------
+    channel = db.session.query(Channel).all()
+    rec = []
+    for a in records:
+        for b in a.publishings:
+            rec.append(b)
+    # Added code ----------
+    return render_template('records.html', records=rec, channel=channel)
+
+
