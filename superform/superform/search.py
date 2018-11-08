@@ -13,9 +13,8 @@ def search():
 
 
 def query_maker(filter_parameter):
-    query = db.session.query(Publishing).filter(filters(filter_parameter))
-    order_query(query, filter_parameter["asc"], filter_parameter["arg"])
-    return query
+    return db.session.query(Publishing).filter(filters(filter_parameter)).order_by(
+        order_query(filter_parameter["order_by"], filter_parameter["is_asc"])).all()
 
 
 def filters(filter_parameter):
@@ -25,58 +24,60 @@ def filters(filter_parameter):
     :return: the list of publication according to the filter parameter
     """
     return filter_query_accessible_publications(filter_parameter["user"]) & \
-           filter_query_channel(filter_parameter["channel"]) & \
+           filter_query_channel(filter_parameter["channels"]) & \
            filter_query_status(filter_parameter["status"]) & \
-           filter_query_title_content(filter_parameter["title"], filter_parameter["content"],
-                                      filter_parameter["words"])
+           filter_query_title_content(filter_parameter["search_in_title"], filter_parameter["search_in_content"],
+                                      filter_parameter["searched_words"])
+
 
 def filter_query_accessible_publications(user):
-    l = (Publishing.post_id == None)
+    condition = (Publishing.post_id == None)
     if not user.admin:
-        a = db.session.query(Post).filter(Post.user_id == user.user_id)
-        for post in a:
-            l = l | Publishing.post_id == post.id
-        if is_moderator(user):
-            for c in get_moderate_channels_for_user(user):
-                l = l | Publishing.channel_id == c.i
-    return l
+        user_post = db.session.query(Post).filter(Post.user_id == user.user_id)
+        for post in user_post:
+            condition = condition | Publishing.post_id == post.id
+        for chan in get_moderate_channels_for_user(user):
+            condition = condition | Publishing.channel_id == chan.id
+    else:
+        condition = (Publishing.post_id != None)
+    return condition
 
 
 def filter_query_channel(channels):
-    l = (Publishing.post_id == None)
-    for cha in channels:
-        l = l | Publishing.channel_id == cha
-    return l
+    condition = (Publishing.post_id == None)
+    for chan_id in channels:
+        condition = condition | Publishing.channel_id == chan_id
+    return condition
 
 
-def filter_query_status(status):
-    l = (Publishing.post_id == None)
-    for cha in status:
-        l = l | Publishing.state == cha
-    return l
+def filter_query_status(states):
+    condition = (Publishing.post_id == None)
+    for state in states:
+        condition = condition | Publishing.state == state
+    return condition
 
 
-def filter_query_title_content(title, content, words, split_words=False):
+def filter_query_title_content(title, content, searched_words, split_words=False):
     if split_words:
-        l = (Publishing.post_id == None)
-        for mot in words:
+        condition = (Publishing.post_id == None)
+        for word in searched_words.split():
             if title & content:
-                l = l | Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
+                condition = condition | Publishing.title.ilike(word) | Publishing.content.ilike(word)
             elif title:
-                l = l | Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
+                condition = condition | Publishing.title.ilike(word)
             else:
-                l = l | Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
-        return l
+                condition = condition | Publishing.content.ilike(word)
+        return condition
     else:
         if title & content:
-            return Publishing.title.contains(words) | Publishing.content.contains(words)
+            return Publishing.title.contains(searched_words) | Publishing.content.contains(searched_words)
         elif title:
-            return Publishing.title.contains(words)
+            return Publishing.title.contains(searched_words)
         else:
-            return Publishing.content.contains(words)
+            return Publishing.content.contains(searched_words)
 
 
-def order_query(asc, arg, query):
+def order_query(order_by, is_asc):
     fil = {
         "post_id": Publishing.post_id,
         "channel_id": Publishing.channel_id,
@@ -88,19 +89,7 @@ def order_query(asc, arg, query):
         "date_from": Publishing.date_from,
         "date_until": Publishing.date_until,
     }
-    for term in arg:
-        if asc:
-            query.order(fil[term])
-        else:
-            query.order(fil[term].desc())
-
-
-"""
-remarque:
-
-    db.session.query(Publishing).filter(f1(c), f2(...)...)
-    def f1(c):
-        return (Publishing.channel_Id == c.id) & (Publishing.state ==0)
-
-    ->accumuller tout les filters, puis les grouper.
-"""
+    if is_asc:
+        return fil[order_by]
+    else:
+        return fil[order_by].desc()
