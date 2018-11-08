@@ -12,55 +12,6 @@ def search():
     return render_template('search.html', lol=1)
 
 
-def filter_query_accessible_publication(user):
-    """
-    Defining publication access as such for a user:
-        -all publication published on superform for a Admin
-        -all publication published on moderated channels for a Moderator
-        -all publication written for a Writer
-    Returns an empty list if user_id is invalid;
-    otherwise returns all accesible post for matching user.
-    """
-
-    # is our user an admin? -> return all publication ever published.
-    if user.admin:
-        return db.session.query(Publishing).all()
-
-    # else: return all the posts user published || all the posts we can moderate
-    post_user_wrote = db.session.query(Post).filter(Post.user_id == user.user_id)
-    publications_user_wrote = (db.session.query(Publishing).filter(Publishing.post_id == post.id) for post in
-                               post_user_wrote)
-
-    flattened_publication = [y for x in publications_user_wrote for y in x]
-
-    if is_moderator(user):
-        chans = get_moderate_channels_for_user(user)
-        pubs_per_chan = (db.session.query(Publishing).filter((Publishing.channel_id == c.id))
-                         # & (Publishing.state == 0))
-                         for c in chans)
-        flattened_publication.append([y for x in pubs_per_chan for y in x])
-
-    return flattened_publication
-
-
-def filter_query_accessible_publications(user):
-    l = None
-    if not user.admin:
-        a = db.session.query(Post).filter(Post.user_id == user.user_id)
-        for post in a:
-            if l :
-                l = l | Publishing.post_id == post.id
-            else :
-                l = Publishing.post_id == post.id
-        if is_moderator(user):
-            for c in get_moderate_channels_for_user(user):
-                if l:
-                    l = l | Publishing.channel_id == c.id
-                else:
-                    l = Publishing.channel_id == c.id
-    return l
-
-
 def query_maker(filter_parameter):
     query = db.session.query(Publishing).filter(filters(filter_parameter))
     order_query(query, filter_parameter["asc"], filter_parameter["arg"])
@@ -79,46 +30,42 @@ def filters(filter_parameter):
            filter_query_title_content(filter_parameter["title"], filter_parameter["content"],
                                       filter_parameter["words"])
 
+def filter_query_accessible_publications(user):
+    l = (Publishing.post_id == None)
+    if not user.admin:
+        a = db.session.query(Post).filter(Post.user_id == user.user_id)
+        for post in a:
+            l = l | Publishing.post_id == post.id
+        if is_moderator(user):
+            for c in get_moderate_channels_for_user(user):
+                l = l | Publishing.channel_id == c.i
+    return l
+
 
 def filter_query_channel(channels):
-    l = None
+    l = (Publishing.post_id == None)
     for cha in channels:
-        if l:
-            l = l | Publishing.channel_id == cha
-        else:
-            l = Publishing.channel_id == cha
+        l = l | Publishing.channel_id == cha
     return l
 
 
 def filter_query_status(status):
-    l = None
+    l = (Publishing.post_id == None)
     for cha in status:
-        if l:
-            l = l | Publishing.state == cha
-        else:
-            l = Publishing.state == cha
+        l = l | Publishing.state == cha
     return l
 
 
 def filter_query_title_content(title, content, words, split_words=False):
-    l = None
     if split_words:
-        for mot in words :
+        l = (Publishing.post_id == None)
+        for mot in words:
             if title & content:
-                if l :
-                    l = l |Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
-                else:
-                    l = Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
+                l = l | Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
             elif title:
-                if l :
-                    l = l |Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
-                else:
-                    l = Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
+                l = l | Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
             else:
-                if l :
-                    l = l |Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
-                else:
-                    l = Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
+                l = l | Publishing.title.ilike(mot) | Publishing.content.ilike(mot)
         return l
     else:
         if title & content:
