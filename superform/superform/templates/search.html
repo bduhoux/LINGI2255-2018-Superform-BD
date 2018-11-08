@@ -1,24 +1,28 @@
 {% extends "layout.html" %}
 {% block title %}Search{% endblock %}
 {% block content %}
-    <h1>Index</h1>
+    <h1>Search</h1>
 
     <p> Life sucks</p>
 
     <form method="post" id="search_form" action="">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     <label for="search_word">Searching pattern</label>
                     <input type="text" name="search_word" id="search_word" class="form-control">
                 </div>
                 <div class="form-group">
                     <label for="search_loc">Searching fields</label><br>
-                    <input type="checkbox" value="title">Title</input><br>
-                    <input type="checkbox" value="description">Description</input><br>
-                    <input type="checkbox" value="date created">Date created</input><br>
-                    <input type="checkbox" value="url">Url</input><br>
-                    <input type="checkbox" value="image">Image</input>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <input type="checkbox" value="title">Title</input><br>
+                            <input type="checkbox" value="description">Description</input><br>
+                            <input type="checkbox" value="date created">Date created</input><br>
+                            <input type="checkbox" value="url">Url</input><br>
+                            <input type="checkbox" value="image">Image</input>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="submit_search"></label>
