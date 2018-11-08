@@ -1,6 +1,8 @@
-from flask import current_app
+from flask import request, jsonify, Blueprint
 import json
 import facebook
+
+facebook_plugin = Blueprint("facebook_plugin", __name__)
 
 FIELDS_UNAVAILABLE = ['Title', 'Description']  # list of field names that are not used by your module
 
@@ -30,6 +32,7 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     print(app_id)
 
     # login le user todo
+
 
     # publie sur page possedée par cet user
     #api1 = facebook.GraphAPI(access_token="trouvée au dessus")
