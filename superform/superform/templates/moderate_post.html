@@ -39,15 +39,14 @@
 
                 </div>
             </div>
-            <button class="btn btn-success">Publish</button></form>
+            <button class="btn btn-success" id="pub-button">Publish</button></form>
 
         </form>
-
+        <!-- seulement quand sur fb -->
         <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
         </fb:login-button>
 
-        <div id="status">
-        </div>
+        <p id="status"></p>
 
     {% else %}
         Your are not logged in.

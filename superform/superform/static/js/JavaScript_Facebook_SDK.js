@@ -4,7 +4,11 @@ function statusChangeCallBack(response){
     console.log(response);
 
     if (response.status == 'connected'){
+        a = getAppId() // d'abord recup appid
         testAPI();
+        p = getPageToken();
+        console.log('pagetoken: '+ p);
+        console.log('appid: '+ a);
     } else {
         document.getElementById('status').innerHTML = "Please Log into this app.";
     }
@@ -17,18 +21,20 @@ function checkLoginState() {
 }
 
 window.fbAsyncInit = function() {
-FB.init({
-  appId      : '317664895679756',
-  cookie     : true,
-  xfbml      : true,
-  version    : 'v3.2'
-});
+    //app_id = getAppId(); //get_appid ici une fois que getappid marche
+    FB.init({
+      appId      : '317664895679756',
+      //appId      : app_id,
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v3.2'
+    });
 
-FB.AppEvents.logPageView();
+    FB.AppEvents.logPageView();
 
-FB.getLoginStatus(function(response) {
-    statusChangeCallBack(response);
-});
+    FB.getLoginStatus(function(response) {
+        statusChangeCallBack(response);
+    });
 };
 
 (function(d, s, id){
@@ -46,15 +52,35 @@ function testAPI() {
         document.getElementById('status').innerHTML =
             'Thanks for logging in, ' + response.name;
     });
-    getPageToken();
 }
+
+
+function getAppId(){
+    $.ajax({
+       url: '/appid',
+       data: {
+          format: 'json'
+       },
+       dataType: 'json',
+       success: function(data) {
+           console.log('printing data...');
+           console.log(data);   //comment retoruner ca????
+           return data;
+       },
+       type: 'GET'
+    });
+}
+
 
 function getPageToken() {
     console.log('getting page token.... ');
     FB.api('/me/accounts?type=page', function (response) {
         console.log('response received');
         response.data.forEach(function (item, index, array) {
-
+            if (item.name == "Test"){
+                console.log('accesToken: '+item.access_token);
+                return item.access_token;
+            }
         });
     });
 }
