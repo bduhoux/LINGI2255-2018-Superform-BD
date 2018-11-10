@@ -24,14 +24,14 @@ function checkLoginState() {
     });
 }
 
-window.fbAsyncInit = function() {
-    app_id = getAppId(); //get_appid ici une fois que getappid marche
+window.fbAsyncInit = async function() {
+    app_id = await getAppId(); //get_appid ici une fois que getappid marche
     console.log("hel");
     console.log(app_id);
     console.log("lo");
     FB.init({
-      appId      : '317664895679756',
-      //appId      : app_id,
+      //appId      : '317664895679756',
+      appId      : app_id,
       cookie     : true,
       xfbml      : true,
       version    : 'v3.2'
