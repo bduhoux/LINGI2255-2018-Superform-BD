@@ -102,7 +102,7 @@ def populate_db():
                 link_url="http://linkedin.com/", image_url="http://wordpress.com/",
                 date_from=datetime_converter("2018-11-24"), date_until=datetime_converter("2018-11-25"))
     db.session.add(post)
-    post = Post(id=10, user_id="channelwriter", title="men instrument saw",
+    post = Post(id=10, user_id="channelwriter", title="men instrument",
                 description="", link_url="", image_url="", date_from=datetime_converter("2018-11-26"),
                 date_until=datetime_converter("2018-11-27"))
     db.session.add(post)
@@ -156,7 +156,7 @@ def populate_db():
                             date_from=datetime_converter("2018-11-22"), date_until=datetime_converter("2018-11-23"),
                             extra="{}")
     db.session.add(publishing)
-    publishing = Publishing(post_id=4, channel_id=3, state=2, title="men instrument saw", description="", link_url="",
+    publishing = Publishing(post_id=4, channel_id=3, state=2, title="men instrument", description="", link_url="",
                             image_url="", date_from=datetime_converter("2018-11-10"),
                             date_until=datetime_converter("2018-11-17"), extra="que ça n'as pas")
     db.session.add(publishing)
@@ -204,14 +204,14 @@ def test_admin_by_keyword_search(client):
     filter_parameter["states"] = [0, 1, 2]
     filter_parameter["search_in_title"] = True
     filter_parameter["search_in_content"] = False
-    filter_parameter["searched_words"] = "first title"
+    filter_parameter["searched_words"] = "title saw middleton"
     filter_parameter["search_by_keyword"] = True
     filter_parameter["order_by"] = "post_id"
     filter_parameter["is_asc"] = True
 
     result = query_maker(filter_parameter)
-    assert 3 == len(result)
-    assert [1, 5, 11] == [pub.post_id for pub in result]
+    assert 7 == len(result)
+    assert [1, 2, 3, 5, 8, 10, 11] == [pub.post_id for pub in result]
 
 def test_admin_channels_search(client):
     populate_db()
