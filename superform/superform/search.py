@@ -98,12 +98,11 @@ def filter_query_title_content(title, content, searched_words, split_words):
         condition = (Publishing.post_id == None)
         for word in searched_words.split():
             if title & content:
-                condition = condition | Publishing.title.ilike(word) | Publishing.title.ilike(word + ' %') | Publishing.title.ilike('% '+word) | Publishing.title.ilike('% '+word+' %') | \
-                            Publishing.description.ilike(word) | Publishing.description.ilike(word + ' %') | Publishing.description.ilike('% ' + word) | Publishing.description.ilike('% ' + word + ' %')
+                condition = condition | Publishing.title.contains(word) | Publishing.description.contains(word)
             elif title:
-                condition = condition | Publishing.title.ilike(word) | Publishing.title.ilike(word + ' %') | Publishing.title.ilike('% '+word) | Publishing.title.ilike('% '+word+' %')
+                condition = condition | Publishing.title.contains(word)
             else:
-                condition = condition | Publishing.description.ilike(word) | Publishing.description.ilike(word + ' %') | Publishing.description.ilike('% ' + word) | Publishing.description.ilike('% ' + word + ' %')
+                condition = condition | Publishing.description.contains(word)
         return condition
     else:
         if title & content:
