@@ -98,19 +98,19 @@ def filter_query_title_content(title, content, searched_words, split_words):
         condition = (Publishing.post_id == None)
         for word in searched_words.split():
             if title & content:
-                condition = condition | Publishing.title.ilike(word) | Publishing.content.ilike(word)
+                condition = condition | Publishing.title.ilike(word) | Publishing.description.ilike(word)
             elif title:
                 condition = condition | Publishing.title.ilike(word)
             else:
-                condition = condition | Publishing.content.ilike(word)
+                condition = condition | Publishing.description.ilike(word)
         return condition
     else:
         if title & content:
-            return Publishing.title.contains(searched_words) | Publishing.content.contains(searched_words)
+            return Publishing.title.contains(searched_words) | Publishing.description.contains(searched_words)
         elif title:
             return Publishing.title.contains(searched_words)
         else:
-            return Publishing.content.contains(searched_words)
+            return Publishing.description.contains(searched_words)
 
 
 def order_query(order_by, is_asc):
