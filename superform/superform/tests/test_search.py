@@ -4,6 +4,7 @@ import tempfile
 from superform import app, db
 from superform.models import Authorization, Channel, User, Post, Publishing
 from superform.utils import datetime_converter
+from superform.search import query_maker
 
 
 @pytest.fixture
@@ -178,10 +179,39 @@ def populate_db():
     db.session.add(publishing)
 
 
-def test_basic_search(client):
+def test_admin_basic_search(client):
     populate_db()
-    user = db.session.query(User).filter(User.id == "admin").first()
-    assert "Admin" == user.name
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = "first title"
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [1, 5, 11] == [pub.post_id for pub in result]
+
+def test_admin_by_keyword_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = "first title"
+    filter_parameter["search_by_keyword"] = True
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [1, 5, 11] == [pub.post_id for pub in result]
 
 
 def test_advanced_search():
