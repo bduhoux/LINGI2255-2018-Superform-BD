@@ -2,6 +2,8 @@ import pytest
 import os
 import tempfile
 from superform import app, db
+from superform.models import Authorization, Channel, User, Post, Publishing
+from superform.utils import datetime_converter
 
 
 @pytest.fixture
@@ -19,15 +21,167 @@ def client():
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
 
+
 def populate_db():
-    pass
+    user = User(id="michouchou", email="ftg@gmail.com", name="f", first_name="tg", admin=False)
+    db.session.add(user)
+    user = User(id="googleplusmoderator", email="ripinpeace@google.plus", name="Press F", first_name="To pay respect",
+                admin=False)
+    db.session.add(user)
+    user = User(id="mr_inutile69", email="pasdechannel@channel.channel", name="MR", first_name="PS", admin=False)
+    db.session.add(user)
+    user = User(id="channelwriter", email="lolcemailincroyable@wtf.com", name="Channel", first_name="von LECRIVAIN",
+                admin=False)
+    db.session.add(user)
+    user = User(id="channelmoder", email="mmmcharal@cool.com", name="Channel", first_name="van Moderate", admin=False)
+    db.session.add(user)
+    user = User(id="admin", email="admin@gmail.com", name="Admin", first_name="van Ze Broek", admin=True)
+    db.session.add(user)
+
+    channel = Channel(id=1, name="Twitter", module="superform.plugins.Twitter", config="{}")
+    db.session.add(channel)
+    channel = Channel(id=2, name="GPlus", module="superform.plugins.Gplus", config="{}")
+    db.session.add(channel)
+    channel = Channel(id=3, name="RSS", module="superform.plugins.RSS", config="{}")
+    db.session.add(channel)
+    channel = Channel(id=4, name="GMoins", module="superform.plugins.Gmoins", config="{}")
+    db.session.add(channel)
+
+    authorization = Authorization(user_id="michouchou", channel_id=1, permission=1)
+    db.session.add(authorization)
+    authorization = Authorization(user_id="admin", channel_id=3, permission=2)
+    db.session.add(authorization)
+    authorization = Authorization(user_id="googleplusmoderator", channel_id=2, permission=2)
+    db.session.add(authorization)
+    authorization = Authorization(user_id="channelwriter", channel_id=4, permission=1)
+    db.session.add(authorization)
+    authorization = Authorization(user_id="channelmoder", channel_id=1, permission=2)
+    db.session.add(authorization)
+
+    post = Post(id=1, user_id="channelmoder", title="first title",
+                description="That know ask case sex ham dear her spot. Weddings followed the all marianne nor whatever settling. Perhaps six prudent several her had offence. Did had way law dinner square tastes. Recommend concealed yet her procuring see consulted depending. Adieus hunted end plenty are his she afraid. Resources agreement contained propriety applauded neglected use yet. ",
+                link_url="http://facebook.com/", image_url="pas", date_from=datetime_converter("2018-07-01"),
+                date_until=datetime_converter("2018-07-01"))
+    db.session.add(post)
+    post = Post(id=2, user_id="michouchou", title="second title",
+                description="first title Him rendered may attended concerns jennings reserved now. Sympathize did now preference unpleasing mrs few. Mrs for hour game room want are fond dare. For detract charmed add talking age. Shy resolution instrument unreserved man few. She did open find pain some out. If we landlord stanhill mr whatever pleasure supplied concerns so. Exquisite by it admitting cordially september newspaper an. Acceptance middletons am it favourable.",
+                link_url="http://twitter.com/", image_url="", date_from=datetime_converter("2018-11-13"),
+                date_until=datetime_converter("2018-11-14"))
+    db.session.add(post)
+    post = Post(id=3, user_id="michouchou", title="third title",
+                description="Man request adapted spirits set pressed. Up to denoting subjects sensible feelings it indulged directly. We dwelling elegance do shutters appetite yourself diverted. Our next drew much you with rank. Tore many held age hold rose than our. She literature sentiments any contrasted. Set aware joy sense young now tears china shy. ",
+                link_url="http://google.com/", image_url="de", date_from=datetime_converter("2018-11-15"),
+                date_until=datetime_converter("2018-11-16"))
+    db.session.add(post)
+    post = Post(id=4, user_id="channelmoder", title="fourth nottitle",
+                description="Man request adapted spirits set pressed. ", link_url="http://google.com/", image_url="",
+                date_from=datetime_converter("2018-11-10"), date_until=datetime_converter("2018-11-17"))
+    db.session.add(post)
+    post = Post(id=5, user_id="michouchou", title="first title",
+                description="Not him old music think his found enjoy merry. Listening acuteness dependent at or an. Apartments thoroughly unsatiable terminated sex how themselves. She are ten hours wrong walls stand early. Domestic perceive on an ladyship extended received do. Why jennings our whatever his learning gay perceive.",
+                link_url="http://youtube.com/", image_url="recherche", date_from=datetime_converter("2018-11-18"),
+                date_until=datetime_converter("2018-11-19"))
+    db.session.add(post)
+    post = Post(id=7, user_id="channelmoder", title="lorem ipsum",
+                description="Add you viewing ten equally believe put. Separate families my on drawings do oh offended strictly elegance. Perceive jointure be mistress by jennings properly. An admiration at he discovered difficulty continuing. We in building removing possible suitable friendly on. ",
+                link_url="http://instagram.com/", image_url="{}", date_from=datetime_converter("2018-11-20"),
+                date_until=datetime_converter("2018-11-21"))
+    db.session.add(post)
+    post = Post(id=8, user_id="channelmoder", title="", description="",
+                link_url="", image_url="", date_from=datetime_converter("2018-11-22"),
+                date_until=datetime_converter("2018-11-23"))
+    db.session.add(post)
+    post = Post(id=9, user_id="channelwriter",
+                title="him men instrument saw",
+                description="It prepare is ye nothing blushes up brought. Or as gravity pasture limited evening on. Wicket around beauty say she. Frankness resembled say not new smallness you discovery. Noisier ferrars yet shyness weather ten colonel. Too him himself engaged husband pursuit musical.",
+                link_url="http://linkedin.com/", image_url="http://wordpress.com/",
+                date_from=datetime_converter("2018-11-24"), date_until=datetime_converter("2018-11-25"))
+    db.session.add(post)
+    post = Post(id=10, user_id="channelwriter", title="men instrument saw",
+                description="", link_url="", image_url="", date_from=datetime_converter("2018-11-26"),
+                date_until=datetime_converter("2018-11-27"))
+    db.session.add(post)
+    post = Post(id=11, user_id="channelwriter", title="",
+                description="Him rendered may attended concerns jennings reserved now. Sympathize did now preference unpleasing mrs few. Mrs for hour game room want are fond dare. For detract charmed add talking age. Shy resolution instrument unreserved man few. She did open find pain some out. ",
+                link_url="http://wordpress.com/", image_url="sur", date_from=datetime_converter("2018-11-28"),
+                date_until=datetime_converter("2018-11-29"))
+    db.session.add(post)
+
+    publishing = Publishing(post_id=1, channel_id=1, state=0, title="first title",
+                            description="That know ask case sex ham dear her spot. Weddings followed the all marianne nor whatever settling. Perhaps six prudent several her had offence. Did had way law dinner square tastes. Recommend concealed yet her procuring see consulted depending. Adieus hunted end plenty are his she afraid. Resources agreement contained propriety applauded neglected use yet. ",
+                            link_url="http://facebook.com/", image_url="pas",
+                            date_from=datetime_converter("2018-11-11"),
+                            date_until=datetime_converter("2018-11-12"), extra="{}")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=2, channel_id=1, state=1, title="second title",
+                            description="first title Him rendered may attended concerns jennings reserved now. Sympathize did now preference unpleasing mrs few. Mrs for hour game room want are fond dare. For detract charmed add talking age. Shy resolution instrument unreserved man few. She did open find pain some out. If we landlord stanhill mr whatever pleasure supplied concerns so. Exquisite by it admitting cordially september newspaper an. Acceptance middletons am it favourable.",
+                            link_url="http://twitter.com/", image_url="", date_from=datetime_converter("2018-11-13"),
+                            date_until=datetime_converter("2018-11-14"), extra="{ce champs}")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=3, channel_id=1, state=2, title="third title",
+                            description="Man request adapted spirits set pressed. Up to denoting subjects sensible feelings it indulged directly. We dwelling elegance do shutters appetite yourself diverted. Our next drew much you with rank. Tore many held age hold rose than our. She literature sentiments any contrasted. Set aware joy sense young now tears china shy. ",
+                            link_url="http://google.com/", image_url="de", date_from=datetime_converter("2018-11-15"),
+                            date_until=datetime_converter("2018-11-16"), extra='{"est sans"}')
+    db.session.add(publishing)
+    publishing = Publishing(post_id=4, channel_id=1, state=0, title="fourth nottitle",
+                            description="Man request adapted spirits set pressed. ", link_url="http://google.com/",
+                            image_url="", date_from=datetime_converter("2018-11-10"),
+                            date_until=datetime_converter("2018-11-17"), extra="{'importance':mais}")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=5, channel_id=1, state=1, title="first title",
+                            description="Not him old music think his found enjoy merry. Listening acuteness dependent at or an. Apartments thoroughly unsatiable terminated sex how themselves. She are ten hours wrong walls stand early. Domestic perceive on an ladyship extended received do. Why jennings our whatever his learning gay perceive.",
+                            link_url="http://youtube.com/", image_url="recherche",
+                            date_from=datetime_converter("2018-11-18"), date_until=datetime_converter("2018-11-19"),
+                            extra="")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=1, channel_id=3, state=0, title="lorem ipsum",
+                            description="Add you viewing ten equally believe put. Separate families my on drawings do oh offended strictly elegance. Perceive jointure be mistress by jennings properly. An admiration at he discovered difficulty continuing. We in building removing possible suitable friendly on. ",
+                            link_url="http://instagram.com/", image_url="{}",
+                            date_from=datetime_converter("2018-11-11"),
+                            date_until=datetime_converter("2018-11-12"), extra="verifions")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=7, channel_id=3, state=0, title="", description="", link_url="", image_url="",
+                            date_from=datetime_converter("2018-11-20"), date_until=datetime_converter("2018-11-21"),
+                            extra="{}")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=8, channel_id=3, state=0, title="him men instrument saw",
+                            description="It prepare is ye nothing blushes up brought. Or as gravity pasture limited evening on. Wicket around beauty say she. Frankness resembled say not new smallness you discovery. Noisier ferrars yet shyness weather ten colonel. Too him himself engaged husband pursuit musical.",
+                            link_url="http://linkedin.com/", image_url="http://wordpress.com/",
+                            date_from=datetime_converter("2018-11-22"), date_until=datetime_converter("2018-11-23"),
+                            extra="{}")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=4, channel_id=3, state=2, title="men instrument saw", description="", link_url="",
+                            image_url="", date_from=datetime_converter("2018-11-10"),
+                            date_until=datetime_converter("2018-11-17"), extra="que ça n'as pas")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=9, channel_id=4, state=1, title="",
+                            description="Him rendered may attended concerns jennings reserved now. Sympathize did now preference unpleasing mrs few. Mrs for hour game room want are fond dare. For detract charmed add talking age. Shy resolution instrument unreserved man few. She did open find pain some out. ",
+                            link_url="http://wordpress.com/", image_url="sur",
+                            date_from=datetime_converter("2018-11-24"),
+                            date_until=datetime_converter("2018-11-25"), extra="[]")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=10, channel_id=4, state=1, title="explained middleton am",
+                            description="Entire any had depend and figure winter. Change stairs and men likely wisdom new happen piqued six. Now taken him timed sex world get. Enjoyed married an feeling delight pursuit as offered. As admire roused length likely played pretty to no. Means had joy miles her merry solid order. ",
+                            link_url="http://linkedin.com/", image_url="les images",
+                            date_from=datetime_converter("2018-11-26"), date_until=datetime_converter("2018-11-27"),
+                            extra="")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=11, channel_id=4, state=2, title="first title",
+                            description="Perhaps far exposed age effects. Now distrusts you her delivered applauded affection out sincerity. As tolerably recommend shameless unfeeling he objection consisted. She although cheerful perceive screened throwing met not eat distance.",
+                            link_url="http://youtube.com/", image_url="h", date_from=datetime_converter("2018-11-28"),
+                            date_until=datetime_converter("2018-11-29"), extra="'d'influence'")
+    db.session.add(publishing)
 
 
-def test_basic_search():
-    pass
+def test_basic_search(client):
+    populate_db()
+    user = db.session.query(User).filter(User.id == "admin").first()
+    assert "Admin" == user.name
+
 
 def test_advanced_search():
     pass
+
 
 def test_sql_injections():
     """
