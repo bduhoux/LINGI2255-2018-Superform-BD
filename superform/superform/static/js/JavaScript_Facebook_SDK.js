@@ -109,7 +109,23 @@ function getPageToken() {
                 console.log('accesToken: '+item.access_token);
                 return item.access_token;
                 */
+                setToken(item.access_token);
             }
         });
+    });
+}
+
+function setToken(data){
+    $.ajax({
+       url: '/token',
+       data: JSON.stringify({token: data.toString()}),
+       dataType: 'json',
+       success: function(data) {
+            console.log("token received : " + data);
+       },
+        error: function(err){
+           console.log(err);
+        },
+       type: 'POST'
     });
 }
