@@ -4,11 +4,15 @@ function statusChangeCallBack(response){
     console.log(response);
 
     if (response.status == 'connected'){
-        a = getAppId() // d'abord recup appid
+        console.log('1');
+        //a = getAppId(); // d'abord recup appid
+        console.log('2');
         testAPI();
+        console.log('3');
         p = getPageToken();
+        console.log('4');
+        //console.log('appid: '+ a);
         console.log('pagetoken: '+ p);
-        console.log('appid: '+ a);
     } else {
         document.getElementById('status').innerHTML = "Please Log into this app.";
     }
@@ -21,7 +25,10 @@ function checkLoginState() {
 }
 
 window.fbAsyncInit = function() {
-    //app_id = getAppId(); //get_appid ici une fois que getappid marche
+    app_id = getAppId(); //get_appid ici une fois que getappid marche
+    console.log("hel");
+    console.log(app_id);
+    console.log("lo");
     FB.init({
       appId      : '317664895679756',
       //appId      : app_id,
@@ -54,7 +61,7 @@ function testAPI() {
     });
 }
 
-
+/*
 function getAppId(){
     $.ajax({
        url: '/appid',
@@ -62,6 +69,7 @@ function getAppId(){
           format: 'json'
        },
        dataType: 'json',
+       async: !1,
        success: function(data) {
            console.log('printing data...');
            console.log(data);   //comment retoruner ca????
@@ -70,7 +78,26 @@ function getAppId(){
        type: 'GET'
     });
 }
+*/
 
+async function getAppId(){
+    var promise1 = await fetch("/appid");
+    var data = await promise1.json();
+    console.log(data);
+    return data;
+}
+
+
+
+/*
+function getAppId(){
+    var data;
+    fetch("/echo/json").then(function(response){
+        data = response.json();
+    });
+    return data;
+}
+*/
 
 function getPageToken() {
     console.log('getting page token.... ');
@@ -78,8 +105,10 @@ function getPageToken() {
         console.log('response received');
         response.data.forEach(function (item, index, array) {
             if (item.name == "Test"){
+                /*
                 console.log('accesToken: '+item.access_token);
                 return item.access_token;
+                */
             }
         });
     });
