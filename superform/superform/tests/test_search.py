@@ -23,6 +23,7 @@ def client():
 
 
 def populate_db():
+    User.query.delete()
     user = User(id="michouchou", email="ftg@gmail.com", name="f", first_name="tg", admin=False)
     db.session.add(user)
     user = User(id="googleplusmoderator", email="ripinpeace@google.plus", name="Press F", first_name="To pay respect",
@@ -38,6 +39,7 @@ def populate_db():
     user = User(id="admin", email="admin@gmail.com", name="Admin", first_name="van Ze Broek", admin=True)
     db.session.add(user)
 
+    Channel.query.delete()
     channel = Channel(id=1, name="Twitter", module="superform.plugins.Twitter", config="{}")
     db.session.add(channel)
     channel = Channel(id=2, name="GPlus", module="superform.plugins.Gplus", config="{}")
@@ -47,6 +49,7 @@ def populate_db():
     channel = Channel(id=4, name="GMoins", module="superform.plugins.Gmoins", config="{}")
     db.session.add(channel)
 
+    Authorization.query.delete()
     authorization = Authorization(user_id="michouchou", channel_id=1, permission=1)
     db.session.add(authorization)
     authorization = Authorization(user_id="admin", channel_id=3, permission=2)
@@ -58,6 +61,7 @@ def populate_db():
     authorization = Authorization(user_id="channelmoder", channel_id=1, permission=2)
     db.session.add(authorization)
 
+    Post.query.delete()
     post = Post(id=1, user_id="channelmoder", title="first title",
                 description="That know ask case sex ham dear her spot. Weddings followed the all marianne nor whatever settling. Perhaps six prudent several her had offence. Did had way law dinner square tastes. Recommend concealed yet her procuring see consulted depending. Adieus hunted end plenty are his she afraid. Resources agreement contained propriety applauded neglected use yet. ",
                 link_url="http://facebook.com/", image_url="pas", date_from=datetime_converter("2018-07-01"),
@@ -107,6 +111,7 @@ def populate_db():
                 date_until=datetime_converter("2018-11-29"))
     db.session.add(post)
 
+    Publishing.query.delete()
     publishing = Publishing(post_id=1, channel_id=1, state=0, title="first title",
                             description="That know ask case sex ham dear her spot. Weddings followed the all marianne nor whatever settling. Perhaps six prudent several her had offence. Did had way law dinner square tastes. Recommend concealed yet her procuring see consulted depending. Adieus hunted end plenty are his she afraid. Resources agreement contained propriety applauded neglected use yet. ",
                             link_url="http://facebook.com/", image_url="pas",
