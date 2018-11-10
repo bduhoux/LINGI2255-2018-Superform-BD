@@ -19,6 +19,8 @@ def query_maker(filter_parameter):
     :param filter_parameter: A dictionary containing the different filter parameters
     :return: The wanted query
     """
+    print(db.session.query(Publishing).filter(filters(filter_parameter)).order_by(
+        order_query(filter_parameter["order_by"], filter_parameter["is_asc"])))
     return db.session.query(Publishing).filter(filters(filter_parameter)).order_by(
         order_query(filter_parameter["order_by"], filter_parameter["is_asc"])).all()
 
@@ -31,11 +33,10 @@ def filters(filter_parameter):
     :param filter_parameter: a dictionary representing the different filter to apply
     :return: the list of publication according to the filter parameter
     """
-    return filter_query_accessible_publications(filter_parameter["user"]) & \
-           filter_query_channel(filter_parameter["channels"]) & \
-           filter_query_status(filter_parameter["status"]) & \
-           filter_query_title_content(filter_parameter["search_in_title"], filter_parameter["search_in_content"],
-                                      filter_parameter["searched_words"], filter_parameter["search_by_keyword"])
+    return filter_query_accessible_publications(filter_parameter["user"]) & filter_query_channel(
+        filter_parameter["channels"]) & filter_query_status(filter_parameter["states"]) & filter_query_title_content(
+        filter_parameter["search_in_title"], filter_parameter["search_in_content"], filter_parameter["searched_words"],
+        filter_parameter["search_by_keyword"])
 
 
 def filter_query_accessible_publications(user):
@@ -49,9 +50,9 @@ def filter_query_accessible_publications(user):
     if not user.admin:
         user_post = db.session.query(Post).filter(Post.user_id == user.user_id)
         for post in user_post:
-            condition = condition | Publishing.post_id == post.id
+            condition = condition | (Publishing.post_id == post.id)
         for chan in get_moderate_channels_for_user(user):
-            condition = condition | Publishing.channel_id == chan.id
+            condition = condition | (Publishing.channel_id == chan.id)
     else:
         condition = (Publishing.post_id != None)
     return condition
@@ -66,7 +67,7 @@ def filter_query_channel(channels):
         """
     condition = (Publishing.post_id == None)
     for chan_id in channels:
-        condition = condition | Publishing.channel_id == chan_id
+        condition = condition | (Publishing.channel_id == chan_id)
     return condition
 
 
@@ -79,7 +80,7 @@ def filter_query_status(states):
     """
     condition = (Publishing.post_id == None)
     for state in states:
-        condition = condition | Publishing.state == state
+        condition = condition | (Publishing.state == state)
     return condition
 
 
