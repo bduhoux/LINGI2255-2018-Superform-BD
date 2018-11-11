@@ -19,8 +19,6 @@ def query_maker(filter_parameter):
     :param filter_parameter: A dictionary containing the different filter parameters
     :return: The wanted query
     """
-    print(db.session.query(Publishing).filter(filters(filter_parameter)).order_by(
-        order_query(filter_parameter["order_by"], filter_parameter["is_asc"])))
     return db.session.query(Publishing).filter(filters(filter_parameter)).order_by(
         order_query(filter_parameter["order_by"], filter_parameter["is_asc"])).all()
 
@@ -48,7 +46,7 @@ def filter_query_accessible_publications(user):
     """
     condition = (Publishing.post_id == None)
     if not user.admin:
-        user_post = db.session.query(Post).filter(Post.user_id == user.user_id)
+        user_post = db.session.query(Post).filter(Post.user_id == user.id)
         for post in user_post:
             condition = condition | (Publishing.post_id == post.id)
         for chan in get_moderate_channels_for_user(user):
@@ -95,6 +93,8 @@ def filter_query_title_content(title, content, searched_words, split_words):
     :return: the filter to add to a query to filter publishings having the title/content corresponding to the inputs.
     """
     if split_words:
+        if (searched_words == '') | (searched_words == ' '):
+            return (Publishing.post_id != None)
         condition = (Publishing.post_id == None)
         for word in searched_words.split():
             if title & content:

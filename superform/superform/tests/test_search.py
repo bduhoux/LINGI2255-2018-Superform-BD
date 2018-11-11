@@ -61,6 +61,8 @@ def populate_db():
     db.session.add(authorization)
     authorization = Authorization(user_id="channelmoder", channel_id=1, permission=2)
     db.session.add(authorization)
+    authorization = Authorization(user_id="channelmoder", channel_id=3, permission=1)
+    db.session.add(authorization)
 
     Post.query.delete()
     post = Post(id=1, user_id="channelmoder", title="first title",
@@ -179,7 +181,18 @@ def populate_db():
     db.session.add(publishing)
 
 
-def test_admin_basic_search(client):
+def empty_db():
+    User.query.delete()
+    user = User(id="michouchou", email="ftg@gmail.com", name="f", first_name="tg", admin=False)
+    db.session.add(user)
+
+    Channel.query.delete()
+    Authorization.query.delete()
+    Post.query.delete()
+    Publishing.query.delete()
+
+
+def test_admin_search(client):
     populate_db()
     filter_parameter = dict()
     filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
@@ -196,7 +209,25 @@ def test_admin_basic_search(client):
     assert 3 == len(result)
     assert [1, 5, 11] == [pub.post_id for pub in result]
 
-def test_admin_by_keyword_search(client):
+
+def test_empty_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 12 == len(result)
+
+
+def test_by_keyword_search(client):
     populate_db()
     filter_parameter = dict()
     filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
@@ -213,7 +244,8 @@ def test_admin_by_keyword_search(client):
     assert 8 == len(result)
     assert [1, 2, 3, 4, 5, 8, 10, 11] == [pub.post_id for pub in result]
 
-def test_admin_channels_search(client):
+
+def test_channels_search(client):
     populate_db()
     filter_parameter = dict()
     filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
@@ -230,7 +262,8 @@ def test_admin_channels_search(client):
     assert 5 == len(result)
     assert [1, 2, 3, 4, 5] == [pub.post_id for pub in result]
 
-def test_admin_states_search(client):
+
+def test_states_search(client):
     populate_db()
     filter_parameter = dict()
     filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
@@ -248,7 +281,7 @@ def test_admin_states_search(client):
     assert [2, 3, 5, 11] == [pub.post_id for pub in result]
 
 
-def test_admin_content_search(client):
+def test_content_search(client):
     populate_db()
     filter_parameter = dict()
     filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
@@ -266,7 +299,7 @@ def test_admin_content_search(client):
     assert [1, 2, 3, 5, 8, 9, 10] == [pub.post_id for pub in result]
 
 
-def test_admin_content_keyword_search(client):
+def test_content_keyword_search(client):
     populate_db()
     filter_parameter = dict()
     filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
@@ -282,6 +315,237 @@ def test_admin_content_keyword_search(client):
     result = query_maker(filter_parameter)
     assert 3 == len(result)
     assert [1, 3, 10] == [pub.post_id for pub in result]
+
+
+def test_content_title_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = True
+    filter_parameter["searched_words"] = "first title"
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 4 == len(result)
+    assert [1, 2, 5, 11] == [pub.post_id for pub in result]
+
+
+def test_content_title_keyboard_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = True
+    filter_parameter["searched_words"] = "drawings any middleton saw"
+    filter_parameter["search_by_keyword"] = True
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 5 == len(result)
+    assert [1, 2, 3, 8, 10] == [pub.post_id for pub in result]
+
+
+def test_order_title_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [1]
+    filter_parameter["states"] = [0, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = "title"
+    filter_parameter["search_by_keyword"] = True
+    filter_parameter["order_by"] = "title"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [1, 4, 3] == [pub.post_id for pub in result]
+
+
+def test_order_description_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = True
+    filter_parameter["order_by"] = "description"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [10, 9, 11] == [pub.post_id for pub in result]
+
+
+def test_order_date_from_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "date_from"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [9, 10, 11] == [pub.post_id for pub in result]
+
+
+def test_order_date_until_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "date_until"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [9, 10, 11] == [pub.post_id for pub in result]
+
+
+def test_order_desc_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
+    filter_parameter["channels"] = [4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "date_until"
+    filter_parameter["is_asc"] = False
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [11, 10, 9] == [pub.post_id for pub in result]
+
+
+def test_writer_empty_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "mr_inutile69").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 0 == len(result)
+
+
+def test_writer_basic_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "michouchou").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [2, 3, 5] == [pub.post_id for pub in result]
+
+
+def test_moderator_empty_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "googleplusmoderator").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 0 == len(result)
+
+
+def test_writer_basic2_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "channelwriter").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [9, 10, 11] == [pub.post_id for pub in result]
+
+
+def test_moderator_writer_basic_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "channelmoder").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 9 == len(result)
+    assert [1, 1, 2, 3, 4, 4, 5, 7, 8] == [pub.post_id for pub in result]
+
+
+def test_empty_db_search(client):
+    empty_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "michouchou").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+
+    result = query_maker(filter_parameter)
+    assert 0 == len(result)
 
 
 def test_advanced_search():
