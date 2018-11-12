@@ -8,8 +8,7 @@ facebook_plugin = Blueprint("facebook_plugin", "superform.plugins.facebook")
 
 FIELDS_UNAVAILABLE = ['Title', 'Description']  # list of field names that are not used by your module
 
-CONFIG_FIELDS = ["page_id",
-                 "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.
+CONFIG_FIELDS = ["page_id", "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.
 
 facebook_is_connected = False
 
@@ -18,7 +17,7 @@ fb_token = 0
 
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     print(9)
-    page_id = get_page_id(channel_config)
+    page_id = get_page_id()
     access_token = fb_token # == 0 alors pas connecté
     print("access_token = " + str(access_token))
     if str(access_token) == "0":
@@ -45,11 +44,11 @@ def get_api(cfg):
     graph = facebook.GraphAPI(cfg['access_token'])
     return graph
 
-
+"""
 def get_page_id(config):
     json_data = json.loads(config)
     return json_data['page_id']
-
+"""
 
 @facebook_plugin.route('/appid')
 def get_app_id():
@@ -58,6 +57,12 @@ def get_app_id():
     app_id = json_data["app_id"]
     return jsonify(app_id)
 
+@facebook_plugin.route('/pageid')
+def get_page_id():
+    config = db.session.query(Channel).filter(Channel.module == "superform.plugins.facebook").first().config
+    json_data = json.loads(config)
+    page_id = json_data["page_id"]
+    return jsonify(page_id)
 
 @facebook_plugin.route('/token', methods=['POST'])
 def set_token():

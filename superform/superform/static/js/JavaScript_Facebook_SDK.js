@@ -7,12 +7,7 @@ function statusChangeCallBack(response){
         p = getPageToken();
         console.log('pagetoken: '+ p);
     } else {
-        try {
-          document.getElementById('status').innerHTML = "Please Log into this app or your post won't be published.";
-        }
-        catch(error) {
-
-        }
+        document.getElementById('status').innerHTML = "Please Log into this app or your post won't be published.";
     }
 }
 
@@ -23,7 +18,7 @@ function checkLoginState() {
 }
 
 window.fbAsyncInit = async function() {
-    app_id = await getAppId(); //get_appid ici une fois que getappid marche
+    app_id = await getAppId();
     FB.init({
       appId      : app_id,
       cookie     : true,
@@ -63,12 +58,20 @@ async function getAppId(){
     return data;
 }
 
+async function getPageId(){
+    var promise1 = await fetch("/pageid");
+    var data = await promise1.json();
+    console.log(data);
+    return data;
+}
+
 function getPageToken() {
     console.log('getting page token.... ');
-    FB.api('/me/accounts?type=page', function (response) {
-        console.log('response received');
+    FB.api('/me/accounts?type=page', async function (response) {
+        console.log('pageId received');
+        pageId = await getPageId();
         response.data.forEach(function (item, index, array) {
-            if (item.name == "Test"){
+            if (item.id == pageId){
                 setToken(item.access_token);
             }
         });

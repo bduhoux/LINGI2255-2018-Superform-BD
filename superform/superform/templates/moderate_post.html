@@ -58,8 +58,10 @@
 
 
     {% block scripts %}
+        {% if session.facebook_running %}
         <script src="../../static/js/JavaScript_Facebook_SDK.js">
         </script>
+        {% endif %}
     {% endblock %}
 
 {% endblock %}
