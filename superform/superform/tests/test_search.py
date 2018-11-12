@@ -548,10 +548,6 @@ def test_empty_db_search(client):
     assert 0 == len(result)
 
 
-def test_advanced_search():
-    pass
-
-
 def test_sql_injections():
     """
     Check if the search module prevents SQL injections:
