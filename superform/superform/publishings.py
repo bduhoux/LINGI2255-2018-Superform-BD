@@ -2,7 +2,7 @@ from flask import Blueprint, url_for, request, redirect, render_template, sessio
 
 from superform.utils import login_required, datetime_converter, str_converter
 from superform.models import db, Publishing, Channel
-from superform.plugins.facebook import fb_token
+
 
 pub_page = Blueprint('publishings', __name__)
 @pub_page.route('/moderate/<int:id>/<string:idc>',methods=["GET","POST"])
@@ -17,24 +17,30 @@ def moderate_publishing(id,idc):
 
 
 
-        # todo
-        """
+        date_f = pub.date_from
+        date_u = pub.date_until
+        pub.date_from = datetime_converter(pub.date_from)
+        pub.date_until = datetime_converter(pub.date_until)
         print("0")
         print(pub.channel_id) # affiche bien "fb"
         print("1")
-        v = db.session.query(Channel).filter(Channel.name == pub.channel_id).first() # PQ marche pas????!!!!! si ça ça marche, cacher bouton login fb marche 
+        v = db.session.query(Channel).filter(Channel.name == pub.channel_id).first() # PQ marche pas????!!!!! si ça ça marche, cacher bouton login fb marche
+        pub.date_from = date_f
+        pub.date_until = date_u
         print(v.module)
         if v.module == "superform.plugins.facebook":
             session["facebook_running"] = True
         else:
             session["facebook_running"] = False
-        """
+
         return render_template('moderate_post.html', pub=pub)
+
     else: # quand on appuye sur publish
         if pub.channel_id == "fb":
+            from superform.plugins.facebook import fb_token
             print(fb_token)
             session["facebook_running"] = True
-            if fb_token == 0: # pq reste à 0 quand délogé puis relogé après??? todo
+            if fb_token == 0:
                 return redirect(url_for('publishings.moderate_publishing',id=id,idc=idc))
         else:
             session["facebook_running"] = False
@@ -51,6 +57,7 @@ def moderate_publishing(id,idc):
         # running the plugin here
         c = db.session.query(Channel).filter(Channel.name == pub.channel_id).first()
         plugin_name = c.module
+        print(plugin_name)
         c_conf = c.config
         from importlib import import_module
         plugin = import_module(plugin_name)
