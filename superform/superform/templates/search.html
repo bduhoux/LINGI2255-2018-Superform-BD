@@ -12,6 +12,14 @@
                     <input type="text" name="search_word" style="width: 50%" id="search_word" class="form-control">
                 </div>
                 <div class="form-group">
+                    <label for="search_chan">Searching channels</label><br>
+                    <select class="select-multiple" style="width: 50%" name="search_chan" multiple>
+                        {% for chan in l_chan %}
+                            <option value="{{ chan.name }}">{{ chan.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="search_loc">Searching fields</label><br>
                     <select class="select-multiple" style="width: 50%" name="search_loc" multiple>
                         <option value="title">Title</option>
