@@ -43,10 +43,14 @@
 
         </form>
         <!-- seulement quand sur fb -->
-        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-        </fb:login-button>
+        {% if session.facebook_running %}
+            <div>
+                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                </fb:login-button>
+                <p id="status"></p>
+            </div>
+        {% endif %}
 
-        <p id="status"></p>
 
     {% else %}
         Your are not logged in.

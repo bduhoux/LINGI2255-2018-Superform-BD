@@ -13,30 +13,33 @@ CONFIG_FIELDS = ["page_id",
 
 facebook_is_connected = False
 
-token = 0
+fb_token = 0
 
 
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
-    facebook_is_connected = True
-
+    print(9)
     page_id = get_page_id(channel_config)
-    access_token = token
-    print("access_token = " + access_token)
+    access_token = fb_token # == 0 alors pas connecté
+    print("access_token = " + str(access_token))
+    if str(access_token) == "0":
+        print("token error, are you sure you are connected to facebook?")
+        facebook_is_connected = False
+    else:
+        facebook_is_connected = True
+        cfg = get_config(page_id, access_token)
+        api = get_api(cfg)
 
-    cfg = get_config(page_id, access_token)
-    api = get_api(cfg)
+        msg = get_message(publishing)
+        link = get_link(publishing)
+        image = get_image(publishing)
 
-    msg = get_message(publishing)
-    link = get_link(publishing)
-    image = get_image(publishing)
+        status1 = api.put_object(
+            parent_object="me",
+            connection_name="feed",
+            message=msg,
+            link=link
 
-    status = api.put_object(
-        parent_object="me",
-        connection_name="feed",
-        message=msg,
-        link=link
-)
-
+        )
 
 def get_api(cfg):
     graph = facebook.GraphAPI(cfg['access_token'])
@@ -58,10 +61,10 @@ def get_app_id():
 
 @facebook_plugin.route('/token', methods=['POST'])
 def set_token():
-    global token
+    global fb_token
     data = request.get_data()
     jss = json.loads(data.decode("utf-8"))
-    token = jss['token']
+    fb_token = jss['token']
     return jsonify(status = "success", data="ok")
 
 
