@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, render_template
 from superform.utils import login_required
 from superform.models import db, Post, Publishing
@@ -29,12 +31,13 @@ def filters(filter_parameter):
     retrieve certain publication.
 
     :param filter_parameter: a dictionary representing the different filter to apply
-    :return: the list of publication according to the filter parameter
+    :return: the list of publication according to the filter para#dmeter
     """
     return filter_query_accessible_publications(filter_parameter["user"]) & filter_query_channel(
         filter_parameter["channels"]) & filter_query_status(filter_parameter["states"]) & filter_query_title_content(
-        filter_parameter["search_in_title"], filter_parameter["search_in_content"], filter_parameter["searched_words"],
-        filter_parameter["search_by_keyword"])
+        filter_parameter.get("search_in_title", None), filter_parameter.get("search_in_content", None),
+        filter_parameter.get("searched_words", None),filter_parameter.get("search_by_keyword", None) &
+        filter_date(filter_parameter.get("date_from", None), filter_parameter.get("date_until", None)))
 
 
 def filter_query_accessible_publications(user):
@@ -104,13 +107,37 @@ def filter_query_title_content(title, content, searched_words, split_words):
             else:
                 condition = condition | Publishing.description.contains(word)
         return condition
-    else:
+    elif not split_words:
         if title & content:
             return Publishing.title.contains(searched_words) | Publishing.description.contains(searched_words)
         elif title:
             return Publishing.title.contains(searched_words)
         else:
             return Publishing.description.contains(searched_words)
+    else:
+        return Publishing.post_id != None #Return true means all publishings are accepted
+
+
+def filter_date(date_from, date_until):
+    """
+    Return a filter parameter allowing only Publishing from a particular and/or to a particular date (if none of them
+    are expressed, there will be no filtering)
+
+    :param date_from: if not None, filter only publishing posted after a particular date
+    :param date_until: if not Node, filter only publishing posted before a particular date
+    :return: A binary Expression filtering the requested publishings by date
+    """
+    condition = Publishing.post_id == None
+    if date_from:
+        date = datetime.strptime(date_from, '%Y-%m-%d')
+        condition = condition | Publishing.date_from >= date
+    if date_until:
+        date = datetime.strptime(date_until, '%Y-%m-%d')
+        condition = condition | Publishing.date_until <= date
+    if not date_from and not date_until:
+        return Publishing.post_id != None
+    else :
+        return condition
 
 
 def order_query(order_by, is_asc):
