@@ -42,11 +42,11 @@ def filters(filter_parameter):
     :param filter_parameter: a dictionary representing the different filter to apply
     :return: the list of publication according to the filter para#dmeter
     """
-    return filter_query_accessible_publications(filter_parameter["user"]) & filter_query_channel(
-        filter_parameter["channels"]) & filter_query_status(filter_parameter["states"]) & filter_query_title_content(
-        filter_parameter.get("search_in_title", None), filter_parameter.get("search_in_content", None),
-        filter_parameter.get("searched_words", None), filter_parameter.get("search_by_keyword", None)) & filter_date(
-        filter_parameter.get("date_from", None), filter_parameter.get("date_until", None))
+    return filter_query_accessible_publications(filter_parameter["user"]) \
+           & filter_query_channel(filter_parameter["channels"]) \
+           & filter_query_status(filter_parameter["states"]) \
+           & filter_query_title_content(filter_parameter["search_in_title"], filter_parameter["search_in_content"],filter_parameter["searched_words"], filter_parameter["search_by_keyword"]) \
+           & filter_date(filter_parameter["date_from"], filter_parameter["date_until"])
 
 
 def filter_query_accessible_publications(user):
@@ -105,7 +105,7 @@ def filter_query_title_content(title, content, searched_words, split_words):
     :return: the filter to add to a query to filter publishings having the title/content corresponding to the inputs.
     """
     if split_words:
-        if (searched_words == '') | (searched_words == ' '):
+        if (searched_words == '') | (searched_words == ' ') | (searched_words == None):
             return (Publishing.post_id != None)
         condition = (Publishing.post_id == None)
         for word in searched_words.split():
