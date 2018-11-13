@@ -136,17 +136,14 @@ def filter_date(date_from, date_until):
     :param date_until: if not Node, filter only publishing posted before a particular date
     :return: A binary Expression filtering the requested publishings by date
     """
-    condition = (Publishing.post_id == None)
+    condition = (Publishing.post_id != None)
     if date_from:
         date = datetime.strptime(date_from, '%Y-%m-%d')
-        condition = condition | (Publishing.date_from >= date)
+        condition = condition & (Publishing.date_from >= date)
     if date_until:
         date = datetime.strptime(date_until, '%Y-%m-%d')
-        condition = condition | (Publishing.date_until <= date)
-    if not date_from and not date_until:
-        return Publishing.post_id != None
-    else:
-        return condition
+        condition = condition & (Publishing.date_until <= date)
+    return condition
 
 
 def order_query(order_by, is_asc):
