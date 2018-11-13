@@ -42,7 +42,7 @@ def make_filter_parameter(user_id,pattern,chan,post_status,loc,order_by,order):
         'search_in_title': 'title' in loc,
         'search_in_content': 'description' in loc,
         'search_words': pattern,
-        'search_by_keyword': True,
+        'search_by_keyword': False,
         'date_from': False,
         'date_until': False,
         'order_by': order_by,
@@ -132,7 +132,7 @@ def filter_query_title_content(title, content, searched_words, split_words):
     :return: the filter to add to a query to filter publishings having the title/content corresponding to the inputs.
     """
     if split_words:
-        if (searched_words == '') | (searched_words == ' '):
+        if (searched_words == '') | (searched_words == ' ') | (searched_words is None):
             return (Publishing.post_id != None)
         condition = (Publishing.post_id == None)
         for word in searched_words.split():
