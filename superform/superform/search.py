@@ -2,22 +2,23 @@ from datetime import datetime
 
 from flask import Blueprint, url_for, request, redirect, render_template, flash, session
 from superform.utils import login_required
-from superform.models import db, Post, Publishing, User
+from superform.models import db, Post, Publishing, User, Channel
 from superform.users import get_moderate_channels_for_user, channels_available_for_user
 
 search_page = Blueprint('search', __name__)
 
-selected = []
-
+selected_chan = []
+selected_loc = []
+publishings = []
 
 @search_page.route('/search', methods=["GET", "POST"])
 @login_required()
 def search():
-    global selected
+    global selected_chan, selected_loc, publishings
     user_id = session.get('user_id', '') if session.get('logged_in', False) else -1
     l_chan = channels_available_for_user(user_id)
     if request.method == 'GET':
-        return render_template('search.html', l_chan=l_chan, selected=selected)
+        return render_template('search.html', l_chan=l_chan, selected_chan=selected_chan, selected_loc=selected_loc, publishings=publishings)
     else:
         pattern = request.form.get('search_word')
         chan = request.form.getlist('search_chan')
@@ -25,26 +26,28 @@ def search():
         loc = request.form.getlist('search_loc')
         order_by = request.form.get('order_loc')
         order = request.form.get('search_order')
-        selected = chan+loc
-        print(user_id,chan,pattern,loc,order_by,order)
-        filter_parameter = make_filter_parameter(user_id,pattern,chan,status,loc,order_by,order)
-        result = query_maker(filter_parameter)
-        print(result)
-        return render_template('search.html', l_chan=l_chan, selected=selected)
+        date_from = request.form.get('date_from')
+        date_until = request.form.get('date_until')
+        search_type = request.form.get('search_type') == 'keyword'
+        selected_chan = chan
+        selected_loc = loc
+        filter_parameter = make_filter_parameter(user_id,pattern,chan,status,loc,order_by,order,date_from,date_until,search_type)
+        publishings = query_maker(filter_parameter)
+        return render_template('search.html', l_chan=l_chan, selected_chan=selected_chan,selected_loc=selected_loc, publishings=publishings)
 
 
-def make_filter_parameter(user_id,pattern,chan,post_status,loc,order_by,order):
+def make_filter_parameter(user_id,pattern,channels,post_status,search_location,order_by,order,date_from=False,date_until=False,search_by_keyword=False):
     user = User.query.get(user_id) if session.get("logged_in", False) else None
     return {
         'user': user,
-        'channels': chan,
+        'channels': channels,
         'states': post_status,
-        'search_in_title': 'title' in loc,
-        'search_in_content': 'description' in loc,
-        'search_words': pattern,
-        'search_by_keyword': False,
-        'date_from': False,
-        'date_until': False,
+        'search_in_title': 'title' in search_location,
+        'search_in_content': 'description' in search_location,
+        'searched_words': pattern,
+        'search_by_keyword': search_by_keyword,
+        'date_from': date_from,
+        'date_until': date_until,
         'order_by': order_by,
         'is_asc': order == 'ascending'
     }

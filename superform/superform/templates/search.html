@@ -6,60 +6,119 @@
     <form method="post" id="search_form" action="">
         <div class="tab-content">
             <div class="tab-pane container-fluid active">
-                <div class="row">
+                <div class="row justify-content-center">
                     <!--<div class="col-md-3"></div>-->
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="search_word">Searching pattern <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label>
-                            <input type="text" name="search_word" style="width: 50%" id="search_word" class="form-control">
+                            <label for="search_word">Searching pattern </label>
+                            <input type="text" name="search_word" style="width: 100%" id="search_word" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="search_chan">Searching channels <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
-                            <select class="select-multiple" style="width: 50%" name="search_chan" id="search_chan" multiple>
+                            <label for="search_chan">Searching channels </label><br>
+                            <select class="select-chan" style="width: 100%" name="search_chan" id="search_chan" multiple>
                                 {% for chan in l_chan %}
-                                    <option value="{{ chan.name }}">{{ chan.name }}</option>
+                                    <option value="{{ chan.id }}">{{ chan.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="post_status">Post status <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
-                            <select class="select-multiple" style="width: 50%" name="post_status" id="post_status" multiple>
-                                <option value="published">Published</option>
-                                <option value="waiting">Waiting for approval</option>
+                            <label for="post_status">Post status</label><br>
+                            <select class="select-status" style="width: 100%" name="post_status" id="post_status" multiple>
+                                <option value="1">Published</option>
+                                <option value="0">Waiting for approval</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="search_loc">Searching fields <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
-                            <select class="select-multiple" style="width: 50%" name="search_loc" id="search_loc" multiple>
+                            <label for="search_loc">Searching fields</label><br>
+                            <select class="select-loc" style="width: 100%" name="search_loc" id="search_loc" multiple>
                                 <option value="title">Title</option>
                                 <option value="description">Description</option>
                                 <option value="url">Url</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="order_loc">Order field<a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
-                            <select class="select-order-field" style="width: 50%" name="order_loc" id="order_loc">
+                            <label for="search_type">Order field</label><br>
+                            <select class="select-order-field" style="width: 100%" name="search_type" id="search_type">
+                                <option value="keyword">Search by keyword</option>
+                                <option value="complete">Complete search</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="order_loc">Order field</label><br>
+                            <select class="select-order-field" style="width: 100%" name="order_loc" id="order_loc">
                                 <option value="title">Title</option>
                                 <option value="description">Description</option>
                                 <option value="url">Url</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="search_order">Searching order <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
-                            <select class="select-order" style="width: 50%" name="search_order" id="search_order">
+                            <label for="search_order">Searching order</label><br>
+                            <select class="select-order" style="width: 100%" name="search_order" id="search_order">
                                 <option value="ascending">Ascending</option>
                                 <option value="descending">Descending</option>
                             </select>
                         </div>
                         <div class="form-group">
+                            <label for="date_from">Date from</label>
+                            <input type="date" name="date_from" id="date_from" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="date_until">Date until</label>
+                            <input type="date" name="date_until" id="date_until" class="form-control">
+                        </div>
+                        <div class="form-group">
                             <label for="submit_search"></label>
-                            <input type="submit" name="submit_search" style="width: 25%" id="submit_search" class="form-control">
+                            <input type="submit"  style="width: 100%" name="submit_search" id="submit_search" class="form-control">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </form>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Search results</h2>
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>
+                      Channel
+                    </th>
+                    <th>
+                      Subject
+                    </th>
+                    <th>
+                      Body
+                    </th>
+                    <th>
+                        Author
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                {% for p in publishings %}
+                    <tr>
+                        <td>
+                            {{ p.channel.name }}
+                        </td>
+                        <td>
+                            {{ p.title }}
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col">{{ p.description }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            {{ p.get_author() }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 
 {% endblock %}
@@ -67,7 +126,7 @@
 {% block scripts %}
     <script>
         $(function() {
-            $('.select-multiple').select2();
+            $('.select-multiple').select2(sele);
             $('.select-order').select2();
             $('.select-order-field').select2();
         });
