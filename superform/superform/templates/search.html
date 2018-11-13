@@ -4,41 +4,58 @@
     <h1>Search</h1>
 
     <form method="post" id="search_form" action="">
-        <div class="row justify-content-center">
-            <!--<div class="col-md-3"></div>-->
-            <div class="col-md">
-                <div class="form-group">
-                    <label for="search_word">Searching pattern</label>
-                    <input type="text" name="search_word" style="width: 50%" id="search_word" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="search_chan">Searching channels</label><br>
-                    <select class="select-multiple" style="width: 50%" name="search_chan" multiple>
-                        {% for chan in l_chan %}
-                            <option value="{{ chan.name }}">{{ chan.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="search_loc">Searching fields</label><br>
-                    <select class="select-multiple" style="width: 50%" name="search_loc" multiple>
-                        <option value="title">Title</option>
-                        <option value="description">Description</option>
-                        <option value="date created">Date created</option>
-                        <option value="url">Url</option>
-                        <option value="image">Image</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="search_order">Searching order</label><br>
-                    <select class="select-order" style="width: 50%" name="search_order">
-                        <option value="ascending">Ascending</option>
-                        <option value="descending">Descending</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="submit_search"></label>
-                    <input type="submit" name="submit_search" style="width: 25%" id="submit_search" class="form-control">
+        <div class="tab-content">
+            <div class="tab-pane container-fluid active">
+                <div class="row">
+                    <!--<div class="col-md-3"></div>-->
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="search_word">Searching pattern <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label>
+                            <input type="text" name="search_word" style="width: 50%" id="search_word" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="search_chan">Searching channels <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
+                            <select class="select-multiple" style="width: 50%" name="search_chan" id="search_chan" multiple>
+                                {% for chan in l_chan %}
+                                    <option value="{{ chan.name }}">{{ chan.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="post_status">Post status <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
+                            <select class="select-multiple" style="width: 50%" name="post_status" id="post_status" multiple>
+                                <option value="published">Published</option>
+                                <option value="waiting">Waiting for approval</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="search_loc">Searching fields <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
+                            <select class="select-multiple" style="width: 50%" name="search_loc" id="search_loc" multiple>
+                                <option value="title">Title</option>
+                                <option value="description">Description</option>
+                                <option value="url">Url</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="order_loc">Order field<a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
+                            <select class="select-order-field" style="width: 50%" name="order_loc" id="order_loc">
+                                <option value="title">Title</option>
+                                <option value="description">Description</option>
+                                <option value="url">Url</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="search_order">Searching order <a title="Select an order to sort the result"><span class="glyphicon glyphicon-question-sign"></span></a></label><br>
+                            <select class="select-order" style="width: 50%" name="search_order" id="search_order">
+                                <option value="ascending">Ascending</option>
+                                <option value="descending">Descending</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="submit_search"></label>
+                            <input type="submit" name="submit_search" style="width: 25%" id="submit_search" class="form-control">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,6 +69,7 @@
         $(function() {
             $('.select-multiple').select2();
             $('.select-order').select2();
+            $('.select-order-field').select2();
         });
     </script>
 {% endblock %}
