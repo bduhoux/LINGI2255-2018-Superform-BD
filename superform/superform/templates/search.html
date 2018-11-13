@@ -37,15 +37,15 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="search_type">Order field</label><br>
-                            <select class="select-order-field" style="width: 100%" name="search_type" id="search_type">
+                            <label for="search_type">Order type</label><br>
+                            <select class="select-search-type" style="width: 100%" name="search_type" id="search_type">
                                 <option value="keyword">Search by keyword</option>
                                 <option value="complete">Complete search</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="order_loc">Order field</label><br>
-                            <select class="select-order-field" style="width: 100%" name="order_loc" id="order_loc">
+                            <select class="select-order-loc" style="width: 100%" name="order_loc" id="order_loc">
                                 <option value="title">Title</option>
                                 <option value="description">Description</option>
                                 <option value="url">Url</option>
@@ -65,6 +65,10 @@
                         <div class="form-group">
                             <label for="date_until">Date until</label>
                             <input type="date" name="date_until" id="date_until" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="reset_search"></label>
+                            <input type="reset" name="reset_search" id="reset_search" onclick="clear_form()" class="form-control" style="width: 100%">
                         </div>
                         <div class="form-group">
                             <label for="submit_search"></label>
@@ -97,7 +101,7 @@
                 </thead>
 
                 <tbody>
-                {% for p in publishings %}
+                {% for p in publishing %}
                     <tr>
                         <td>
                             {{ p.channel.name }}
@@ -126,9 +130,61 @@
 {% block scripts %}
     <script>
         $(function() {
-            $('.select-multiple').select2(sele);
+            $('.select-chan').select2();
+            $('.select-status').select2();
+            $('.select-loc').select2();
+            $('.select-search-type').select2();
             $('.select-order').select2();
-            $('.select-order-field').select2();
+            $('.select-order-loc').select2();
+
+            preselect();
+
+            //localStorage.clear();
+
+            $('#search_form').submit( function () {
+                localStorage.setItem('search-word',$('#search_word').val());
+                localStorage.setItem('search-chan',$('#search_chan').val());
+                localStorage.setItem('search-status',$('#post_status').val());
+                localStorage.setItem('search-loc',$('#search_loc').val());
+                localStorage.setItem('search-type',$('#search_type').val());
+                localStorage.setItem('order-loc',$('#order_loc').val());
+                localStorage.setItem('search-order',$('#search_order').val());
+                localStorage.setItem('date-from', $('#date_from').val());
+                localStorage.setItem('date-until',$('#date_until').val());
+            });
         });
+
+        document.getElementById('search_form').reset( function () {
+            clear()
+        });
+
+        function preselect() {
+            if ('search-word' in localStorage){
+                var a = new Array(it('search-chan'));
+                var b = new Array(it('search-status'));
+                var c = new Array(it('search-loc'));
+                alert(c);
+                $('#search_word').val(it('search-word')).trigger('change');
+                $('#search_chan').val(new Array(it('search-chan'))).trigger('change');
+                $('#post_status').val(new Array(it('search-status'))).trigger('change');
+                $('#search_loc').val(new Array(it('search-loc'))).trigger('change');
+                $('#search_type').val(it('search-type')).trigger('change');
+                $('#order_loc').val(it('order-loc')).trigger('change');
+                $('#search_order').val(it('search-order')).trigger('change');
+                $('#date_from').val(it('date_from')).trigger('change');
+                $('#date_until').val(it('date_until')).trigger('change');
+            }
+        }
+
+        function it(key){
+            return localStorage.getItem(key);
+        }
+
+        function clear_form() {
+            localStorage.clear();
+            $('#search_chan').val(null).trigger('change');
+            $('#post_status').val(null).trigger('change');
+            $('#search_loc').val(null).trigger('change');
+        }
     </script>
 {% endblock %}
