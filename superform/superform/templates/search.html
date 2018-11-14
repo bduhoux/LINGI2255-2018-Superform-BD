@@ -129,6 +129,36 @@
 
 {% block scripts %}
     <script>
+        let fields = [
+            'search_word',
+            'search_chan',
+            'post_status',
+            'search_loc',
+            'search_type',
+            'order_loc',
+            'search_order',
+            'date_from',
+            'date_until'
+        ];
+        let multiple_fields = {
+            'search_word': false,
+            'search_chan': true,
+            'post_status': true,
+            'search_loc': true,
+            'search_type': false,
+            'order_loc': false,
+            'search_order': false,
+            'date_from': false,
+            'date_until': false
+        }; // key is the id of the element and the value is true only if the element is multiple select
+        let clear_data = {
+            'search_chan': null,
+            'post_status': null,
+            'search_loc': null,
+            'search_type:': 'keyword',
+            'order_loc': 'title',
+            'search_order': 'ascending'
+        };
         $(function() {
             $('.select-chan').select2();
             $('.select-status').select2();
@@ -137,42 +167,32 @@
             $('.select-order').select2();
             $('.select-order-loc').select2();
 
-            preselect();
+            preselect(); // preselect all options selected in a previous post request
 
             //localStorage.clear();
 
             $('#search_form').submit( function () {
-                localStorage.setItem('search-word',$('#search_word').val());
-                localStorage.setItem('search-chan',$('#search_chan').val());
-                localStorage.setItem('search-status',$('#post_status').val());
-                localStorage.setItem('search-loc',$('#search_loc').val());
-                localStorage.setItem('search-type',$('#search_type').val());
-                localStorage.setItem('order-loc',$('#order_loc').val());
-                localStorage.setItem('search-order',$('#search_order').val());
-                localStorage.setItem('date-from', $('#date_from').val());
-                localStorage.setItem('date-until',$('#date_until').val());
-            });
-        });
-
-        document.getElementById('search_form').reset( function () {
-            clear()
+                fields.forEach( function (e) {
+                    localStorage.setItem(e,$('#'+e).val())
+                })
+            }); // stocks local
         });
 
         function preselect() {
-            if ('search-word' in localStorage){
-                var a = new Array(it('search-chan'));
-                var b = new Array(it('search-status'));
-                var c = new Array(it('search-loc'));
-                alert(c);
-                $('#search_word').val(it('search-word')).trigger('change');
-                $('#search_chan').val(new Array(it('search-chan'))).trigger('change');
-                $('#post_status').val(new Array(it('search-status'))).trigger('change');
-                $('#search_loc').val(new Array(it('search-loc'))).trigger('change');
-                $('#search_type').val(it('search-type')).trigger('change');
-                $('#order_loc').val(it('order-loc')).trigger('change');
-                $('#search_order').val(it('search-order')).trigger('change');
+            if ('search_word' in localStorage){
+                fields.forEach( function (e) {
+                    let selector = $('#'+e);
+                    multiple_fields[e] ? selector.val(get_array(it(e))).trigger('change') : selector.val(it(e)).trigger('change')
+                });
+                /*$('#search_word').val(it('search_word')).trigger('change');
+                $('#search_chan').val(get_array(it('search_chan'))).trigger('change');
+                $('#post_status').val(get_array(it('post_status'))).trigger('change');
+                $('#search_loc').val(get_array(it('search_loc'))).trigger('change');
+                $('#search_type').val(it('search_type')).trigger('change');
+                $('#order_loc').val(it('order_loc')).trigger('change');
+                $('#search_order').val(it('search_order')).trigger('change');
                 $('#date_from').val(it('date_from')).trigger('change');
-                $('#date_until').val(it('date_until')).trigger('change');
+                $('#date_until').val(it('date_until')).trigger('change');*/
             }
         }
 
@@ -180,11 +200,20 @@
             return localStorage.getItem(key);
         }
 
+        function get_array(str) {
+            let tab = str.split(',');
+            let res= [];
+            tab.forEach(function (e) {
+                res.push(e)
+            });
+            return res
+        }
+
         function clear_form() {
             localStorage.clear();
-            $('#search_chan').val(null).trigger('change');
-            $('#post_status').val(null).trigger('change');
-            $('#search_loc').val(null).trigger('change');
+            fields.forEach( function (e) {
+                e in clear_data ? $('#'+e).val(clear_data[e]).trigger('change'): {};
+            })
         }
     </script>
 {% endblock %}
