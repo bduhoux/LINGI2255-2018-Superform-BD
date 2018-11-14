@@ -89,7 +89,6 @@ def test_delete_publishing(client):
         assert pub is None
 
 
-# This test currently fails as the security is not yet implemented:
 # Not being able to delete someone else's post
 def test_delete_not_author(client):
     user_id = "myself"
