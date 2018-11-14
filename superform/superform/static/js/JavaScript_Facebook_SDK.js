@@ -2,11 +2,12 @@
 function statusChangeCallBack(response){
     console.log('statusChangeCallback');
     console.log(response);
-
     if (response.status == 'connected'){
         testAPI();
+        p = getPageToken();
+        console.log('pagetoken: '+ p);
     } else {
-        document.getElementById('status').innerHTML = "Please Log into this app.";
+        document.getElementById('status').innerHTML = "Please Log into this app or your post won't be published.";
     }
 }
 
@@ -16,19 +17,20 @@ function checkLoginState() {
     });
 }
 
-window.fbAsyncInit = function() {
-FB.init({
-  appId      : '317664895679756',
-  cookie     : true,
-  xfbml      : true,
-  version    : 'v3.2'
-});
+window.fbAsyncInit = async function() {
+    app_id = await getAppId();
+    FB.init({
+      appId      : app_id,
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v3.2'
+    });
 
-FB.AppEvents.logPageView();
+    FB.AppEvents.logPageView();
 
-FB.getLoginStatus(function(response) {
-    statusChangeCallBack(response);
-});
+    FB.getLoginStatus(function(response) {
+        statusChangeCallBack(response);
+    });
 };
 
 (function(d, s, id){
@@ -48,15 +50,45 @@ function testAPI() {
     });
 }
 
+
+async function getAppId(){
+    var promise1 = await fetch("/appid");
+    var data = await promise1.json();
+    console.log(data);
+    return data;
+}
+
+async function getPageId(){
+    var promise1 = await fetch("/pageid");
+    var data = await promise1.json();
+    console.log(data);
+    return data;
+}
+
 function getPageToken() {
     console.log('getting page token.... ');
-    FB.api('/me/accounts?type=page', function (response) {
-        console.log('response received');
+    FB.api('/me/accounts?type=page', async function (response) {
+        console.log('pageId received');
+        pageId = await getPageId();
         response.data.forEach(function (item, index, array) {
-            if (item.name == "Test") {
-                document.getElementById("access_token").value = item.access_token;
-                return item.access_token;
+            if (item.id == pageId){
+                setToken(item.access_token);
             }
         });
+    });
+}
+
+function setToken(data){
+    $.ajax({
+       url: '/token',
+       data: JSON.stringify({token: data.toString()}),
+       dataType: 'json',
+       success: function(data) {
+            console.log("token received : " + data);
+       },
+        error: function(err){
+           console.log(err);
+        },
+       type: 'POST'
     });
 }

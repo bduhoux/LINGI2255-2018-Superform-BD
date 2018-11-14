@@ -39,18 +39,29 @@
 
                 </div>
             </div>
-            <button class="btn btn-success">Publish</button>
+            <button class="btn btn-success" id="pub-button">Publish</button></form>
+
         </form>
-         <div id="status"></div>
+        <!-- seulement quand sur fb -->
+        {% if session.facebook_running %}
+            <div>
+                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                </fb:login-button>
+                <p id="status"></p>
+            </div>
+        {% endif %}
 
 
     {% else %}
         Your are not logged in.
     {% endif %}
 
+
     {% block scripts %}
-        <script src="../static/js/JavaScript_Facebook_SDK.js">
+        {% if session.facebook_running %}
+        <script src="../../static/js/JavaScript_Facebook_SDK.js">
         </script>
+        {% endif %}
     {% endblock %}
 
 {% endblock %}

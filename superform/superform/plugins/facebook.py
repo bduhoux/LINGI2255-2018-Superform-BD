@@ -1,81 +1,82 @@
-from flask import current_app
+from flask import request, jsonify, Blueprint, url_for, redirect, abort
 import json
 import facebook
+from superform.models import db, Post, Publishing, Channel
+
+# facebook_plugin = Blueprint("facebook_plugin", __name__)
+facebook_plugin = Blueprint("facebook_plugin", "superform.plugins.facebook")
 
 FIELDS_UNAVAILABLE = ['Title', 'Description']  # list of field names that are not used by your module
 
-CONFIG_FIELDS = ["page_id",
-                 "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.
+CONFIG_FIELDS = ["page_id", "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.
+
+facebook_is_connected = False
+
+fb_token = 0
 
 
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
-    """
-    page_access_token = "EAAEg6h9DvQwBAKlNUhF4NGa69OYGlgLJZAZBFDZBbZAk0gFScTX2f0EG0ZAkaiVPEWlRBXePLXgy2d8rnE21GI7Ru4mvZAJ8STI0xIaVN0jOGH5xCE6MIIBr3l9jNQVUSo8XafSdZC6KzomTnMiFGcFsGZB7xaGZChZBpL4VJgpnaC2b8fRQltnmZA91qXXlc6gcdcvZB7DF4ZAeWkhAMuVDY9hlJ"
-    api = facebook.GraphAPI(access_token=page_access_token)
-    msg = "penis"
+    print(9)
+    page_id = get_page_id()
+    access_token = fb_token # == 0 alors pas connecté
+    print("access_token = " + str(access_token))
+    if str(access_token) == "0":
+        print("token error, are you sure you are connected to facebook?")
+        facebook_is_connected = False
+    else:
+        facebook_is_connected = True
+        cfg = get_config(page_id, access_token)
+        api = get_api(cfg)
 
-    api.put_object(
-        parent_object="me",
-        connection_name="feed",
-        message=msg,
-        link=""
-    )
-    """
+        msg = get_message(publishing)
+        link = get_link(publishing)
+        image = get_image(publishing)
 
+        status1 = api.put_object(
+            parent_object="me",
+            connection_name="feed",
+            message=msg,
+            link=link
 
+        )
 
-    page_id = get_page_id(channel_config)
-    app_id = get_app_id(channel_config)
-
-    cfg = get_config(page_id, app_id)
-
-    # login le user todo
-
-    # publie sur page possedée par cet user
-    #api1 = facebook.GraphAPI(access_token="trouvée au dessus")
-    api1 = facebook.GraphAPI(access_token="EAAEg6h9DvQwBALKixA48eCqk6G7baxSzZBkBVcdifTra4FqhJlasQfxKzKrVuZCLEZCSjHGLhoMukcbmHTcOZCwTZBXLzUBeEdDYctuDsAPN9svmPIsTmJlnPE6akX5dPzEJLHPg7N6ZAZCofARAuiPIZAt2zea0SFI5XZBhegA6boAogk9YZBzFXKrk4zbzV3GwzvqZA9RqqoCaWoHR5o7qG74xsRiTEXaXj0ZD")
-    response = api1.request('/me/accounts?type=page')  # recoit liste des pages gérée par le user et leurs page tokens
-    pages = json.loads(response)
-    for page in pages['data']:
-        print(page["access_token"])
-
-    api = -1
-"""
-    msg = get_message(publishing)
-    link = get_link(publishing)
-    image = get_image(publishing)
-
-    status = api.put_object(
-        parent_object="me",
-        connection_name="feed",
-        message=msg,
-        link=link
-    )
-"""
-
-
-
-
-"""
 def get_api(cfg):
     graph = facebook.GraphAPI(cfg['access_token'])
     return graph
-"""
 
+"""
 def get_page_id(config):
     json_data = json.loads(config)
     return json_data['page_id']
+"""
 
-
-def get_app_id(config):
+@facebook_plugin.route('/appid')
+def get_app_id():
+    config = db.session.query(Channel).filter(Channel.module == "superform.plugins.facebook").first().config
     json_data = json.loads(config)
-    return json_data['app_id']
+    app_id = json_data["app_id"]
+    return jsonify(app_id)
+
+@facebook_plugin.route('/pageid')
+def get_page_id():
+    config = db.session.query(Channel).filter(Channel.module == "superform.plugins.facebook").first().config
+    json_data = json.loads(config)
+    page_id = json_data["page_id"]
+    return jsonify(page_id)
+
+@facebook_plugin.route('/token', methods=['POST'])
+def set_token():
+    global fb_token
+    data = request.get_data()
+    jss = json.loads(data.decode("utf-8"))
+    fb_token = jss['token']
+    return jsonify(status = "success", data="ok")
 
 
-def get_config(page_id, app_id):
+def get_config(page_id, access_token):
     cfg = {
         "page_id": page_id,  # Step 1
-        "app_id": app_id  # Step 3
+        "access_token": access_token  # Step 3
     }
     return cfg
 
