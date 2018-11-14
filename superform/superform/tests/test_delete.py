@@ -84,8 +84,10 @@ def test_delete_publishing(client):
 
     client.get(path)
 
-    deleted_publishings = db.session.query(Publishing).filter(Publishing.post_id == id_post).first()
-    assert deleted_publishings is None
+    deleted_publishings = db.session.query(Publishing).filter(Publishing.post_id == id_post)
+    for pub in deleted_publishings:
+        assert pub is None
+
 
 # This test currently fails as the security is not yet implemented:
 # Not being able to delete someone else's post
