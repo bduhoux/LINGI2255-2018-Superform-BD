@@ -6,6 +6,8 @@ from superform.users import channels_available_for_user
 from superform.utils import login_required, datetime_converter, str_converter, get_instance_from_module_path
 from superform.models import db, Post, Publishing, Channel
 
+from superform.archival_module import get_archival_config, HOUR_KEY, MINUT_KEY
+
 posts_page = Blueprint('posts', __name__)
 
 
@@ -105,7 +107,11 @@ def records():
     for a in records:
         for b in a.publishings:
             rec.append(b)
+    isAdmin = session.get("logged_in", "") and session.get("admin", "")
+    archival_config = get_archival_config()
     # Added code ----------
-    return render_template('records.html', records=rec, channel=channel)
+    return render_template('records.html', records=rec, channel=channel, isAdmin=isAdmin,
+                           archival_hour=("%02d" % archival_config[HOUR_KEY]),
+                           archival_minut=("%02d" % archival_config[MINUT_KEY]))
 
 

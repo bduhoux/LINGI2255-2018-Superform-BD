@@ -13,8 +13,7 @@ from superform.feed import feed_page
 from superform.users import get_moderate_channels_for_user, is_moderator
 
 # for the archival module
-from apscheduler.schedulers.background import BackgroundScheduler
-from superform.archival_module import archival_job
+from superform.archival_module import archival_page, run_default_job
 
 app = Flask(__name__)
 app.config.from_json("config.json")
@@ -26,6 +25,7 @@ app.register_blueprint(channels_page)
 app.register_blueprint(posts_page)
 app.register_blueprint(pub_page)
 app.register_blueprint(feed_page)
+app.register_blueprint(archival_page)
 
 # Init dbs
 db.init_app(app)
@@ -65,6 +65,4 @@ def notfound(error):
 
 if __name__ == '__main__':
     app.run()
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(archival_job, "cron", hour=0, minute=1)
-    scheduler.start()
+    run_default_job()
