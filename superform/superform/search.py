@@ -14,7 +14,7 @@ def search():
     user_id = session.get('user_id', '') if session.get('logged_in', False) else -1
     l_chan = channels_available_for_user(user_id)
     if request.method == 'GET':
-        return render_template('search.html', l_chan=l_chan, publishing=[])
+        return render_template('search.html', l_chan=l_chan, post=False, id_chan=[chan.id for chan in l_chan])
     else:
         pattern = request.form.get('search_word')
         chan = request.form.getlist('search_chan')
@@ -27,7 +27,7 @@ def search():
         search_type = request.form.get('search_type') == 'keyword'
         filter_parameter = make_filter_parameter(user_id,pattern,chan,status,loc,order_by,order,date_from,date_until,search_type)
         search_result = query_maker(filter_parameter)
-        return render_template('search.html', l_chan=l_chan, publishing=search_result)
+        return render_template('search.html', l_chan=l_chan, publishing=search_result, post=True, id_chan=[chan.id for chan in l_chan])
 
 
 def make_filter_parameter(user_id,pattern,channels,post_status,search_location,order_by,order,date_from=False,date_until=False,search_by_keyword=False):
