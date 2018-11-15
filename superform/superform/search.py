@@ -105,7 +105,7 @@ def filter_query_channel(channels):
     return condition
 
 
-def filter_query_status(states):
+def filter_query_status(status):
     """
     A function which returns a filter allowing only publishings with certain state
 
@@ -113,7 +113,7 @@ def filter_query_status(states):
     :return: a filter parameter allowing only publishings with a state defined by states
     """
     condition = (Publishing.post_id == None)
-    for state in states:
+    for state in status:
         condition = condition | (Publishing.state == state)
     return condition
 
