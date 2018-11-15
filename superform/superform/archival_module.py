@@ -76,7 +76,7 @@ def archival_job():
 
     db.session.commit()
 
-@archival_page.route('/test', methods=['GET', 'POST'])
+@archival_page.route('/set_new_archival_job', methods=['GET', 'POST'])
 @login_required(admin_required=True)
 def test():
     if request.method == 'POST':
