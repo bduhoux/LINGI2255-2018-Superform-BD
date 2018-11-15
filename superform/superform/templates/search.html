@@ -11,13 +11,8 @@
                         <div class="form-group" style="width: 100%">
                             <input type="text" name="search_word" style="width: 75%" id="search_word"
                                    class="search-query">
-                            <button type="submit" style="width: 14%" name="submit_search" id="submit_search"
-                                    class="btn">
-                                Search
-                            </button>
-
                         </div>
-                        <div style="width: 80%">
+                        <div id="advanced_search" class="d-none" style="width: 80%">
                             <div class="row" style="width: 100%">
                                 <div class="col-md-6" style="width: 100%">
                                     <div class="form-group">
@@ -99,9 +94,14 @@
 
                         </div>
                         <div class="form-group">
-                            <label for="reset_search"></label>
-                            <button type="reset" name="reset_search" id="reset_search" onclick="clear_form()"
-                                    class="form-control" style="width: 15%">Clear search
+                            <button type="submit" style="width: 14%" name="submit_search" id="submit_search" class="btn btn-primary">
+                                Search
+                            </button>
+                            <button type="reset" name="reset_search" id="reset_search" onclick="clear_form()" class="btn">
+                                Clear search
+                            </button>
+                            <button id="advanced_search_button" type="button" onclick="toggle_search(this)" class="btn btn-outline-primary">
+                                Show advanced search
                             </button>
                         </div>
 
@@ -159,7 +159,6 @@
             </div>
         </div>
     {% endif %}
-
 
 {% endblock %}
 
@@ -251,8 +250,16 @@
                 e in clear_data ? $('#' + e).val(clear_data[e]).trigger('change') : {};
             })
         }
+        advanced_search_displayed = false;
+        function toggle_search() {
+            if (advanced_search_displayed) {
+                $('#advanced_search').addClass('d-none');
+                $('#advanced_search_button').text('Show advanced search');
+            } else {
+                $('#advanced_search').removeClass('d-none');
+                $('#advanced_search_button').text('Hide advanced search');
+            }
+            advanced_search_displayed = !advanced_search_displayed;
+        }
     </script>
 {% endblock %}
-
-
-
