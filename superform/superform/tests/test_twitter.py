@@ -3,7 +3,6 @@ import random
 
 import superform.plugins.Twitter as Twitter
 from superform import app
-import twitter
 from superform.models import Publishing
 
 cha_conf = json.dumps({"Access token": "1052533183151886336-RBoq1epkAOeRfGdd2pBrbi9uTxQBv6",
