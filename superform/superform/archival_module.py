@@ -1,13 +1,14 @@
 from superform.models import db, Publishing
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.base import STATE_RUNNING
 from superform.utils import login_required
 import json, time
 from flask import Blueprint, url_for, redirect, request, Flask
 
 archival_page = Blueprint('archival', __name__)
 
-scheduler = None
+scheduler = BackgroundScheduler()
 
 # By default, the archival_job is scheduled at 00:01 :
 HOUR_DEFAULT = 0
@@ -66,12 +67,11 @@ def run_specific_job(hour, minut):
     __run_job(hour, minut)
 
 def __run_job(hour, minut):
-    global scheduler
-    if scheduler is not None:
-        scheduler.shutdown()
-    scheduler = BackgroundScheduler()
+    for job in scheduler.get_jobs():
+        job.remove()
     scheduler.add_job(archival_job, "cron", hour=hour, minute=minut)
-    scheduler.start()
+    if scheduler.state != STATE_RUNNING:
+        scheduler.start()
 
 def archival_job():
     sql_config = get_sqlalchemy_config()
