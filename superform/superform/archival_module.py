@@ -78,7 +78,7 @@ def archival_job():
 
 @archival_page.route('/set_new_archival_job', methods=['GET', 'POST'])
 @login_required(admin_required=True)
-def test():
+def new_archival_job():
     if request.method == 'POST':
         timer = request.form['arch_time']
         if not isTimeFormat(timer):

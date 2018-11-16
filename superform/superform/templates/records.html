@@ -26,17 +26,12 @@
     <div class="collapse" id="collapseConfiguration">
         <div class="card card-body" style="width: 18rem;">
             <form action="/set_new_archival_job" method="POST">
-                Choose the update time :
+                Update now or change the update time :
                 <div class="form-group" style="text-align: center; margin-top: 1rem">
                     <input name="arch_time" type="time" value="{{ archival_hour }}:{{ archival_minut }}" required>
                 </div>
-                <input class="btn btn-primary" style="float: right" type="submit" value="Save">
-
-            </form>
-            <form  action="/update_archival_states" method="POST">
-                <div class="form-group" style="text-align: center; margin-top: 1rem">
-                    <input class="btn btn-primary" style="float: right" type="submit" value="Update now">or :</input>
-                </div>
+                <input class="btn btn-primary" style="float: right; margin-right: 10px; box-sizing: border-box" type="submit" value="Save">
+                <a href="/update_archival_states" style="float: right" class="btn btn-primary">Update now</a>
             </form>
         </div>
     </div>
