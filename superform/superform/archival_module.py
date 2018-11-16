@@ -89,6 +89,12 @@ def test():
         run_specific_job(hour, minut)
     return redirect(url_for('posts.records'))
 
+@archival_page.route('/update_archival_states', methods=['GET', 'POST'])
+@login_required(admin_required=True)
+def update_now():
+    archival_job()
+    return redirect(url_for('posts.records'))
+
 def isTimeFormat(input):
     try:
         time.strptime(input, '%H:%M')
