@@ -3,7 +3,7 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from superform.utils import login_required
 import json, time
-from flask import Blueprint, url_for, redirect, request
+from flask import Blueprint, url_for, redirect, request, Flask
 
 archival_page = Blueprint('archival', __name__)
 
@@ -17,6 +17,8 @@ FILE_PATH = "superform/config.json"
 ARCHIVAL_KEY = "ARCHIVAL_JOB"
 HOUR_KEY = "hour"
 MINUT_KEY = "minut"
+SQL_URI_KEY = "SQLALCHEMY_DATABASE_URI"
+SQL_TRACK_KEY = "SQLALCHEMY_TRACK_MODIFICATIONS"
 
 def get_archival_config():
     """
@@ -34,6 +36,11 @@ def get_archival_config():
             MINUT_KEY: MINUT_DEFAULT
         }
     return data[ARCHIVAL_KEY]
+
+def get_sqlalchemy_config():
+    with open(FILE_PATH) as f:
+        data = json.load(f)
+    return data[SQL_URI_KEY], data[SQL_TRACK_KEY]
 
 def set_archival_job_config(hour, minut):
     with open(FILE_PATH) as f:
@@ -67,14 +74,20 @@ def __run_job(hour, minut):
     scheduler.start()
 
 def archival_job():
-    toArchive = db.session.query(Publishing)\
-        .filter(Publishing.date_until < datetime.now(), Publishing.state == 1)\
-        .all()
+    sql_config = get_sqlalchemy_config()
+    app = Flask(__name__)
+    app.config[SQL_URI_KEY] = sql_config[0]
+    app.config[SQL_TRACK_KEY] = sql_config[1]
+    with app.app_context():
+        db.init_app(app)
+        toArchive = db.session.query(Publishing)\
+            .filter(Publishing.date_until < datetime.now(), Publishing.state == 1)\
+            .all()
 
-    for pub in toArchive:
-        pub.state = 2
+        for pub in toArchive:
+            pub.state = 2
 
-    db.session.commit()
+        db.session.commit()
 
 @archival_page.route('/set_new_archival_job', methods=['GET', 'POST'])
 @login_required(admin_required=True)
