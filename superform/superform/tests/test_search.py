@@ -6,7 +6,6 @@ from superform.models import Authorization, Channel, User, Post, Publishing
 from superform.utils import datetime_converter
 from superform.search import query_maker
 
-
 @pytest.fixture
 def client():
     app.app_context().push()
@@ -21,7 +20,6 @@ def client():
 
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
-
 
 def populate_db():
     User.query.delete()
