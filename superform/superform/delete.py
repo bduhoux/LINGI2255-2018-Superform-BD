@@ -45,7 +45,7 @@ def delete_post(id):
 
 
 def is_not_validated(pub):
-    if pub.state != -1 or pub.state != 0:
+    if pub.state != -1 and pub.state != 0:
         return False
 
     return True
