@@ -478,6 +478,7 @@ def test_writer_basic_search(client):
     assert [2, 3, 5] == [pub.post_id for pub in result]
 
 
+
 def test_moderator_empty_search(client):
     populate_db()
     filter_parameter = dict()
