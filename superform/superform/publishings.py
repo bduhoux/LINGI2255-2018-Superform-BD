@@ -21,13 +21,9 @@ def moderate_publishing(id,idc):
         date_u = pub.date_until
         pub.date_from = datetime_converter(pub.date_from)
         pub.date_until = datetime_converter(pub.date_until)
-        print("0")
-        print(pub.channel_id) # affiche bien "fb"
-        print("1")
-        v = db.session.query(Channel).filter(Channel.name == pub.channel_id).first() # PQ marche pas????!!!!! si ça ça marche, cacher bouton login fb marche
+        v = db.session.query(Channel).filter(Channel.name == pub.channel_id).first()
         pub.date_from = date_f
         pub.date_until = date_u
-        print(v.module)
         if v.module == "superform.plugins.facebook":
             session["facebook_running"] = True
         else:
@@ -36,7 +32,10 @@ def moderate_publishing(id,idc):
         return render_template('moderate_post.html', pub=pub)
 
     else: # quand on appuye sur publish
-        if pub.channel_id == "fb":
+        pub.date_from = datetime_converter(pub.date_from)
+        pub.date_until = datetime_converter(pub.date_until)
+        c = db.session.query(Channel).filter(Channel.name == pub.channel_id).first()
+        if c.module == "superform.plugins.facebook":
             from superform.plugins.facebook import fb_token
             print(fb_token)
             session["facebook_running"] = True
@@ -55,7 +54,7 @@ def moderate_publishing(id,idc):
         pub.state = 1
         db.session.commit()
         # running the plugin here
-        c = db.session.query(Channel).filter(Channel.name == pub.channel_id).first()
+        #c = db.session.query(Channel).filter(Channel.name == pub.channel_id).first()
         plugin_name = c.module
         print(plugin_name)
         c_conf = c.config
