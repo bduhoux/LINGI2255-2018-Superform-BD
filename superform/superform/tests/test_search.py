@@ -243,7 +243,10 @@ def test_by_keyword_search(client):
     result = query_maker(filter_parameter)
     assert 8 == len(result)
     assert [1, 2, 3, 4, 5, 8, 10, 11] == [pub.post_id for pub in result]
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6403c3e... search test: change in comprehension of search
 
 def test_channels_search(client):
     populate_db()
@@ -281,7 +284,11 @@ def test_states_search(client):
     assert [2, 3, 5, 11] == [pub.post_id for pub in result]
 
 
+<<<<<<< HEAD
 def test_content_search(client):
+=======
+def test_admin_content_search(client):
+>>>>>>> 6403c3e... search test: change in comprehension of search
     populate_db()
     filter_parameter = dict()
     filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
@@ -299,7 +306,11 @@ def test_content_search(client):
     assert [1, 2, 3, 5, 8, 9, 10] == [pub.post_id for pub in result]
 
 
+<<<<<<< HEAD
 def test_content_keyword_search(client):
+=======
+def test_admin_content_keyword_search(client):
+>>>>>>> 6403c3e... search test: change in comprehension of search
     populate_db()
     filter_parameter = dict()
     filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
@@ -317,6 +328,7 @@ def test_content_keyword_search(client):
     assert [1, 3, 10] == [pub.post_id for pub in result]
 
 
+<<<<<<< HEAD
 def test_content_title_search(client):
     populate_db()
     filter_parameter = dict()
@@ -476,6 +488,10 @@ def test_writer_basic_search(client):
     result = query_maker(filter_parameter)
     assert 3 == len(result)
     assert [2, 3, 5] == [pub.post_id for pub in result]
+=======
+def test_advanced_search():
+    pass
+>>>>>>> 6403c3e... search test: change in comprehension of search
 
 
 
