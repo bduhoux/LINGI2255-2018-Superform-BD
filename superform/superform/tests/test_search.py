@@ -21,6 +21,7 @@ def client():
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
 
+
 def populate_db():
     User.query.delete()
     user = User(id="michouchou", email="ftg@gmail.com", name="f", first_name="tg", admin=False)
@@ -544,6 +545,7 @@ def test_empty_db_search(client):
 
     result = query_maker(filter_parameter)
     assert 0 == len(result)
+
 
 def test_time_period_search(client):
     populate_db()
