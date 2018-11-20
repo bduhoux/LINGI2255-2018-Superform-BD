@@ -548,6 +548,45 @@ def test_empty_db_search(client):
     result = query_maker(filter_parameter)
     assert 0 == len(result)
 
+def test_time_period_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "michouchou").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter["order_by"] = "post_id"
+    filter_parameter["is_asc"] = True
+    filter_parameter["date_from"] = "2017-05-07"
+    filter_parameter["date_until"] = "2019-07-07"
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert [2, 3, 5] == [pub.post_id for pub in result]
+    filter_parameter["date_from"] = "2020-05-07"
+    filter_parameter["date_until"] = "2021-07-07"
+    result = query_maker(filter_parameter)
+    assert 0 == len(result)
+    filter_parameter["date_from"] = "2000-05-07"
+    filter_parameter["date_until"] = "2001-07-07"
+    result = query_maker(filter_parameter)
+    assert 0 == len(result)
+    filter_parameter["date_from"] = "2020-05-07"
+    filter_parameter["date_until"] = "2017-07-07"
+    result = query_maker(filter_parameter)
+    assert 0 == len(result)
+    filter_parameter["date_from"] = "2018-11-16"
+    filter_parameter.pop("date_until", None)
+    result = query_maker(filter_parameter)
+    assert 1 == len(result)
+    assert [5] == [pub.post_id for pub in result]
+    filter_parameter.pop("date_from", None)
+    filter_parameter["date_until"] = "2018-11-15"
+    result = query_maker(filter_parameter)
+    assert 1 == len(result)
+    assert [2] == [pub.post_id for pub in result]
 
 def test_time_period_search(client):
     populate_db()
