@@ -6,6 +6,7 @@ from superform.models import Authorization, Channel, User, Post, Publishing
 from superform.utils import datetime_converter
 from superform.search import query_maker
 
+
 @pytest.fixture
 def client():
     app.app_context().push()
