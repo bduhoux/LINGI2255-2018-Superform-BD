@@ -188,9 +188,9 @@
             'date_until': false
         }; // key is the id of the element and the value is true only if the element is multiple select
         let clear_data = {
-            'search_chan': null,
-            'post_status': null,
-            'search_loc': null,
+            'search_chan': {{ id_chan }},
+            'post_status': [2, 1, 0],
+            'search_loc': ['title', 'description'],
             'search_type:': 'keyword',
             'order_loc': 'title',
             'search_order': 'ascending'
