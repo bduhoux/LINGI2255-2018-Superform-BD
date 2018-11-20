@@ -7,18 +7,14 @@ from superform.users import get_moderate_channels_for_user, channels_available_f
 
 search_page = Blueprint('search', __name__)
 
-selected_chan = []
-selected_loc = []
-publishings = []
 
 @search_page.route('/search', methods=["GET", "POST"])
 @login_required()
 def search():
-    global selected_chan, selected_loc, publishings
     user_id = session.get('user_id', '') if session.get('logged_in', False) else -1
     l_chan = channels_available_for_user(user_id)
     if request.method == 'GET':
-        return render_template('search.html', l_chan=l_chan, selected_chan=selected_chan, selected_loc=selected_loc, publishings=publishings)
+        return render_template('search.html', l_chan=l_chan, publishing=[])
     else:
         pattern = request.form.get('search_word')
         chan = request.form.getlist('search_chan')
@@ -29,11 +25,9 @@ def search():
         date_from = request.form.get('date_from')
         date_until = request.form.get('date_until')
         search_type = request.form.get('search_type') == 'keyword'
-        selected_chan = chan
-        selected_loc = loc
         filter_parameter = make_filter_parameter(user_id,pattern,chan,status,loc,order_by,order,date_from,date_until,search_type)
-        publishings = query_maker(filter_parameter)
-        return render_template('search.html', l_chan=l_chan, selected_chan=selected_chan,selected_loc=selected_loc, publishings=publishings)
+        search_result = query_maker(filter_parameter)
+        return render_template('search.html', l_chan=l_chan, publishing=search_result)
 
 
 def make_filter_parameter(user_id,pattern,channels,post_status,search_location,order_by,order,date_from=False,date_until=False,search_by_keyword=False):
@@ -72,11 +66,11 @@ def filters(filter_parameter):
     :param filter_parameter: a dictionary representing the different filter to apply
     :return: the list of publication according to the filter para#dmeter
     """
-    return filter_query_accessible_publications(filter_parameter["user"]) \
-           & filter_query_channel(filter_parameter["channels"]) \
-           & filter_query_status(filter_parameter["states"]) \
-           & filter_query_title_content(filter_parameter["search_in_title"], filter_parameter["search_in_content"],filter_parameter["searched_words"], filter_parameter["search_by_keyword"]) \
-           & filter_date(filter_parameter["date_from"], filter_parameter["date_until"])
+    return filter_query_accessible_publications(filter_parameter["user"]) & filter_query_channel(
+        filter_parameter["channels"]) & filter_query_status(filter_parameter["states"]) & filter_query_title_content(
+        filter_parameter.get("search_in_title", None), filter_parameter.get("search_in_content", None),
+        filter_parameter.get("searched_words", None), filter_parameter.get("search_by_keyword", None)) & filter_date(
+        filter_parameter.get("date_from", None), filter_parameter.get("date_until", None))
 
 
 def filter_query_accessible_publications(user):
