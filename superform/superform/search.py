@@ -1,9 +1,16 @@
 
-from flask import session, Blueprint
+from flask import session, Blueprint, url_for, render_template
+from superform.utils import login_required
 from superform.models import db, User, Post, Publishing
 from  superform.users import get_moderate_channels_for_user, is_moderator
 
 search_page = Blueprint('search', __name__)
+
+
+@search_page.route('/search', methods=["GET", "POST"])
+@login_required()
+def search():
+    return render_template('search.html', lol=1)
 
 def get_accessible_publications_of_user(user):
     """
