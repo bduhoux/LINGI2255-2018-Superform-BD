@@ -40,15 +40,6 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
 
         )
 
-def get_api(cfg):
-    graph = facebook.GraphAPI(cfg['access_token'])
-    return graph
-
-"""
-def get_page_id(config):
-    json_data = json.loads(config)
-    return json_data['page_id']
-"""
 
 @facebook_plugin.route('/appid')
 def get_app_id():
@@ -71,6 +62,11 @@ def set_token():
     jss = json.loads(data.decode("utf-8"))
     fb_token = jss['token']
     return jsonify(status = "success", data="ok")
+
+
+def get_api(cfg):
+    graph = facebook.GraphAPI(cfg['access_token'])
+    return graph
 
 
 def get_config(page_id, access_token):
