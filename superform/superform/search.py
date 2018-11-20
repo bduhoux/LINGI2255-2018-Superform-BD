@@ -72,8 +72,8 @@ def filters(filter_parameter):
     return filter_query_accessible_publications(filter_parameter["user"]) & filter_query_channel(
         filter_parameter["channels"]) & filter_query_status(filter_parameter["states"]) & filter_query_title_content(
         filter_parameter.get("search_in_title", None), filter_parameter.get("search_in_content", None),
-        filter_parameter.get("searched_words", None),filter_parameter.get("search_by_keyword", None) &
-        filter_date(filter_parameter.get("date_from", None), filter_parameter.get("date_until", None)))
+        filter_parameter.get("searched_words", None), filter_parameter.get("search_by_keyword", None)) & filter_date(
+        filter_parameter.get("date_from", None), filter_parameter.get("date_until", None))
 
 
 def filter_query_accessible_publications(user):
@@ -151,7 +151,7 @@ def filter_query_title_content(title, content, searched_words, split_words):
         else:
             return Publishing.description.contains(searched_words)
     else:
-        return Publishing.post_id != None #Return true means all publishings are accepted
+        return Publishing.post_id != None  # Return true means all publishings are accepted
 
 
 def filter_date(date_from, date_until):
@@ -163,16 +163,16 @@ def filter_date(date_from, date_until):
     :param date_until: if not Node, filter only publishing posted before a particular date
     :return: A binary Expression filtering the requested publishings by date
     """
-    condition = Publishing.post_id == None
+    condition = (Publishing.post_id == None)
     if date_from:
         date = datetime.strptime(date_from, '%Y-%m-%d')
-        condition = condition | Publishing.date_from >= date
+        condition = condition | (Publishing.date_from >= date)
     if date_until:
         date = datetime.strptime(date_until, '%Y-%m-%d')
-        condition = condition | Publishing.date_until <= date
+        condition = condition | (Publishing.date_until <= date)
     if not date_from and not date_until:
         return Publishing.post_id != None
-    else :
+    else:
         return condition
 
 
