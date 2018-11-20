@@ -30,5 +30,8 @@ def moderate_publishing(id,idc):
         plugin = import_module(plugin_name)
         plugin.run(pub,c_conf)
 
+
+
+
         return redirect(url_for('index'))
 
