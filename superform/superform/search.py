@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template
+from flask import Blueprint, url_for, request, redirect, render_template, flash, session
 from superform.utils import login_required
 from superform.models import db, Post, Publishing
 from superform.users import get_moderate_channels_for_user
@@ -11,7 +11,15 @@ search_page = Blueprint('search', __name__)
 @search_page.route('/search', methods=["GET", "POST"])
 @login_required()
 def search():
-    return render_template('search.html', lol=1)
+    if request.method == 'GET':
+        return render_template('search.html', lol=1)
+    else:
+        user_id = session.get('user_id', '') if session.get('logged_in', False) else -1
+        pattern = request.form.get('search_word')
+        loc = request.form.getlist('search_loc')
+        order = request.form.get('search_order')
+        print(user_id,pattern,loc,order)
+        return render_template('search.html', lol=1)
 
 
 def query_maker(filter_parameter):
