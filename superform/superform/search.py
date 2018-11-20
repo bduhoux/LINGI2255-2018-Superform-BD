@@ -100,20 +100,24 @@ def filter_query_channel(channels):
         :return: the filter parameters allowing to show publishings in the channels defined by the input channels
         """
     condition = (Publishing.post_id == None)
+    if not channels:
+        return (Publishing.post_id != None)
     for chan_id in channels:
         condition = condition | (Publishing.channel_id == chan_id)
     return condition
 
 
-def filter_query_status(status):
+def filter_query_status(states):
     """
     A function which returns a filter allowing only publishings with certain state
 
     :param states: A list containing the states the publishings has to possess
     :return: a filter parameter allowing only publishings with a state defined by states
     """
+    if not states:
+        return (Publishing.post_id != None)
     condition = (Publishing.post_id == None)
-    for state in status:
+    for state in states:
         condition = condition | (Publishing.state == state)
     return condition
 

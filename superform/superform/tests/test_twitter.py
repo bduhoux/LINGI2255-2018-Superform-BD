@@ -1,13 +1,16 @@
 import json
 import random
 
+from flask import current_app
 import superform.plugins.Twitter as Twitter
 from superform import app
-import twitter
 from superform.models import Publishing
 
-cha_conf = json.dumps({"Access token": "1052533183151886336-RBoq1epkAOeRfGdd2pBrbi9uTxQBv6",
-                       "Access token secret": "vqM1nqgcst0uNDSryuMGjhCjT9ldCj4rFUpfxJfDzuTzc"})  # Getted from db
+json_data =open('../config.json')
+data = json.load(json_data)
+
+cha_conf = json.dumps({"Access token": data["TWITTER_TEST_ACESS TOKEN"],
+                       "Access token secret": data["TWITTER_TEST_ACESS TOKEN_SECRET"]})  # Getted from db
 with app.app_context():
     twit = Twitter.get_api(cha_conf)  # We'll need this variable for other tests
 

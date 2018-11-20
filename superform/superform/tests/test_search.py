@@ -25,7 +25,7 @@ def client():
 
 def populate_db():
     User.query.delete()
-    user = User(id="michouchou", email="ftg@gmail.com", name="f", first_name="tg", admin=False)
+    user = User(id="michouchou", email="test@gmail.com", name="t", first_name="est", admin=False)
     db.session.add(user)
     user = User(id="googleplusmoderator", email="ripinpeace@google.plus", name="Press F", first_name="To pay respect",
                 admin=False)
