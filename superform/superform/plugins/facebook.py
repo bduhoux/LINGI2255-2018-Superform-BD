@@ -16,7 +16,6 @@ fb_token = 0
 
 
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
-    print(9)
     page_id = get_page_id()
     access_token = fb_token # == 0 alors pas connecté
     print("access_token = " + str(access_token))
@@ -48,12 +47,14 @@ def get_app_id():
     app_id = json_data["app_id"]
     return jsonify(app_id)
 
+
 @facebook_plugin.route('/pageid')
 def get_page_id():
     config = db.session.query(Channel).filter(Channel.module == "superform.plugins.facebook").first().config
     json_data = json.loads(config)
     page_id = json_data["page_id"]
     return jsonify(page_id)
+
 
 @facebook_plugin.route('/token', methods=['POST'])
 def set_token():

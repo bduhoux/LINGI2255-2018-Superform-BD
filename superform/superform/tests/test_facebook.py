@@ -25,40 +25,10 @@ def client():
     os.unlink(app.config['DATABASE'])
 
 
-
-
-
 def test_config(client):
 
-    assert fb.get_config("453122048545115", "EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA") == {"page_id": "453122048545115",
-                                 "access_token": "EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA"}
-
-
-
-
-
-def test_get_api(client):
-    new_channel = Channel(config={"page_id": "248157169745230",
-                                  "app_id": "919191747820"})
-
-    json_config = json.dumps(new_channel.config)
-
-    graph = facebook.GraphAPI("EAAEg6h9DvQwBADFqgmWtCnqXKXTFZAxxxIUHH3iZBHyj54pTYdykE39JQHhM9yOgFOigGCd3FZCqZCZA6wsmPUX7fGyea4Mso6aZBSvmGUZAjWKLzTSZCLZBHVfUtDRYKKNqcZA4Qe5JLzeaZC2THwERHrsTEZBHfHueHZBETYxBHCrZAmiajhFlki3SLZA")
-
-    assert True == True # fb.get_api(json_config) == graph # marche pas
-
-
-
-
-
-def test_get_message(client):
-    assert True == True
-
-def test_get_link(client):
-    assert True == True
-
-def test_get_image(client):
-    assert True == True
+    assert fb.get_config("12121212121", "333333") == {"page_id": "12121212121",
+                                 "access_token": "333333"}
 
 
 def test_publish_msg(client):
@@ -66,6 +36,7 @@ def test_publish_msg(client):
     new_publish = Publishing(title="Coucou", description="J'aime faire des tests unitaires", link_url="https://docs.pytest.org/en/latest/index.html")
 
     assert fb.get_message(new_publish) == "Coucou\n\nJ'aime faire des tests unitaires"
+
 
 def test_publish_link(client):
 
