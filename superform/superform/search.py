@@ -2,24 +2,52 @@ from datetime import datetime
 
 from flask import Blueprint, url_for, request, redirect, render_template, flash, session
 from superform.utils import login_required
-from superform.models import db, Post, Publishing
-from superform.users import get_moderate_channels_for_user
+from superform.models import db, Post, Publishing, User
+from superform.users import get_moderate_channels_for_user, channels_available_for_user
 
 search_page = Blueprint('search', __name__)
+
+selected = []
 
 
 @search_page.route('/search', methods=["GET", "POST"])
 @login_required()
 def search():
+    global selected
+    user_id = session.get('user_id', '') if session.get('logged_in', False) else -1
+    l_chan = channels_available_for_user(user_id)
     if request.method == 'GET':
-        return render_template('search.html', lol=1)
+        return render_template('search.html', l_chan=l_chan, selected=selected)
     else:
-        user_id = session.get('user_id', '') if session.get('logged_in', False) else -1
         pattern = request.form.get('search_word')
+        chan = request.form.getlist('search_chan')
+        status = request.form.getlist('post_status')
         loc = request.form.getlist('search_loc')
+        order_by = request.form.get('order_loc')
         order = request.form.get('search_order')
-        print(user_id,pattern,loc,order)
-        return render_template('search.html', lol=1)
+        selected = chan+loc
+        print(user_id,chan,pattern,loc,order_by,order)
+        filter_parameter = make_filter_parameter(user_id,pattern,chan,status,loc,order_by,order)
+        result = query_maker(filter_parameter)
+        print(result)
+        return render_template('search.html', l_chan=l_chan, selected=selected)
+
+
+def make_filter_parameter(user_id,pattern,chan,post_status,loc,order_by,order):
+    user = User.query.get(user_id) if session.get("logged_in", False) else None
+    return {
+        'user': user,
+        'channels': chan,
+        'states': post_status,
+        'search_in_title': 'title' in loc,
+        'search_in_content': 'description' in loc,
+        'search_words': pattern,
+        'search_by_keyword': True,
+        'date_from': False,
+        'date_until': False,
+        'order_by': order_by,
+        'is_asc': order == 'ascending'
+    }
 
 
 def query_maker(filter_parameter):
