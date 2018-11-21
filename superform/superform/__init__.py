@@ -12,6 +12,9 @@ from superform.posts import posts_page
 from superform.feed import feed_page
 from superform.users import get_moderate_channels_for_user, is_moderator
 
+# for the archival module
+from superform.archival_module import archival_page, run_default_job
+
 app = Flask(__name__)
 app.config.from_json("config.json")
 
@@ -22,6 +25,7 @@ app.register_blueprint(channels_page)
 app.register_blueprint(posts_page)
 app.register_blueprint(pub_page)
 app.register_blueprint(feed_page)
+app.register_blueprint(archival_page)
 
 # Init dbs
 db.init_app(app)
@@ -61,3 +65,4 @@ def notfound(error):
 
 if __name__ == '__main__':
     app.run()
+    run_default_job()

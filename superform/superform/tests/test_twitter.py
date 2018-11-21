@@ -1,7 +1,7 @@
 import json
 import random
 
-import plugins.Twitter as Twitter
+from superform.plugins import Twitter
 from superform import app
 import twitter
 from superform.models import Publishing
