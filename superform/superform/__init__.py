@@ -9,8 +9,10 @@ from superform.authentication import authentication_page
 from superform.authorizations import authorizations_page
 from superform.channels import channels_page
 from superform.posts import posts_page
+from superform.delete import delete_page
 from superform.feed import feed_page
 from superform.users import get_moderate_channels_for_user, is_moderator
+from superform.plugins.facebook import facebook_plugin
 from superform.search import search_page
 
 # for the archival module
@@ -28,6 +30,9 @@ app.register_blueprint(posts_page)
 app.register_blueprint(pub_page)
 app.register_blueprint(feed_page)
 app.register_blueprint(archival_page)
+
+app.register_blueprint(delete_page)
+app.register_blueprint(facebook_plugin)
 
 # Init dbs
 db.init_app(app)

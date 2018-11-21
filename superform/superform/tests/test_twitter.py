@@ -6,7 +6,7 @@ import superform.plugins.Twitter as Twitter
 from superform import app
 from superform.models import Publishing
 
-json_data =open('../config.json')
+json_data =open('superform/config.json')
 data = json.load(json_data)
 
 cha_conf = json.dumps({"Access token": data["TWITTER_TEST_ACESS TOKEN"],
