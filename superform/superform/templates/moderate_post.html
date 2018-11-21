@@ -58,15 +58,6 @@
             <button class="btn btn-success" id="pub-button">Publish</button></form>
 
         </form>
-        <!-- seulement quand sur fb -->
-        {% if session.facebook_running %}
-            <div>
-                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-                </fb:login-button>
-                <p id="status"></p>
-            </div>
-        {% endif %}
-
 
     {% else %}
         Your are not logged in.
@@ -80,11 +71,10 @@
     </script>
 
 
-    {% block scripts %}
-        {% if session.facebook_running %}
-        <script src="../../static/js/JavaScript_Facebook_SDK.js">
-        </script>
-        {% endif %}
-    {% endblock %}
+
+    {% if session.facebook_running %}
+    <script src="../../static/js/JavaScript_Facebook_SDK.js">
+    </script>
+    {% endif %}
 
 {% endblock %}

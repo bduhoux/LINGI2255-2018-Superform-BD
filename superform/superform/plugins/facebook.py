@@ -18,7 +18,6 @@ fb_token = 0
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     page_id = get_page_id()
     access_token = fb_token # == 0 alors pas connecté
-    print("access_token = " + str(access_token))
     if str(access_token) == "0":
         print("token error, are you sure you are connected to facebook?")
         facebook_is_connected = False

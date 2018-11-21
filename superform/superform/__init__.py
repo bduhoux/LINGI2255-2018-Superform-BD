@@ -13,6 +13,7 @@ from superform.delete import delete_page
 from superform.feed import feed_page
 from superform.users import get_moderate_channels_for_user, is_moderator
 from superform.plugins.facebook import facebook_plugin
+from superform.search import search_page
 
 # for the archival module
 from superform.archival_module import archival_page, run_default_job
@@ -23,6 +24,7 @@ app.config.from_json("config.json")
 # Register blueprints
 app.register_blueprint(authentication_page)
 app.register_blueprint(authorizations_page)
+app.register_blueprint(search_page)
 app.register_blueprint(channels_page)
 app.register_blueprint(posts_page)
 app.register_blueprint(pub_page)
