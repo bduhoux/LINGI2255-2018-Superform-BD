@@ -14,7 +14,7 @@ scheduler = BackgroundScheduler()
 HOUR_DEFAULT = 0
 MINUT_DEFAULT = 1
 
-FILE_PATH = "superform/config.json"
+FILE_PATH = "../config.json"
 ARCHIVAL_KEY = "ARCHIVAL_JOB"
 HOUR_KEY = "hour"
 MINUT_KEY = "minut"
