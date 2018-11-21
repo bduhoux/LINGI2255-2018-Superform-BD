@@ -4,14 +4,18 @@ import importlib
 
 import superform.plugins
 from superform.publishings import pub_page
-from superform.models import db, User, Post,Publishing
+from superform.models import db, User, Post, Publishing
 from superform.authentication import authentication_page
 from superform.authorizations import authorizations_page
 from superform.channels import channels_page
 from superform.posts import posts_page
 from superform.delete import delete_page
+from superform.feed import feed_page
 from superform.users import get_moderate_channels_for_user, is_moderator
 from superform.plugins.facebook import facebook_plugin
+
+# for the archival module
+from superform.archival_module import archival_page, run_default_job
 
 app = Flask(__name__)
 app.config.from_json("config.json")
@@ -22,6 +26,8 @@ app.register_blueprint(authorizations_page)
 app.register_blueprint(channels_page)
 app.register_blueprint(posts_page)
 app.register_blueprint(pub_page)
+app.register_blueprint(feed_page)
+app.register_blueprint(archival_page)
 
 app.register_blueprint(delete_page)
 app.register_blueprint(facebook_plugin)
@@ -46,10 +52,11 @@ def index():
         setattr(user,'is_mod',is_moderator(user))
         posts = db.session.query(Post).filter(Post.user_id==session.get("user_id", ""))
         chans = get_moderate_channels_for_user(user)
-        pubs_per_chan = (db.session.query(Publishing).filter((Publishing.channel_id == c.name) & (Publishing.state == 0)) for c in chans)
+        pubs_per_chan = (db.session.query(Publishing).filter((Publishing.channel_id == c.id) & (Publishing.state == 0)) for c in chans)
         flattened_list_pubs = [y for x in pubs_per_chan for y in x]
 
     return render_template("index.html", user=user,posts=posts,publishings = flattened_list_pubs)
+
 
 @app.errorhandler(403)
 def forbidden(error):
@@ -63,3 +70,4 @@ def notfound(error):
 
 if __name__ == '__main__':
     app.run()
+    run_default_job()

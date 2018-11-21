@@ -59,6 +59,7 @@ class Publishing(db.Model):
     image_url = db.Column(db.Text)
     date_from = db.Column(db.DateTime)
     date_until = db.Column(db.DateTime)
+    extra = db.Column(db.Text)
 
     __table_args__ = (db.PrimaryKeyConstraint('post_id', 'channel_id'),)
 
@@ -76,7 +77,7 @@ class Channel(db.Model):
     config = db.Column(db.Text, nullable=False)
 
     publishings = db.relationship("Publishing", backref="channel", lazy=True)
-    authorizations = db.relationship("Authorization", backref="channel", lazy=True)
+    authorizations = db.relationship("Authorization", cascade="all, delete", backref="channel", lazy=True)
 
     __table_args__ = ({"sqlite_autoincrement": True},)
 
