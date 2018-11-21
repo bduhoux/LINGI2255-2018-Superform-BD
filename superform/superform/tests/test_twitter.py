@@ -109,4 +109,3 @@ def test_get_cha_conf():
             twit.DestroyStatus(v["id"])
             text += status["full_text"]
         assert text == my_publy.description
-
