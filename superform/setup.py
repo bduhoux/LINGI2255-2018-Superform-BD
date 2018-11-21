@@ -13,6 +13,4 @@ setup(
         'feedgen',
         'python-twitter'
     ]
-
-
 )

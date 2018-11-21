@@ -68,6 +68,8 @@ def get_api(channel_config):
 def publish_list(statuslist, twitter_api, media=None):
     a = []
     for status in statuslist[:-1]:
-        a.append(twitter_api.PostUpdate(status))
-    a.append(twitter_api.PostUpdate(statuslist[len(statuslist) - 1], media))
+        if status != "":
+            a.append(twitter_api.PostUpdate(status))
+    if statuslist[len(statuslist) - 1] != "":
+        a.append(twitter_api.PostUpdate(statuslist[len(statuslist) - 1], media))
     return a
