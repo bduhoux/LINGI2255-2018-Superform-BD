@@ -10,7 +10,9 @@ setup(
         'flask',
         'python3-saml',
         'sqlalchemy',
-        'flask_sqlalchemy',
+        'flask-sqlalchemy',
+        'pytest',
+        'facebook-sdk',
         'feedgen',
         'python-twitter'
     ]
