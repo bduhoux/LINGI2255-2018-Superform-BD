@@ -163,4 +163,3 @@ def test_post_to_rss_same_date(client):
 
     assert 'Test of rss same date' in data
     assert 'RSS feed same date' in data
-

@@ -55,8 +55,10 @@
 
                 </div>
             </div>
-            <button class="btn btn-success">Publish</button>
+            <button class="btn btn-success" id="pub-button">Publish</button></form>
+
         </form>
+
     {% else %}
         Your are not logged in.
     {% endif %}
@@ -67,5 +69,12 @@
         {% set template = 'plugins/' + module_name + '/moderate.js'%}
         {% include template ignore missing %}
     </script>
+
+
+
+    {% if session.facebook_running %}
+    <script src="../../static/js/JavaScript_Facebook_SDK.js">
+    </script>
+    {% endif %}
 
 {% endblock %}
