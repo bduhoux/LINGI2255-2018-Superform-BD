@@ -44,6 +44,14 @@
                                         </select>
                                     </div>
 
+                                    <div class="form-group">
+                                        <input type="radio" name="search_table" value="Publishing"
+                                                {% if search_table!="Post" %} checked{% endif %}> Publishing
+                                        <input type="radio" name="search_table" value="Post"
+                                                {% if search_table=="Post" %}
+                                               checked{% endif %}> Post
+                                    </div>
+
 
                                 </div>
                                 <div class="col-md-6" style="width: 100%">
@@ -59,6 +67,7 @@
                                             <option value="2">Archived</option>
                                             <option value="1">Published</option>
                                             <option value="0">Waiting for approval</option>
+                                            <option value="-1">Incomplete</option>
                                         </select>
                                     </div>
 
@@ -103,9 +112,16 @@
                 <table id="result_tab" class="table table-bordered">
                     <thead>
                     <tr>
-                        <th onclick="sortTable(0)">
-                            Channel
-                        </th>
+                        {% if search_table=="Publication" %}
+                            <th onclick="sortTable(0)">
+                                Channel
+                            </th>
+                        {% endif %}
+                        {% if search_table=="Post" %}
+                            <th onclick="sortTable(0)">
+                                #
+                            </th>
+                        {% endif %}
                         <th onclick="sortTable(1)">
                             Subject
                         </th>
@@ -118,6 +134,9 @@
                         <th onclick="sortTable(4)">
                             Date
                         </th>
+                        <th>
+                            Action
+                        </th>
                     </tr>
                     </thead>
 
@@ -125,8 +144,14 @@
                     {% for p in publishing %}
                         <tr>
                             <td>
-                                {{ p.channel.name }}
+                                {% if search_table=="Publication" %}
+                                    {{ p.channel.name }}
+                                {% endif %}
+                                {% if search_table=="Post" %}
+                                    {{ p.id }}
+                                {% endif %}
                             </td>
+
                             <td>
                                 {{ p.title }}
                             </td>
@@ -136,10 +161,33 @@
                                 </div>
                             </td>
                             <td>
-                                {{ p.get_author() }}
+                                {% if search_table=="Publication" %}
+                                    {{ p.get_author() }}
+                                {% endif %}
+                                {% if search_table=="Post" %}
+                                    {{ p.user_id }}
+                                {% endif %}
                             </td>
                             <td>
                                 {{ p.date_from.strftime('%Y-%m-%d') }}
+                            </td>
+
+                            <td>
+                                {% if search_table=="Publication" %}
+                                    {% if (p.channel.id in moderate_channel) and p.state==0 %}
+                                        <a href="{{ url_for('publishings.moderate_publishing',id=p.post_id,idc=p.channel_id) }}"
+                                           class="btn btn-outline-primary" role="button">Moderate</a>
+                                    {% endif %}
+                                {% endif %}
+                                {% if search_table=="Post" %}
+                                    {% if p.user_id == user_id %}
+                                        <a href="#" class="btn btn-outline-primary" role="button">Edit</a>
+                                        <a href="#" class="btn btn-outline-primary">Copy</a>
+                                        <a href="{{ url_for('delete.delete_post', id=p.id) }}"
+                                           onclick="return confirm('Are you sure?')" class="btn btn-outline-warning"
+                                           formmethod="post" type="submit" role="button">Delete</a>
+                                    {% endif %}
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -163,10 +211,9 @@
             'post_status',
             'search_loc',
             'search_type',
-            'order_loc',
-            'search_order',
             'date_from',
-            'date_until'
+            'date_until',
+            'search_table'
         ];
         let multiple_fields = {
             'search_word': false,
@@ -174,8 +221,6 @@
             'post_status': true,
             'search_loc': true,
             'search_type': false,
-            'order_loc': false,
-            'search_order': false,
             'date_from': false,
             'date_until': false
         }; // key is the id of the element and the value is true only if the element is multiple select
@@ -183,17 +228,15 @@
             'search_chan': null,
             'post_status': null,
             'search_loc': null,
-            'search_type:': 'keyword',
-            'order_loc': 'title',
-            'search_order': 'ascending'
+            'search_type:': 'keyword'
+
         };
         $(function () {
             $('.select-chan').select2();
             $('.select-status').select2();
             $('.select-loc').select2();
             $('.select-search-type').select2();
-            $('.select-order').select2();
-            $('.select-order-loc').select2();
+            $('.search_table').select2();
 
             preselect(); // preselect all options selected in a previous post request
 
