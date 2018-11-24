@@ -20,17 +20,15 @@ def search():
         chan = request.form.getlist('search_chan')
         status = request.form.getlist('post_status')
         loc = request.form.getlist('search_loc')
-        order_by = request.form.get('order_loc')
-        order = request.form.get('search_order')
         date_from = request.form.get('date_from')
         date_until = request.form.get('date_until')
         search_type = request.form.get('search_type') == 'keyword'
-        filter_parameter = make_filter_parameter(user_id,pattern,chan,status,loc,order_by,order,date_from,date_until,search_type)
+        filter_parameter = make_filter_parameter(user_id,pattern,chan,status,loc,date_from,date_until,search_type)
         search_result = query_maker(filter_parameter)
         return render_template('search.html', l_chan=l_chan, publishing=search_result, post=True)
 
 
-def make_filter_parameter(user_id,pattern,channels,post_status,search_location,order_by,order,date_from=False,date_until=False,search_by_keyword=False):
+def make_filter_parameter(user_id,pattern,channels,post_status,search_location,date_from=False,date_until=False,search_by_keyword=False):
     user = User.query.get(user_id) if session.get("logged_in", False) else None
     return {
         'user': user,
@@ -42,8 +40,6 @@ def make_filter_parameter(user_id,pattern,channels,post_status,search_location,o
         'search_by_keyword': search_by_keyword,
         'date_from': date_from,
         'date_until': date_until,
-        'order_by': order_by,
-        'is_asc': order == 'ascending'
     }
 
 
@@ -54,8 +50,7 @@ def query_maker(filter_parameter):
     :param filter_parameter: A dictionary containing the different filter parameters
     :return: The wanted query
     """
-    return db.session.query(Publishing).filter(filters(filter_parameter)).order_by(
-        order_query(filter_parameter["order_by"], filter_parameter["is_asc"])).all()
+    return db.session.query(Publishing).filter(filters(filter_parameter)).all()
 
 
 def filters(filter_parameter):
@@ -173,27 +168,3 @@ def filter_date(date_from, date_until):
         condition = condition & (Publishing.date_until <= date)
     return condition
 
-
-def order_query(order_by, is_asc):
-    """
-    A function which returns the order parameter to order the publishings according to a parameter (and ascending/descending)
-
-    :param order_by: the parameter corresponding to how the publishings will be sorted
-    :param is_asc: True if we want to order in an ascending order, False if descending
-    :return: the order parameter to display the publishings according to the inputs.
-    """
-    fil = {
-        "post_id": Publishing.post_id,
-        "channel_id": Publishing.channel_id,
-        "state": Publishing.state,
-        "title": Publishing.title,
-        "description": Publishing.description,
-        "link_url": Publishing.link_url,
-        "image__url": Publishing.image_url,
-        "date_from": Publishing.date_from,
-        "date_until": Publishing.date_until,
-    }
-    if is_asc:
-        return fil[order_by]
-    else:
-        return fil[order_by].desc()

@@ -16,15 +16,6 @@
                             <div class="row" style="width: 100%">
                                 <div class="col-md-6" style="width: 100%">
                                     <div class="form-group">
-                                        <label for="order_loc">Order field</label><br>
-                                        <select class="select-order-loc" style="width: 100%" name="order_loc"
-                                                id="order_loc">
-                                            <option value="title">Title</option>
-                                            <option value="date_from">Date</option>
-                                            <option value="description">Description</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
                                         <label for="date_from">Date from</label>
                                         <input type="date" name="date_from" id="date_from" class="form-control">
                                     </div>
@@ -47,8 +38,8 @@
                                         <select class="select-loc" style="width: 100%" name="search_loc"
                                                 id="search_loc"
                                                 multiple>
-                                            <option value="title" >Title</option>
-                                            <option value="description" >Description</option>
+                                            <option value="title">Title</option>
+                                            <option value="description">Description</option>
                                             <option value="url">Url</option>
                                         </select>
                                     </div>
@@ -56,14 +47,6 @@
 
                                 </div>
                                 <div class="col-md-6" style="width: 100%">
-                                    <div class="form-group">
-                                        <label for="search_order">Searching order</label><br>
-                                        <select class="select-order" style="width: 100%" name="search_order"
-                                                id="search_order">
-                                            <option value="ascending">Ascending</option>
-                                            <option value="descending">Descending</option>
-                                        </select>
-                                    </div>
                                     <div class="form-group">
                                         <label for="date_until">Date until</label>
                                         <input type="date" name="date_until" id="date_until" class="form-control">
@@ -73,9 +56,9 @@
                                         <select class="select-status" style="width: 100%" name="post_status"
                                                 id="post_status"
                                                 multiple>
-                                            <option value="2" >Archived</option>
-                                            <option value="1" >Published</option>
-                                            <option value="0" >Waiting for approval</option>
+                                            <option value="2">Archived</option>
+                                            <option value="1">Published</option>
+                                            <option value="0">Waiting for approval</option>
                                         </select>
                                     </div>
 
@@ -117,20 +100,23 @@
         <div class="row">
             <div class="col-md-12">
                 <h2>Search results</h2>
-                <table class="table table-bordered">
+                <table id="result_tab" class="table table-bordered">
                     <thead>
                     <tr>
-                        <th>
+                        <th onclick="sortTable(0)">
                             Channel
                         </th>
-                        <th>
+                        <th onclick="sortTable(1)">
                             Subject
                         </th>
-                        <th>
+                        <th onclick="sortTable(2)">
                             Body
                         </th>
-                        <th>
+                        <th onclick="sortTable(3)">
                             Author
+                        </th>
+                        <th onclick="sortTable(4)">
+                            Date
                         </th>
                     </tr>
                     </thead>
@@ -151,6 +137,9 @@
                             </td>
                             <td>
                                 {{ p.get_author() }}
+                            </td>
+                            <td>
+                                {{ p.date_from.strftime('%Y-%m-%d') }}
                             </td>
                         </tr>
                     {% endfor %}
@@ -266,6 +255,61 @@
                 $('#advanced_search_button').text('Hide advanced search');
             }
             advanced_search_displayed = !advanced_search_displayed;
+        }
+
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("result_tab");
+            switching = true;
+            //Set the sorting direction to ascending:
+            dir = "asc";
+            /*Make a loop that will continue until
+            no switching has been done:*/
+            while (switching) {
+                //start by saying: no switching is done:
+                switching = false;
+                rows = table.rows;
+                /*Loop through all table rows (except the
+                first, which contains table headers):*/
+                for (i = 1; i < (rows.length - 1); i++) {
+                    //start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /*Get the two elements you want to compare,
+                    one from current row and one from the next:*/
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    /*check if the two rows should switch place,
+                    based on the direction, asc or desc:*/
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            //if so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            //if so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /*If a switch has been marked, make the switch
+                    and mark that a switch has been done:*/
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    //Each time a switch is done, increase this count by 1:
+                    switchcount++;
+                } else {
+                    /*If no switching has been done AND the direction is "asc",
+                    set the direction to "desc" and run the while loop again.*/
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
         }
     </script>
 {% endblock %}
