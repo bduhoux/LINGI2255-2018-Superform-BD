@@ -59,7 +59,7 @@ def query_maker(filter_parameter):
     :param filter_parameter: A dictionary containing the different filter parameters
     :return: The wanted query
     """
-    #print(db.session.query(filter_parameter["search_table"]).filter(filters(filter_parameter)))
+    print(db.session.query(filter_parameter["search_table"]).filter(filters(filter_parameter)))
     return db.session.query(filter_parameter["search_table"]).filter(filters(filter_parameter)).all()
 
 
@@ -151,7 +151,7 @@ def filter_query_title_content(title, content, searched_words, split_words,table
     if split_words:
         if (searched_words == '') | (searched_words == ' ') | (searched_words is None):
             return (table.post_id != None) if table == Publishing else (table.id != None)
-        condition = (table.post_id == None)
+        condition = (table.post_id == None) if table == Publishing else (table.id == None)
         for word in searched_words.split():
             if title & content:
                 condition = condition | table.title.contains(word) | table.description.contains(word)
@@ -168,7 +168,7 @@ def filter_query_title_content(title, content, searched_words, split_words,table
         else:
             return table.description.contains(searched_words)
     else:
-        return table.post_id != None  # Return true means all publishings are accepted
+        return table.post_id != None if table == Publishing else (table.id != None) # Return true means all publishings are accepted
 
 
 def filter_date(date_from, date_until, table):
