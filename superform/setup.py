@@ -14,6 +14,8 @@ setup(
         'pytest',
         'facebook-sdk',
         'feedgen',
-        'python-twitter'
+        'python-twitter',
+        'selenium',
+        'pytest-flask'
     ]
 )

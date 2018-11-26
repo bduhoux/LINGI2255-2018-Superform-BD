@@ -18,57 +18,63 @@ from superform.search import search_page
 # for the archival module
 from superform.archival_module import archival_page, run_default_job
 
-app = Flask(__name__)
-app.config.from_json("config.json")
 
-# Register blueprints
-app.register_blueprint(authentication_page)
-app.register_blueprint(authorizations_page)
-app.register_blueprint(search_page)
-app.register_blueprint(channels_page)
-app.register_blueprint(posts_page)
-app.register_blueprint(pub_page)
-app.register_blueprint(feed_page)
-app.register_blueprint(archival_page)
+def create_app(testing = False):
+    app = Flask(__name__)
+    app.config.from_json("config.json")
 
-app.register_blueprint(delete_page)
-app.register_blueprint(facebook_plugin)
+    # Register blueprints
+    app.register_blueprint(authentication_page)
+    app.register_blueprint(authorizations_page)
+    app.register_blueprint(search_page)
+    app.register_blueprint(channels_page)
+    app.register_blueprint(posts_page)
+    app.register_blueprint(pub_page)
+    app.register_blueprint(feed_page)
+    app.register_blueprint(archival_page)
 
-# Init dbs
-db.init_app(app)
+    app.register_blueprint(delete_page)
+    app.register_blueprint(facebook_plugin)
+    print(app.config["SQLALCHEMY_DATABASE_URI"])
 
-# List available channels in config
-app.config["PLUGINS"] = {
-    name: importlib.import_module(name)
-    for finder, name, ispkg
-    in pkgutil.iter_modules(superform.plugins.__path__, superform.plugins.__name__ + ".")
-}
+    if testing:
+        app.config['TESTING'] = True
+    # Init dbs
+    db.init_app(app)
 
+    # List available channels in config
+    app.config["PLUGINS"] = {
+        name: importlib.import_module(name)
+        for finder, name, ispkg
+        in pkgutil.iter_modules(superform.plugins.__path__, superform.plugins.__name__ + ".")
+    }
 
-@app.route('/')
-def index():
-    user = User.query.get(session.get("user_id", "")) if session.get("logged_in", False) else None
-    posts=[]
-    flattened_list_pubs =[]
-    if user is not None:
-        setattr(user,'is_mod',is_moderator(user))
-        posts = db.session.query(Post).filter(Post.user_id==session.get("user_id", ""))
-        chans = get_moderate_channels_for_user(user)
-        pubs_per_chan = (db.session.query(Publishing).filter((Publishing.channel_id == c.id) & (Publishing.state == 0)) for c in chans)
-        flattened_list_pubs = [y for x in pubs_per_chan for y in x]
+    @app.route('/')
+    def index():
+        user = User.query.get(session.get("user_id", "")) if session.get("logged_in", False) else None
+        posts = []
+        flattened_list_pubs = []
+        if user is not None:
+            setattr(user, 'is_mod', is_moderator(user))
+            posts = db.session.query(Post).filter(Post.user_id == session.get("user_id", ""))
+            chans = get_moderate_channels_for_user(user)
+            pubs_per_chan = (
+            db.session.query(Publishing).filter((Publishing.channel_id == c.id) & (Publishing.state == 0)) for c in
+            chans)
+            flattened_list_pubs = [y for x in pubs_per_chan for y in x]
 
-    return render_template("index.html", user=user,posts=posts,publishings = flattened_list_pubs)
+        return render_template("index.html", user=user, posts=posts, publishings=flattened_list_pubs)
 
+    @app.errorhandler(403)
+    def forbidden(error):
+        return render_template('403.html'), 403
 
-@app.errorhandler(403)
-def forbidden(error):
-    return render_template('403.html'), 403
+    @app.errorhandler(404)
+    def notfound(error):
+        return render_template('404.html'), 404
+    return app
 
-
-@app.errorhandler(404)
-def notfound(error):
-    return render_template('404.html'), 404
-
+app = create_app()
 
 if __name__ == '__main__':
     app.run()
