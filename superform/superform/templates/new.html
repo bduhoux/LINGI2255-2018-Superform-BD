@@ -94,32 +94,32 @@
                                             <label for="{{ chan.name }}_titlepost">Title</label><br>
                                             <input type="text" name="{{ chan.name }}_titlepost" id="{{ chan.name }}_titlepost" class="form-control">
                                         </div>
-                                        <div class="form-group">
-                                            <label for="{{ chan.name }}_descriptionpost">Description</label><br>
-                                            <textarea class="form-control" rows="5" id="{{ chan.name }}_descriptionpost" name="{{ chan.name }}_descriptionpost" accesskey="," onkeydown="if (event.keyCode===27) event.returnValue=false;"></textarea>
-                                        </div>
                                         {%  for elem in modules%}
                                             {%  if elem.module=="superform.plugins.wiki" and elem.name==chan.name%}
+                                                <div class="form-group">
+                                                    <label for="{{ chan.name }}_descriptionpost">Description</label><br>
+                                                    <textarea class="form-control" rows="5" id="text" name="descriptionpost" accesskey="," onkeydown="if (event.keyCode===27) event.returnValue=false;"></textarea>
+                                                </div>
                                                 <script type="text/javascript" src="../static/js/guiedit.js"></script>
                                                 <div class="form-group">
                                                     <label for="{{ chan.name }}_titlepost">Editing</label><br>
-                                                    <script type="text/javascript">
-                                                        <!--
-                                                            insButton("\\'\\'", "\\'\\'", 'Emphasized', "<img src='../static/image/em.gif' title='Emphasized (italic)' style='border:0px;' />", "");
-                                                            insButton("\\'\\'\\'", "\\'\\'\\'", 'Strong', "<img src='../static/image/strong.gif' title='Strong (bold)' style='border:0px;' />", "");
-                                                            insButton("[[", "]]", 'Page link', "<img src='../static/image/pagelink.gif' title='Link to internal page' style='border:0px;' />", "");
-                                                            insButton("[[", "]]", 'http:// | link text', "<img src='../static/image/extlink.gif' title='Link to external page' style='border:0px;' />", "");
-                                                            insButton("\\'+", "+\\'", 'Big text', "<img src='../static/image/big.gif' title='Big text' style='border:0px;' />", "");
-                                                            insButton("\\'-", "-\\'", 'Small text', "<img src='../static/image/small.gif' title='Small text' style='border:0px;' />", "");
-                                                            insButton("\\'^", "^\\'", 'Superscript', "<img src='../static/image/sup.gif' title='Superscript' style='border:0px;' />", "");
-                                                            insButton("\\'_", "_\\'", 'Subscript', "<img src='../static/image/sub.gif' title='Subscript' style='border:0px;' />", "");
-                                                            insButton("\\n!! ", "\\n", 'Heading', "<img src='../static/image/h.gif' title='Heading' style='border:0px;' />", "");
-                                                            insButton("%center%", "", '', "<img src='../static/image/center.gif' title='Center' style='border:0px;' />", "");
-                                                            document.write("<img src='../static/image/fixurl.png' alt='FixUrl' title='Encode special characters in URL link addresses' onclick='FixSelectedURL()'/>");
-                                                        //-->
-                                                    </script>
+                                                    <a tabindex="-1" onclick="insMarkup('\'\'','\'\'','Emphasized');"><img src="../static/image/em.gif" title="Emphasized (italic)" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('\'\'\'','\'\'\'','Strong');"><img src="../static/image/strong.gif" title="Strong (bold)" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('[[',']]','Page link');"><img src="../static/image/pagelink.gif" title="Link to internal page" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('[[',']]','http:// | link text');"><img src="../static/image/extlink.gif" title="Link to external page" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('\'+','+\'','Big text');"><img src="../static/image/big.gif" title="Big text" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('\'-','-\'','Small text');"><img src="../static/image/small.gif" title="Small text" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('\'^','^\'','Superscript');"><img src="../static/image/sup.gif" title="Superscript" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('\'_','_\'','Subscript');"><img src="../static/image/sub.gif" title="Subscript" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('\n!! ','\n','Heading');"><img src="../static/image/h.gif" title="Heading" style="border:0px;"></a>
+                                                    <a tabindex="-1" onclick="insMarkup('%center%','','');"><img src="../static/image/center.gif" title="Center" style="border:0px;"></a>
                                                 </div>
-                                            {% endif %}
+                                            {%  else  %}
+                                                <div class="form-group">
+                                                    <label for="{{ chan.name }}_descriptionpost">Description</label><br>
+                                                    <textarea class="form-control" rows="5" id="descriptionpost" name="descriptionpost" accesskey="," onkeydown="if (event.keyCode===27) event.returnValue=false;"></textarea>
+                                                </div>
+                                            {%  endif  %}
                                             <div class="form-group">
                                                 <label for="{{ chan.name }}_linkurlpost">Link</label><br>
                                                 <input type="text" name="{{ chan.name }}_linkurlpost" id="{{ chan.name }}_linkurlpost" class="form-control">
@@ -239,7 +239,7 @@
             //This is a subselect of input that match with the regex .*descriptionpost
             $('textarea')
                 .filter(function() {
-                    return this.id.match(/.*descriptionpost/);
+                    return this.id.match(/.*descriptionpost/) || this.id.match(/.*text/);
                 })
                 .val(text);
         });
