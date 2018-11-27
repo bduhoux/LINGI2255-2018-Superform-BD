@@ -1,6 +1,7 @@
 from flask import current_app
 import twitter
 import json
+from run_plugin_exception import RunPluginException
 
 FIELDS_UNAVAILABLE = ['Title']
 FILES_MANDATORY = ['Description']
@@ -13,14 +14,19 @@ def run(publishing, channel_config):
     :param publishing: a dictionary containing the elements of the publication
     :param channel_config: The configuration of the Twitter channel used for publishing
     """
-    # Get Twitter API
-    twitter_api = get_api(channel_config)
+    json_data = json.loads(channel_config)
+    if 'Access token' in json_data and 'Access token secret' in json_data:
 
-    statuslist = [y for x, y in json.loads(publishing.extra)['tweet_list']]
-    if publishing.image_url is not '':
-        return publish_list(statuslist, twitter_api, media=publishing.image_url)
+        # Get Twitter API
+        twitter_api = get_api(channel_config)
+
+        statuslist = [y for x, y in json.loads(publishing.extra)['tweet_list']]
+        if publishing.image_url is not '':
+            return publish_list(statuslist, twitter_api, media=publishing.image_url)
+        else:
+            return publish_list(statuslist, twitter_api)
     else:
-        return publish_list(statuslist, twitter_api)
+        raise RunPluginException('Please configure the channel first')
 
 
 def get_channel_fields(form, chan):
