@@ -49,7 +49,7 @@ def new_post():
     module = []
     list_of_channels = channels_available_for_user(user_id)
     for elem in list_of_channels:
-        module.append({"name":elem.name, "module":elem.module})
+        module = {"name":elem.name, "module":elem.module}
         print(module)
         m = elem.module
         clas = get_instance_from_module_path(m)

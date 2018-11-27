@@ -13,6 +13,7 @@
 */
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
+  console.log("insButton");
   if (mkey > '') { mkey = 'accesskey="' + mkey + '" ' }
   document.write("<a tabindex='-1' " + mkey + "onclick=\"insMarkup('"
     + mopen + "','"
@@ -22,7 +23,7 @@ function insButton(mopen, mclose, mtext, mlabel, mkey) {
 }
 
 function insMarkup() {
-  var func = false, tid='/.*descriptionpost/', mopen = '', mclose = '', mtext = '';
+  var func = false, tid='wiki_descriptionpost', mopen = '', mclose = '', mtext = '';
   if(typeof arguments[0] == 'function') {
     var func = arguments[0];
     if(arguments.length > 1) tid = arguments[1];
@@ -32,8 +33,9 @@ function insMarkup() {
     var mopen = arguments[0], mclose = arguments[1], mtext = arguments[2];
     if(arguments.length > 3) tid = arguments[3];
   }
-  
+
   var tarea = document.getElementById(tid);
+  console.log(tarea);
   if (tarea.setSelectionRange > '') {
     var p0 = tarea.selectionStart;
     var p1 = tarea.selectionEnd;
