@@ -114,13 +114,7 @@
                                                     <a tabindex="-1" onclick="insMarkup('\n!! ','\n','Heading');"><img src="../static/image/h.gif" title="Heading" style="border:0px;"></a>
                                                     <a tabindex="-1" onclick="insMarkup('%center%','','');"><img src="../static/image/center.gif" title="Center" style="border:0px;"></a>
                                                 </div>
-                                            {%  else  %}
                                                 <div class="form-group">
-                                                    <label for="{{ chan.name }}_descriptionpost">Description</label><br>
-                                                    <textarea class="form-control" rows="5" id="descriptionpost" name="descriptionpost" accesskey="," onkeydown="if (event.keyCode===27) event.returnValue=false;"></textarea>
-                                                </div>
-                                            {%  endif  %}
-                                            <div class="form-group">
                                                 <label for="{{ chan.name }}_linkurlpost">Link</label><br>
                                                 <input type="text" name="{{ chan.name }}_linkurlpost" id="{{ chan.name }}_linkurlpost" class="form-control">
                                             </div>
@@ -142,6 +136,35 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            {%  else  %}
+                                                <div class="form-group">
+                                                    <label for="{{ chan.name }}_descriptionpost">Description</label><br>
+                                                    <textarea class="form-control" rows="5" id="descriptionpost" name="descriptionpost" accesskey="," onkeydown="if (event.keyCode===27) event.returnValue=false;"></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                <label for="{{ chan.name }}_linkurlpost">Link</label><br>
+                                                <input type="text" name="{{ chan.name }}_linkurlpost" id="{{ chan.name }}_linkurlpost" class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="{{ chan.name }}_imagepost">Image</label><br>
+                                                <input type="file" name="{{ chan.name }}_imagepost" id="{{ chan.name }}_imagepost" class="form-control">
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="{{ chan.name }}_datefrompost">Publication Date</label><br>
+                                                        <input id="{{ chan.name }}_datefrompost" name="{{ chan.name }}_datefrompost" type="date" class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="{{ chan.name }}_dateuntilpost">Publication Until</label><br>
+                                                        <input id="{{ chan.name }}_dateuntilpost" name="{{ chan.name }}_dateuntilpost" type="date" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {%  endif  %}
+
                                         {%  endfor %}
                                     </div>
                                 </div>
