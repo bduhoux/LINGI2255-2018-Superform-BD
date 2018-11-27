@@ -59,7 +59,6 @@ def query_maker(filter_parameter):
     :param filter_parameter: A dictionary containing the different filter parameters
     :return: The wanted query
     """
-    print(db.session.query(filter_parameter["search_table"]).filter(filters(filter_parameter)))
     return db.session.query(filter_parameter["search_table"]).filter(filters(filter_parameter)).all()
 
 

@@ -4,7 +4,7 @@ from flask import Blueprint, url_for, request, redirect, render_template, flash,
 
 from superform.utils import login_required, datetime_converter, str_converter
 from superform.models import db, Publishing, Channel
-from run_plugin_exception import RunPluginException
+from superform.run_plugin_exception import RunPluginException
 
 pub_page = Blueprint('publishings', __name__)
 

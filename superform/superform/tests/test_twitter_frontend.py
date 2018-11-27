@@ -1,16 +1,15 @@
 import json
 import os
-# import sys
+
 import tempfile
 from random import randint
-from time import sleep
 
 import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import pytest
 from selenium import webdriver
-from plugins.Twitter import get_channel_fields
+from superform.plugins.Twitter import get_channel_fields
 from superform import db, app
 from selenium.webdriver.support import expected_conditions as EC
 from superform.models import Authorization, Channel, User, Post, Publishing
@@ -366,7 +365,7 @@ class TestLiveServer:
         driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Publish'])[1]/following::div[1]").click()
-        driver.find_element_by_id("chan_option_83713464566885").click()
+        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
         driver.find_element_by_link_text("Twitter").click()
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='(262 out of 280 characters)'])[1]/following::input[2]").click()

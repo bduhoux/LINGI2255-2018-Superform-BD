@@ -1,7 +1,7 @@
 from flask import current_app
 import twitter
 import json
-from run_plugin_exception import RunPluginException
+from superform.run_plugin_exception import RunPluginException
 
 FIELDS_UNAVAILABLE = ['Title']
 FILES_MANDATORY = ['Description']
