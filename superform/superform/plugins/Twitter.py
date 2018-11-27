@@ -38,7 +38,7 @@ def get_channel_fields(form, chan):
         else:
             tweet = form.get(chan + '_tweet_' + str(i))
         if tweet is not None:
-            tweet_list.append((str(i), tweet.replace('\n','\\n')))
+            tweet_list.append((str(i), tweet))
         else:
             end = True
         i += 1
