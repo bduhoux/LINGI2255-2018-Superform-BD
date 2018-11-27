@@ -262,7 +262,7 @@
             //This is a subselect of input that match with the regex .*descriptionpost
             $('textarea')
                 .filter(function() {
-                    return this.id.match(/.*descriptionpost/) || this.id.match(/.*text/);
+                    return this.id.match(/.*descriptionpost/);
                 })
                 .val(text);
         });

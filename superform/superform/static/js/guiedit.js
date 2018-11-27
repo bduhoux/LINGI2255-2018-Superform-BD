@@ -22,7 +22,7 @@ function insButton(mopen, mclose, mtext, mlabel, mkey) {
 }
 
 function insMarkup() {
-  var func = false, tid='descriptionpost', mopen = '', mclose = '', mtext = '';
+  var func = false, tid='/.*descriptionpost/', mopen = '', mclose = '', mtext = '';
   if(typeof arguments[0] == 'function') {
     var func = arguments[0];
     if(arguments.length > 1) tid = arguments[1];
