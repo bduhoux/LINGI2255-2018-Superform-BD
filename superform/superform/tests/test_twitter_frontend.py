@@ -30,18 +30,14 @@ def client():
 
 
 def setup_db():
-    id_channel = 0  # randint(0, 99999999999999)
-    # while db.session.query(Channel).filter(Channel.id == id_channel).first() is not None:
-    #    id_channel = randint(0, 99999999999999)
+    id_channel = 0
 
     channel = Channel(id=id_channel, name="Twitter", module="superform.plugins.Twitter", config="{}")
     db.session.add(channel)
     authorization = Authorization(user_id="myself", channel_id=id_channel, permission=2)
     db.session.add(authorization)
 
-    id_post = 0  # randint(0, 99999999999999)
-    # while db.session.query(Post).filter(Post.id == id_post).first() is not None:
-    #    id_post = randint(0, 99999999999999)
+    id_post = 0
 
     post = Post(id=id_post, user_id="myself", title="first title",
                 description="That know ask case sex ham dear her spot. Weddings followed the all marianne nor whatever settling. Perhaps six prudent several her had offence. Did had way law dinner square tastes. Recommend concealed yet her procuring see consulted depending. Adieus hunted end plenty are his she afraid. Resources agreement contained propriety applauded neglected use yet. ",
@@ -60,546 +56,614 @@ def teardown_db(id_channel, id_post):
         Publishing.post_id == id_post and Publishing.channel_id == id_channel).first()
     if publishing is not None:
         db.session.delete(publishing)
-    db.session.delete(post)
-    db.session.delete(channel)
+    if post is not None:
+        db.session.delete(post)
+    if channel is not None:
+        db.session.delete(channel)
     db.session.commit()
 
 
 class TestLiveServer:
     def test_basic(self, client):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
 
-        assert driver.find_element_by_id("Twitter_descriptionpost").get_attribute(
-            "value") == "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium."
-        assert driver.find_element_by_id("Twitter_linkurlpost").get_attribute(
-            "value") == "http://127.0.0.1:5000/new"
-        driver.close()
-        teardown_db(id_channel, id_post)
+            assert driver.find_element_by_id("Twitter_descriptionpost").get_attribute(
+                "value") == "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium."
+            assert driver.find_element_by_id("Twitter_linkurlpost").get_attribute(
+                "value") == "http://127.0.0.1:5000/new"
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_basic_moderate(self, client):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        extra = get_channel_fields({'Twitter_tweet_1': driver.find_element_by_id("Twitter_tweet_1").get_attribute(
-            "value"), 'Twitter_tweet_2': driver.find_element_by_id("Twitter_tweet_2").get_attribute(
-            "value")}, 'Twitter')
-        pub = Publishing(post_id=id_post, channel_id=id_channel, state=0, title="",
-                         description=driver.find_element_by_id("Twitter_descriptionpost").get_attribute("value"),
-                         link_url=driver.find_element_by_id("Twitter_linkurlpost").get_attribute("value"),
-                         image_url="pas",
-                         date_from=datetime_converter("2018-07-01"),
-                         date_until=datetime_converter("2018-07-01"), extra=json.dumps(extra))
-        db.session.add(pub)
-        db.session.commit()
-        driver.get('http://127.0.0.1:5000/')
-        # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
-        driver.find_element_by_id("moderate_" + str(id_post)).click()
-        assert driver.find_element_by_id("descrpost").get_attribute(
-            "value") == "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium."
-        assert driver.find_element_by_id("linkurlpost").get_attribute(
-            "value") == "http://127.0.0.1:5000/new"
-        driver.close()
-        teardown_db(id_channel, id_post)
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            extra = get_channel_fields({'Twitter_tweet_1': driver.find_element_by_id("Twitter_tweet_1").get_attribute(
+                "value"), 'Twitter_tweet_2': driver.find_element_by_id("Twitter_tweet_2").get_attribute(
+                "value")}, 'Twitter')
+            pub = Publishing(post_id=id_post, channel_id=id_channel, state=0, title="",
+                             description=driver.find_element_by_id("Twitter_descriptionpost").get_attribute("value"),
+                             link_url=driver.find_element_by_id("Twitter_linkurlpost").get_attribute("value"),
+                             image_url="pas",
+                             date_from=datetime_converter("2018-07-01"),
+                             date_until=datetime_converter("2018-07-01"), extra=json.dumps(extra))
+            db.session.add(pub)
+            db.session.commit()
+            driver.get('http://127.0.0.1:5000/')
+            # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
+            driver.find_element_by_id("moderate_" + str(id_post)).click()
+            assert driver.find_element_by_id("descrpost").get_attribute(
+                "value") == "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium."
+            assert driver.find_element_by_id("linkurlpost").get_attribute(
+                "value") == "http://127.0.0.1:5000/new"
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_basic_warning(self, client):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        extra = get_channel_fields({'Twitter_tweet_1': driver.find_element_by_id("Twitter_tweet_1").get_attribute(
-            "value"), 'Twitter_tweet_2': driver.find_element_by_id("Twitter_tweet_2").get_attribute(
-            "value")}, 'Twitter')
-        pub = Publishing(post_id=id_post, channel_id=id_channel, state=0, title="",
-                         description=driver.find_element_by_id("Twitter_descriptionpost").get_attribute("value"),
-                         link_url=driver.find_element_by_id("Twitter_linkurlpost").get_attribute("value"),
-                         image_url="pas",
-                         date_from=datetime_converter("2018-07-01"),
-                         date_until=datetime_converter("2050-07-01"), extra=json.dumps(extra))
-        db.session.add(pub)
-        db.session.commit()
-        driver.get('http://127.0.0.1:5000/')
-        # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
-        driver.find_element_by_id("moderate_" + str(id_post)).click()
-        driver.find_element_by_id("pub-button").click()
-        assert driver.find_element_by_xpath("(.//*[normalize-space(text()) and normalize-space(.)='Moderate this publication'])[1]/following::div[1]").text == "Warning!: Please configure the channel first"
-        driver.close()
-        teardown_db(id_channel, id_post)
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            extra = get_channel_fields({'Twitter_tweet_1': driver.find_element_by_id("Twitter_tweet_1").get_attribute(
+                "value"), 'Twitter_tweet_2': driver.find_element_by_id("Twitter_tweet_2").get_attribute(
+                "value")}, 'Twitter')
+            pub = Publishing(post_id=id_post, channel_id=id_channel, state=0, title="",
+                             description=driver.find_element_by_id("Twitter_descriptionpost").get_attribute("value"),
+                             link_url=driver.find_element_by_id("Twitter_linkurlpost").get_attribute("value"),
+                             image_url="pas",
+                             date_from=datetime_converter("2018-07-01"),
+                             date_until=datetime_converter("2050-07-01"), extra=json.dumps(extra))
+            db.session.add(pub)
+            db.session.commit()
+            driver.get('http://127.0.0.1:5000/')
+            # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
+            driver.find_element_by_id("moderate_" + str(id_post)).click()
+            driver.find_element_by_id("pub-button").click()
+            assert driver.find_element_by_xpath("(.//*[normalize-space(text()) and normalize-space(.)='Moderate this publication'])[1]/following::div[1]").text == "Warning!: Please configure the channel first"
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_basic_publish(self, client):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Channels")))
-        driver.find_element_by_link_text("Channels").click()
-        driver.find_element_by_link_text("Configure").click()
-        driver.find_element_by_id("Access token").click()
-        driver.find_element_by_id("Access token").clear()
-        driver.find_element_by_id("Access token").send_keys("1052533183151886336-RBoq1epkAOeRfGdd2pBrbi9uTxQBv6")
-        driver.find_element_by_id("Access token secret").click()
-        driver.find_element_by_id("Access token secret").clear()
-        driver.find_element_by_id("Access token secret").send_keys("vqM1nqgcst0uNDSryuMGjhCjT9ldCj4rFUpfxJfDzuTzc")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Access token secret'])[1]/following::button[1]").click()
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Channels")))
+            driver.find_element_by_link_text("Channels").click()
+            driver.find_element_by_link_text("Configure").click()
+            driver.find_element_by_id("Access token").click()
+            driver.find_element_by_id("Access token").clear()
+            driver.find_element_by_id("Access token").send_keys("1052533183151886336-RBoq1epkAOeRfGdd2pBrbi9uTxQBv6")
+            driver.find_element_by_id("Access token secret").click()
+            driver.find_element_by_id("Access token secret").clear()
+            driver.find_element_by_id("Access token secret").send_keys("vqM1nqgcst0uNDSryuMGjhCjT9ldCj4rFUpfxJfDzuTzc")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Access token secret'])[1]/following::button[1]").click()
 
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        extra = {"tweet_list": [["1", ""]]}
-        pub = Publishing(post_id=id_post, channel_id=id_channel, state=0, title="",
-                         description=driver.find_element_by_id("Twitter_descriptionpost").get_attribute("value"),
-                         link_url=driver.find_element_by_id("Twitter_linkurlpost").get_attribute("value"),
-                         image_url="pas",
-                         date_from=datetime_converter("2018-07-01"),
-                         date_until=datetime_converter("2050-07-01"), extra=json.dumps(extra))
-        db.session.add(pub)
-        db.session.commit()
-        driver.get('http://127.0.0.1:5000/')
-        # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
-        driver.find_element_by_id("moderate_" + str(id_post)).click()
-        driver.find_element_by_id("pub-button").click()
-        assert driver.title == 'Index - Superform', driver.title
-        driver.close()
-        teardown_db(id_channel, id_post)
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            extra = {"tweet_list": [["1", ""]]}
+            pub = Publishing(post_id=id_post, channel_id=id_channel, state=0, title="",
+                             description=driver.find_element_by_id("Twitter_descriptionpost").get_attribute("value"),
+                             link_url=driver.find_element_by_id("Twitter_linkurlpost").get_attribute("value"),
+                             image_url="pas",
+                             date_from=datetime_converter("2018-07-01"),
+                             date_until=datetime_converter("2050-07-01"), extra=json.dumps(extra))
+            db.session.add(pub)
+            db.session.commit()
+            driver.get('http://127.0.0.1:5000/')
+            # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
+            driver.find_element_by_id("moderate_" + str(id_post)).click()
+            driver.find_element_by_id("pub-button").click()
+            assert driver.title == 'Index - Superform', driver.title
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_basic_preview(self, client):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
-            "value") == "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis."
-        driver.close()
-        teardown_db(id_channel, id_post)
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
+                "value") == "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis."
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_two_tweet(self):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
-            "value") == "[1/2] An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla…"
-        assert driver.find_element_by_id("Twitter_tweet_2").get_attribute(
-            "value") == "[2/2] exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium."
-        driver.close()
-        teardown_db(id_channel, id_post)
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
+                "value") == "[1/2] An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla…"
+            assert driver.find_element_by_id("Twitter_tweet_2").get_attribute(
+                "value") == "[2/2] exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium."
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_link(self):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
-            "value") == "[1/2] An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla…"
-        assert driver.find_element_by_id("Twitter_tweet_2").get_attribute(
-            "value") == "[2/2] exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium. http://127.0.0.1:5000/new"
-        driver.close()
-        teardown_db(id_channel, id_post)
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
+                "value") == "[1/2] An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla…"
+            assert driver.find_element_by_id("Twitter_tweet_2").get_attribute(
+                "value") == "[2/2] exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium. http://127.0.0.1:5000/new"
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_truncate(self):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        driver.find_element_by_id("Twitter_truncate").click()
-        assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
-            "value") == "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota […] http://127.0.0.1:5000/new"
-        driver.close()
-        teardown_db(id_channel, id_post)
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            driver.find_element_by_id("Twitter_truncate").click()
+            assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
+                "value") == "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota […] http://127.0.0.1:5000/new"
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_characters(self):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        assert driver.find_element_by_id("NumberCharacters_1").text == "(274 out of 280 characters)"
-        assert driver.find_element_by_id("NumberCharacters_2").text == "(262 out of 280 characters)"
-        driver.close()
-        teardown_db(id_channel, id_post)
+        try:
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            assert driver.find_element_by_id("NumberCharacters_1").text == "(274 out of 280 characters)"
+            assert driver.find_element_by_id("NumberCharacters_2").text == "(262 out of 280 characters)"
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_moderate(self, client):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_link_text("Twitter").click()
-        extra = get_channel_fields({'Twitter_tweet_1': driver.find_element_by_id("Twitter_tweet_1").get_attribute(
-            "value"), 'Twitter_tweet_2': driver.find_element_by_id("Twitter_tweet_2").get_attribute(
-            "value")}, 'Twitter')
-        pub = Publishing(post_id=id_post, channel_id=id_channel, state=0, title="",
-                         description="That know ask case sex ham dear her spot. Weddings followed the all marianne nor whatever settling. Perhaps six prudent several her had offence. Did had way law dinner square tastes. Recommend concealed yet her procuring see consulted depending. Adieus hunted end plenty are his she afraid. Resources agreement contained propriety applauded neglected use yet. ",
-                         link_url="http://127.0.0.1:5000/new", image_url="pas",
-                         date_from=datetime_converter("2018-07-01"),
-                         date_until=datetime_converter("2018-07-01"), extra=json.dumps(extra))
-        db.session.add(pub)
-        db.session.commit()
-        driver.get('http://127.0.0.1:5000/')
-        # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
-        driver.find_element_by_id("moderate_" + str(id_post)).click()
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='(262 out of 280 characters)'])[1]/following::input[2]").click()
-        driver.find_element_by_id("tweet_3").click()
-        driver.find_element_by_id("tweet_3").clear()
-        driver.find_element_by_id("tweet_3").send_keys("some random text to test")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='(24 out of 280 characters)'])[1]/following::input[2]").click()
-        driver.find_element_by_id("tweet_4").click()
-        driver.find_element_by_id("tweet_4").clear()
-        driver.find_element_by_id("tweet_4").send_keys("uiocfzuo")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Moderate this publication'])[1]/following::div[2]").click()
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='(8 out of 280 characters)'])[1]/following::input[1]").click()
-        # sleep(5)
-        print(driver.find_element_by_id("tweet_1").get_attribute(
-            "value"))
-        assert driver.find_element_by_id("tweet_1").get_attribute(
-            "value") == "[1/2] An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla…"
-        assert driver.find_element_by_id("tweet_2").get_attribute(
-            "value") == "[2/2] exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium. http://127.0.0.1:5000/new"
-        assert driver.find_element_by_id("tweet_3").get_attribute(
-            "value") == "some random text to test"
         try:
-            driver.find_element_by_id("Twitter_tweet_4")
-            assert False
-        except selenium.common.exceptions.NoSuchElementException:
-            assert True
-        driver.close()
-        teardown_db(id_channel, id_post)
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_link_text("Twitter").click()
+            extra = get_channel_fields({'Twitter_tweet_1': driver.find_element_by_id("Twitter_tweet_1").get_attribute(
+                "value"), 'Twitter_tweet_2': driver.find_element_by_id("Twitter_tweet_2").get_attribute(
+                "value")}, 'Twitter')
+            pub = Publishing(post_id=id_post, channel_id=id_channel, state=0, title="",
+                             description="That know ask case sex ham dear her spot. Weddings followed the all marianne nor whatever settling. Perhaps six prudent several her had offence. Did had way law dinner square tastes. Recommend concealed yet her procuring see consulted depending. Adieus hunted end plenty are his she afraid. Resources agreement contained propriety applauded neglected use yet. ",
+                             link_url="http://127.0.0.1:5000/new", image_url="pas",
+                             date_from=datetime_converter("2018-07-01"),
+                             date_until=datetime_converter("2018-07-01"), extra=json.dumps(extra))
+            db.session.add(pub)
+            db.session.commit()
+            driver.get('http://127.0.0.1:5000/')
+            # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
+            driver.find_element_by_id("moderate_" + str(id_post)).click()
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='(262 out of 280 characters)'])[1]/following::input[2]").click()
+            driver.find_element_by_id("tweet_3").click()
+            driver.find_element_by_id("tweet_3").clear()
+            driver.find_element_by_id("tweet_3").send_keys("some random text to test")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='(24 out of 280 characters)'])[1]/following::input[2]").click()
+            driver.find_element_by_id("tweet_4").click()
+            driver.find_element_by_id("tweet_4").clear()
+            driver.find_element_by_id("tweet_4").send_keys("uiocfzuo")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Moderate this publication'])[1]/following::div[2]").click()
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='(8 out of 280 characters)'])[1]/following::input[1]").click()
+            # sleep(5)
+            print(driver.find_element_by_id("tweet_1").get_attribute(
+                "value"))
+            assert driver.find_element_by_id("tweet_1").get_attribute(
+                "value") == "[1/2] An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla…"
+            assert driver.find_element_by_id("tweet_2").get_attribute(
+                "value") == "[2/2] exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium. http://127.0.0.1:5000/new"
+            assert driver.find_element_by_id("tweet_3").get_attribute(
+                "value") == "some random text to test"
+            try:
+                driver.find_element_by_id("Twitter_tweet_4")
+                assert False
+            except selenium.common.exceptions.NoSuchElementException:
+                assert True
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
 
     def test_add_remove(self):
-        id_channel, id_post = setup_db()
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        wait = WebDriverWait(driver, 10)
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").click()
-        driver.find_element_by_name("j_username").clear()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").click()
-        driver.find_element_by_name("j_password").clear()
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
-        driver.find_element_by_link_text("New post").click()
-        driver.find_element_by_id("descriptionpost").click()
-        driver.find_element_by_id("descriptionpost").clear()
-        driver.find_element_by_id("descriptionpost").send_keys(
-            "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
-        driver.find_element_by_id("linkurlpost").click()
-        driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
-        driver.find_element_by_id("datefrompost").click()
-        driver.find_element_by_id("datefrompost").clear()
-        driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
-        driver.find_element_by_id("dateuntilpost").click()
-        driver.find_element_by_id("dateuntilpost").clear()
-        driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Publish'])[1]/following::div[1]").click()
-        driver.find_element_by_id("chan_option_" + str(id_channel)).click()
-        driver.find_element_by_link_text("Twitter").click()
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='(262 out of 280 characters)'])[1]/following::input[2]").click()
-        driver.find_element_by_id("Twitter_tweet_3").click()
-        driver.find_element_by_id("Twitter_tweet_3").clear()
-        driver.find_element_by_id("Twitter_tweet_3").send_keys("some random text")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='(16 out of 280 characters)'])[1]/following::input[2]").click()
-        driver.find_element_by_id("Twitter_tweet_4").click()
-        driver.find_element_by_id("Twitter_tweet_4").clear()
-        driver.find_element_by_id("Twitter_tweet_4").send_keys("sfgethet fdb")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='(12 out of 280 characters)'])[1]/following::div[1]").click()
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='(12 out of 280 characters)'])[1]/following::input[1]").click()
-        assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
-            "value") == "[1/2] An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla…"
-        assert driver.find_element_by_id("Twitter_tweet_2").get_attribute(
-            "value") == "[2/2] exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium. http://127.0.0.1:5000/new"
-        assert driver.find_element_by_id("Twitter_tweet_3").get_attribute(
-            "value") == "some random text"
         try:
-            driver.find_element_by_id("Twitter_tweet_4")
-            assert False
-        except selenium.common.exceptions.NoSuchElementException:
-            assert True
-        driver.close()
-        teardown_db(id_channel, id_post)
+            id_channel, id_post = setup_db()
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            wait = WebDriverWait(driver, 20)
+            driver.find_element_by_link_text("Login").click()
+            wait.until(EC.element_to_be_clickable((By.NAME, "j_username")))
+            driver.find_element_by_name("j_username").click()
+            driver.find_element_by_name("j_username").clear()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").click()
+            driver.find_element_by_name("j_password").clear()
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
+            driver.find_element_by_link_text("New post").click()
+            driver.find_element_by_id("descriptionpost").click()
+            driver.find_element_by_id("descriptionpost").clear()
+            driver.find_element_by_id("descriptionpost").send_keys(
+                "An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium.")
+            driver.find_element_by_id("linkurlpost").click()
+            driver.find_element_by_id("linkurlpost").clear()
+            driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+            driver.find_element_by_id("datefrompost").click()
+            driver.find_element_by_id("datefrompost").clear()
+            driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
+            driver.find_element_by_id("dateuntilpost").click()
+            driver.find_element_by_id("dateuntilpost").clear()
+            driver.find_element_by_id("dateuntilpost").send_keys("2021-01-29")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Publish'])[1]/following::div[1]").click()
+            driver.find_element_by_id("chan_option_" + str(id_channel)).click()
+            driver.find_element_by_link_text("Twitter").click()
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='(262 out of 280 characters)'])[1]/following::input[2]").click()
+            driver.find_element_by_id("Twitter_tweet_3").click()
+            driver.find_element_by_id("Twitter_tweet_3").clear()
+            driver.find_element_by_id("Twitter_tweet_3").send_keys("some random text")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='(16 out of 280 characters)'])[1]/following::input[2]").click()
+            driver.find_element_by_id("Twitter_tweet_4").click()
+            driver.find_element_by_id("Twitter_tweet_4").clear()
+            driver.find_element_by_id("Twitter_tweet_4").send_keys("sfgethet fdb")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='(12 out of 280 characters)'])[1]/following::div[1]").click()
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='(12 out of 280 characters)'])[1]/following::input[1]").click()
+            assert driver.find_element_by_id("Twitter_tweet_1").get_attribute(
+                "value") == "[1/2] An duis ubique mei, amet commodo dignissim ne eam, vide velit adipiscing est ad. Has eu inani gloriatur. Ius ea zril malorum aliquid. Et pri deleniti euripidis adversarium. Cum hinc putant laoreet ei, ea ullum tamquam vis, cu quo modus ignota officiis.\n\nEum ea nulla…"
+            assert driver.find_element_by_id("Twitter_tweet_2").get_attribute(
+                "value") == "[2/2] exerci, paulo dolore recusabo mel et. Per altera salutatus ad. Cu veri dicat has. Ex erant viris vis, id senserit interesset referrentur nec. Periculis salutatus reformidans eam an, eum te aliquid probatus, no ius corpora petentium. http://127.0.0.1:5000/new"
+            assert driver.find_element_by_id("Twitter_tweet_3").get_attribute(
+                "value") == "some random text"
+            try:
+                driver.find_element_by_id("Twitter_tweet_4")
+                assert False
+            except selenium.common.exceptions.NoSuchElementException:
+                assert True
+            driver.close()
+            teardown_db(id_channel, id_post)
+        except Exception as e:
+            driver.close()
+            teardown_db(id_channel, id_post)
+            assert False, e
