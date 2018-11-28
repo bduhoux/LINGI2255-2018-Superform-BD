@@ -1,3 +1,4 @@
+import os
 from superform.models import db, Publishing
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -14,7 +15,7 @@ scheduler = BackgroundScheduler()
 HOUR_DEFAULT = 0
 MINUT_DEFAULT = 1
 
-FILE_PATH = "superform/config.json"
+FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/config.json'
 ARCHIVAL_KEY = "ARCHIVAL_JOB"
 HOUR_KEY = "hour"
 MINUT_KEY = "minut"
