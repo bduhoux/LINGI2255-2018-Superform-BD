@@ -1,6 +1,19 @@
 <template>
     <div>
-        <slide channel="" id=""></slide>
+        <transition-group name="fade">
+            <slide v-for="i in nbSlides" :channel="channel" :id="i" :key="i"></slide>
+        </transition-group>
+
+
+        <div v-html="getCounter"></div>
+
+        <button type="button" @click="addSlide">
+            Add
+        </button>
+
+        <button type="button" @click="removeSlide">
+            Remove
+        </button>
     </div>
 </template>
 
@@ -12,37 +25,38 @@
         components: {Slide},
         props: {
             channel: {
-                type:String,
-                required:true,
+                type: String,
+                required: true,
                 trim: true
             }
         },
         data() {
             return {
-                nbSlides: 1
+                nbSlides: 1,
+                nbMaxSlides: 5
             }
         },
         methods: {
             addSlide() {
-                if(this.nbSlides === this.nbMaxSlides) {
+                if (this.nbSlides === this.nbMaxSlides) {
                     alert(`You can't create more than ${this.nbMaxSlides}`)
+                } else {
+                    this.nbSlides++;
                 }
             },
             removeSlide() {
-                if(this.nbSlides === 1) {
+                if (this.nbSlides === 1) {
                     alert("You must at least fill one slide !");
                 } else {
                     this.nbSlides--;
                 }
             }
         },
-        created() {
-            this.nbMaxSlides = 5
+        computed: {
+            getCounter() {
+                return `${this.nbSlides}/${this.nbMaxSlides}`
+            }
         }
 
     }
 </script>
-
-<style scoped>
-
-</style>

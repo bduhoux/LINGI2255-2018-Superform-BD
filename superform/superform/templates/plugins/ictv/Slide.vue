@@ -1,56 +1,68 @@
 <template>
     <div>
+        <h4 v-html="getChannel"></h4>
+
         <div class="form-group">
             <label>
                 Title<br>
-                <input :name="getChannelId + 'title'" :id="getChannelId + 'title'"
-                       v-model="title" type="text">
             </label>
+            <input class="form-control" :name="getChannelId + 'title'" :id="getChannelId + 'title'"
+                   v-model="title" type="text">
         </div>
 
         <div class="form-group">
             <label>
                 Subtitle<br>
-                <input :name="getChannelId + 'subtitle'" :id="getChannelId + 'subtitle'"
+            </label>
+                <input class="form-control" :name="getChannelId + 'subtitle'" :id="getChannelId + 'subtitle'"
                        v-model="subtitle"
                        type="text">
-            </label>
         </div>
 
         <div class="form-group">
             <label>
                 Text<br>
-                <input :name="getChannelId + 'text'" :id="getChannelId + 'text'"
+            </label>
+                <input class="form-control" :name="getChannelId + 'text'" :id="getChannelId + 'text'"
                        v-model="text"
                        type="text">
-            </label>
         </div>
 
         <div class="form-group">
             <label>
                 Logo<br>
-                <input :name="getChannelId + 'logo'" :id="getChannelId + 'logo'"
-                       v-model="logo"
-                       type="image">
             </label>
+                <input :name="getChannelId + 'logo'" :id="getChannelId + 'logo'"
+                       class="form-control"
+                       type="file">
         </div>
 
         <div class="form-group">
             <label>
                 Image<br>
-                <input :name="getChannelId + 'image'" :id="getChannelId + 'image'"
-                       v-model="image"
-                       type="image">
             </label>
+                <input :name="getChannelId + 'image'" :id="getChannelId + 'image'"
+                       class="form-control"
+                       type="file">
         </div>
 
         <div class="form-group">
             <label>
                 Background color<br>
-                <input :name="getChannelId + 'background-color'" :id="getChannelId + 'background-color'"
+            </label>
+                <input class="form-control" :name="getChannelId + 'background-color'"
+                       :id="getChannelId + 'background-color'"
                        v-model="backgroundColor"
                        type="text">
+        </div>
+
+        <div class="form-group">
+            <label>
+                Duration<br>
             </label>
+                <input class="form-control" :name="getChannelId + 'duration'" :id="getChannelId + 'duration'"
+                       v-model="duration"
+                       type="number">
         </div>
     </div>
 </template>
@@ -63,10 +75,8 @@
                 title: '',
                 subtitle: '',
                 text: '',
-                logo: '',
-                image: '',
-                background: '',
-                backgroundColor:''
+                backgroundColor: '',
+                duration: 1000
             }
         },
         props: {
@@ -82,7 +92,10 @@
         },
         computed: {
             getChannelId() {
-                return this.channel + '_' + id + '_'
+                return this.channel + '_' + this.id + '_'
+            },
+            getChannel() {
+                return `Slide n°${this.id}`
             }
         }
     }
