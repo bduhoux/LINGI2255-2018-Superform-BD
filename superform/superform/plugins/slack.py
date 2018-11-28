@@ -1,5 +1,6 @@
 import json
 from slackclient import SlackClient
+from superform.run_plugin_exception import RunPluginException
 
 FIELDS_UNAVAILABLE = []
 FILES_MANDATORY = ['Description']
@@ -12,27 +13,36 @@ CONFIG_FIELDS = ['token', 'channel name']
 
 def run(publishing, channel_config):
     json_data = json.loads(channel_config)
-    token = json_data['token']
-    name = json_data['channel name']
-    slack_client = SlackClient(token)
+    if 'token' in json_data and 'channel name' in json_data:
 
-    message = make_message(publishing)
+        token = json_data['token']
+        name = json_data['channel name']
+        slack_client = SlackClient(token)
 
-    channels = slack_client.api_call(
-        "conversations.list"
-    )
-    if channels['ok']:
-        for channel in channels['channels']:
-            if channel['name'] == name:
-                channelid = channel['id']
-                slack_client.api_call(
-                    "chat.postMessage",
-                    channel=channelid,
-                    text=message
-                )
+        message = make_message(publishing)
+
+        channels = slack_client.api_call(
+            "conversations.list"
+        )
+        if channels['ok']:
+            found = False
+            for channel in channels['channels']:
+                if channel['name'] == name:
+                    found = True
+                    channelid = channel['id']
+                    slack_client.api_call(
+                        "chat.postMessage",
+                        channel=channelid,
+                        text=message
+                    )
+            if not found:
+                raise RunPluginException("Channel not found, please review your configuration")
+        else:
+            print('oops')
+            raise RunPluginException("Channel not found, please review your configuration")
     else:
-        # TODO: erreur à afficher
-        pass
+        raise RunPluginException('Please configure the channel first')
+
 
 def make_message(publishing):
     message = ""

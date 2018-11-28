@@ -4,7 +4,7 @@ from flask import Blueprint, url_for, request, redirect, render_template, flash,
 
 from superform.utils import login_required, datetime_converter, str_converter
 from superform.models import db, Publishing, Channel
-
+from superform.run_plugin_exception import RunPluginException
 
 pub_page = Blueprint('publishings', __name__)
 
@@ -66,13 +66,12 @@ def moderate_publishing(id, idc):
             return render_template('moderate_post.html', pub=pub, chan=chan)
         from importlib import import_module
         plugin = import_module(plugin_name)
-        plugin.run(pub, c_conf)
         try:
-            pass
-        except KeyError:
+            plugin.run(pub, c_conf)
+        except RunPluginException as e:
             pub.state = 0
             db.session.commit()
-            flash('Please configure the channel first')
+            flash(str(e))
             pub.date_from = str_converter(pub.date_from)
             pub.date_until = str_converter(pub.date_until)
             if pub.extra is not None:
