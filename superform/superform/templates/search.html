@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}Search{% endblock %}
 {% block content %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <h1>Search</h1>
     <form method="post" id="search_form" action="">
         <div class="tab-content">
@@ -114,24 +115,49 @@
                     <tr>
                         {% if search_table=="Publishing" %}
                             <th onclick="sortTable(0)">
+                                <span style="display: none" id="arrow_0_desc"
+                                      class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                                <span style="display: none" id="arrow_0_asc"
+                                      class="glyphicon glyphicon-triangle-top search_arrow"></span>
                                 Channel
+
                             </th>
                         {% endif %}
                         {% if search_table=="Post" %}
                             <th onclick="sortTable(-1)">
+                                <span style="display: none" id="arrow_0_desc"
+                                      class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                                <span style="display: none" id="arrow_0_asc"
+                                      class="glyphicon glyphicon-triangle-top search_arrow"></span>
                                 #
                             </th>
                         {% endif %}
                         <th onclick="sortTable(1)">
+                            <span style="display: none" id="arrow_1_desc"
+                                  class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                            <span style="display: none" id="arrow_1_asc"
+                                  class="glyphicon glyphicon-triangle-top search_arrow"></span>
                             Subject
                         </th>
                         <th onclick="sortTable(2)">
+                            <span style="display: none" id="arrow_2_desc"
+                                  class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                            <span style="display: none" id="arrow_2_asc"
+                                  class="glyphicon glyphicon-triangle-top search_arrow"></span>
                             Body
                         </th>
                         <th onclick="sortTable(3)">
+                            <span style="display: none" id="arrow_3_desc"
+                                  class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                            <span style="display: none" id="arrow_3_asc"
+                                  class="glyphicon glyphicon-triangle-top search_arrow"></span>
                             Author
                         </th>
                         <th onclick="sortTable(4)">
+                            <span style="display: none" id="arrow_4_desc"
+                                  class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                            <span style="display: none" id="arrow_4_asc"
+                                  class="glyphicon glyphicon-triangle-top search_arrow"></span>
                             Date
                         </th>
                         <th>
@@ -169,7 +195,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {{ p.date_from.strftime('%Y-%m-%d') }}
+                                {{ p.date_from.strftime('%d/%m/%Y') }}
                             </td>
 
                             <td>
@@ -205,6 +231,10 @@
 
 {% block scripts %}
     <script>
+        var order = ["asc", "asc", "asc", "asc", "asc"];
+        $(document).ready(function () {
+            sortTable(2);
+        });
         let fields = [
             'search_word',
             'search_chan',
@@ -310,7 +340,7 @@
             table = document.getElementById("result_tab");
             switching = true;
             //Set the sorting direction to ascending:
-            dir = "asc";
+            dir = order[n];
             /*Make a loop that will continue until
             no switching has been done:*/
             while (switching) {
@@ -329,36 +359,31 @@
                     /*check if the two rows should switch place,
                     based on the direction, asc or desc:*/
                     if (number) {
-                        if (dir == "asc") {
-                            if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
-                                //if so, mark as a switch and break the loop:
-                                shouldSwitch = true;
-                                break;
-                            }
-                        } else if (dir == "desc") {
-                            if (parseInt(x.innerHTML) < parseInt(y.innerHTML)) {
-                                //if so, mark as a switch and break the loop:
-                                shouldSwitch = true;
-                                break;
-                            }
-                        }
+                        var elemX = parseInt(x.innerHTML)
+                        var elemY = parseInt(y.innerHTML)
+                    } else if (n == 4) {
+                        var partsx = x.innerHTML.toLowerCase().split('/');
+                        var partsy = y.innerHTML.toLowerCase().split('/');
+                        var elemX = new Date(Date.UTC(partsx[0], partsx[1] - 1, partsx[2]))
+                        var elemY = new Date(Date.UTC(partsy[0], partsy[1] - 1, partsy[2]))
                     } else {
-                        console.log(n);
-                        if (dir == "asc") {
-                            console.log(x.innerHTML);
-                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                                //if so, mark as a switch and break the loop:
-                                shouldSwitch = true;
-                                break;
-                            }
-                        } else if (dir == "desc") {
-                            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                                //if so, mark as a switch and break the loop:
-                                shouldSwitch = true;
-                                break;
-                            }
+                        var elemX = x.innerHTML.toLowerCase()
+                        var elemY = y.innerHTML.toLowerCase()
+                    }
+                    if (dir == "asc") {
+                        if (elemX > elemY) {
+                            //if so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (elemX < elemY) {
+                            //if so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
                         }
                     }
+
                 }
                 if (shouldSwitch) {
                     /*If a switch has been marked, make the switch
@@ -367,14 +392,19 @@
                     switching = true;
                     //Each time a switch is done, increase this count by 1:
                     switchcount++;
-                } else {
-                    /*If no switching has been done AND the direction is "asc",
-                    set the direction to "desc" and run the while loop again.*/
-                    if (switchcount == 0 && dir == "asc") {
-                        dir = "desc";
-                        switching = true;
-                    }
                 }
+            }
+            elementArray = document.getElementsByClassName("search_arrow")
+            for (var i = 0; i < elementArray.length; i++) {
+                // PERFORM STUFF ON THE ELEMENT
+                elementArray[i].style.display = 'none';
+            }
+            console.log("arrow_" + n + "_" + dir)
+            document.getElementById("arrow_" + n + "_" + dir).style.display = '';
+            if (order[n] == "asc") {
+                order[n] = "desc";
+            } else {
+                order[n] = "asc";
             }
         }
     </script>
