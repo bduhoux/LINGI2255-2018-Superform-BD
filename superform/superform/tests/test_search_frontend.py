@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
+from sqlalchemy.exc import InvalidRequestError
 
 import pytest
 import tempfile, os
@@ -35,31 +36,37 @@ def setup_db():
                 link_url="http://facebook.com/", image_url="pas", date_from=datetime_converter("2018-08-08"),
                 date_until=datetime_converter("2018-08-10"))
     db.session.add(post)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
     return id_channel, id_post
 
 
-def teardown_db(id_channel, id_post):
-    post = db.session.query(Post).filter(Post.id == id_post).first()
-    channel = db.session.query(Channel).filter(Channel.id == id_channel).first()
-    publishing = db.session.query(Publishing).filter(
-        Publishing.post_id == id_post and Publishing.channel_id == id_channel).first()
-    if publishing is not None:
-        db.session.delete(publishing)
-    if post is not None:
-        db.session.delete(post)
-    if channel is not None:
-        db.session.delete(channel)
-    db.session.commit()
+def teardown_db(id_channels, id_posts):
+    for id_post in id_posts:
+        post = db.session.query(Post).filter(Post.id == id_post).first()
+        for id_channel in id_channels:
+            publishing = db.session.query(Publishing).filter(
+                Publishing.post_id == id_post and Publishing.channel_id == id_channel).first()
+            if publishing is not None:
+                db.session.delete(publishing)
+        if post is not None:
+            db.session.delete(post)
+    for id_channel in id_channels:
+        channel = db.session.query(Channel).filter(Channel.id == id_channel).first()
+        if channel is not None:
+            db.session.delete(channel)
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
 
 
 class TestLiveServer:
 
     def test_basic(self, client):
-        try:
-            setup_db()
-        except Exception as e:
-            pass
+        setup_db()
         driver = webdriver.Firefox()
         try:
             driver.get('http://127.0.0.1:5000/')
@@ -110,20 +117,19 @@ class TestLiveServer:
             rows = table_results.find_elements_by_tag_name("tr")
             assert len(rows) == 1
         except AssertionError as e:
-            teardown_db(0, 0)
+            teardown_db([0], [0])
             driver.close()
             assert False, str(e)
-        except Exception as e:
-            teardown_db(0, 0)
+        except InvalidRequestError as e:
+            teardown_db([0], [0])
             driver.close()
             assert False, "An error occured while testing: {}".format(str(e))
+        teardown_db([0], [0])
+        driver.close()
         driver.close()
 
     def test_search_date(self, client):
-        try:
-            setup_db()
-        except Exception as e:
-            pass
+        setup_db()
         driver = webdriver.Firefox()
         try:
             driver.get('http://127.0.0.1:5000/')
@@ -160,6 +166,48 @@ class TestLiveServer:
             rows = table_results.find_elements_by_tag_name("tr")
             assert len(rows) == 1
         except AssertionError as e:
+            teardown_db([0], [0])
+            driver.close()
+            assert False, str(e)
+        except InvalidRequestError as e:
+            teardown_db([0], [0])
+            driver.close()
+            assert False, "An error occured while testing: {}".format(str(e))
+
+        teardown_db([0], [0])
+        driver.close()
+
+    """
+    def test_search_status(self, client):
+        setup_db()
+        driver = webdriver.Firefox()
+        try:
+            driver = webdriver.Firefox()
+            driver.get('http://127.0.0.1:5000/')
+            driver.find_element_by_link_text("Login").click()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
+            driver.find_element_by_link_text("Search").click()
+            driver.find_element_by_id("search_word").send_keys("Test")
+            driver.find_element_by_id("advanced_search_button").click()
+            driver.execute_script("$('#post_status').val('1').trigger('change');")  # Published
+    
+            driver.find_element_by_id("submit_search").click()
+            assert driver.title == 'Search - Superform', driver.title
+            driver.find_element_by_id("advanced_search_button").click()
+            driver.execute_script("$('#post_status').val('0').trigger('change');")  # Waiting for approval
+    
+            driver.find_element_by_id("submit_search").click()
+            assert driver.title == 'Search - Superform', driver.title
+            driver.find_element_by_id("advanced_search_button").click()
+            driver.execute_script("$('#post_status').val(['2', '1']).trigger('change');")  # Archived and Incomplete
+            driver.find_element_by_id("submit_search").click()
+            assert driver.title == 'Search - Superform', driver.title
+        except AssertionError as e:
             teardown_db(0, 0)
             driver.close()
             assert False, str(e)
@@ -167,46 +215,12 @@ class TestLiveServer:
             teardown_db(0, 0)
             driver.close()
             assert False, "An error occured while testing: {}".format(str(e))
-
-    """
-    def test_search_status(self, client):
-                try:
-            setup_db()
-        except Exception as e:
-            pass
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
-        driver.find_element_by_link_text("Search").click()
-        driver.find_element_by_id("search_word").send_keys("Test")
-        driver.find_element_by_id("advanced_search_button").click()
-        driver.execute_script("$('#post_status').val('1').trigger('change');")  # Published
-
-        driver.find_element_by_id("submit_search").click()
-        assert driver.title == 'Search - Superform', driver.title
-        driver.find_element_by_id("advanced_search_button").click()
-        driver.execute_script("$('#post_status').val('0').trigger('change');")  # Waiting for approval
-
-        driver.find_element_by_id("submit_search").click()
-        assert driver.title == 'Search - Superform', driver.title
-        driver.find_element_by_id("advanced_search_button").click()
-        driver.execute_script("$('#post_status').val(['2', '1']).trigger('change');")  # Archived and Incomplete
-        driver.find_element_by_id("submit_search").click()
-        assert driver.title == 'Search - Superform', driver.title
+        teardown_db(0, 0)
         driver.close()
-        # teardown_db()
+        teardown_db(0,0)
     """
     def test_search_searching_fields(self, client):
-        try:
-            setup_db()
-        except Exception as e:
-            pass
+        setup_db()
         driver = webdriver.Firefox()
         try:
             driver.get('http://127.0.0.1:5000/')
@@ -240,6 +254,32 @@ class TestLiveServer:
             rows = table_results.find_elements_by_tag_name("tr")
             assert len(rows) == 1
         except AssertionError as e:
+            teardown_db([0], [0])
+            driver.close()
+            assert False, str(e)
+        except Exception as e:
+            teardown_db([0], [0])
+            driver.close()
+            assert False, "An error occured while testing: {}".format(str(e))
+        teardown_db([0], [0])
+        driver.close()
+        teardown_db([0], [0])
+
+    """
+    def test_search_order(self, client):
+        setup_db()
+        driver = webdriver.Firefox()
+        try:
+            driver.get('http://127.0.0.1:5000/')
+            driver.find_element_by_link_text("Login").click()
+            driver.find_element_by_name("j_username").send_keys("myself")
+            driver.find_element_by_name("j_password").send_keys("myself")
+            driver.find_element_by_xpath(
+                "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
+
+        except AssertionError as e:
             teardown_db(0, 0)
             driver.close()
             assert False, str(e)
@@ -247,27 +287,6 @@ class TestLiveServer:
             teardown_db(0, 0)
             driver.close()
             assert False, "An error occured while testing: {}".format(str(e))
-
+        teardown_db(0, 0)
         driver.close()
-        teardown_db(0,0)
-
-    """
-    def test_search_order(self, client):
-                try:
-            setup_db()
-        except Exception as e:
-            pass
-        driver = webdriver.Firefox()
-        driver.get('http://127.0.0.1:5000/')
-        driver.find_element_by_link_text("Login").click()
-        driver.find_element_by_name("j_username").send_keys("myself")
-        driver.find_element_by_name("j_password").send_keys("myself")
-        driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
-        wait = WebDriverWait(driver, 10)
-        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
-
-        # put test here
-
-        driver.close()
-        # teardown_db()"""
+        teardown_db(0,0)"""
