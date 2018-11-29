@@ -12,21 +12,20 @@
     Script maintained by Petko Yotov www.pmwiki.org/petko
 */
 
-Element.prototype.appendAfter = function (element) {
-    element.parentNode.insertBefore(this, element.nextSibling);
-}, false;
 
-function preview() {
-      tid = arguments[0].id;
-      console.log(tid);
-      tarea = document.getElementById(tid);
-      console.log(tarea);
-      var divpreview = document.createElement('div');
-      console.log(divpreview);
-      divpreview.setAttribute("id","preview");
-      divpreview.appendAfter(tarea.parent());
-      tarea.setAttribute("onkeyup", "keyup(){document.getElementById('preview').innerHTML = this.value;}");
-      tarea.setAttribute("onkeypress", "keypress(){document.getElementById('preview').innerHTML = this.value;}");
+function previewFunction() {
+    tid = arguments[0].id;
+    console.log(tid);
+    tarea = document.getElementById(tid);
+    console.log(tarea);
+    var divpreview = document.createElement('div');
+    console.log(divpreview);
+    divpreview.setAttribute("id", "previewWiki");
+    Element.prototype.appendAfter = function (element) {
+        element.parentNode.insertBefore(this, element.nextSibling);
+    }, false;
+    divpreview.appendAfter(tarea.parentElement);
+    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('previewWiki').innerHTML = this.value;};
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
