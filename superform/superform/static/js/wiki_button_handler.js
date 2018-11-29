@@ -12,6 +12,23 @@
     Script maintained by Petko Yotov www.pmwiki.org/petko
 */
 
+Element.prototype.appendAfter = function (element) {
+    element.parentNode.insertBefore(this, element.nextSibling);
+}, false;
+
+function preview() {
+      tid = arguments[0].id;
+      console.log(tid);
+      tarea = document.getElementById(tid);
+      console.log(tarea);
+      var divpreview = document.createElement('div');
+      console.log(divpreview);
+      divpreview.setAttribute("id","preview");
+      divpreview.appendAfter(tarea.parent());
+      tarea.setAttribute("onkeyup", "keyup(){document.getElementById('preview').innerHTML = this.value;}");
+      tarea.setAttribute("onkeypress", "keypress(){document.getElementById('preview').innerHTML = this.value;}");
+}
+
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
   console.log("insButton");
   if (mkey > '') { mkey = 'accesskey="' + mkey + '" ' }
@@ -31,11 +48,16 @@ function insMarkup() {
   }
   else if (arguments.length >= 3) {
     var mopen = arguments[0], mclose = arguments[1], mtext = arguments[2];
-    if(arguments.length > 3) tid = arguments[3];
+    if(arguments.length > 3) {
+        tid = arguments[3];
+        console.log(tid);
+        tid = tid.id;
+        console.log(tid);
+    }
   }
 
   var tarea = document.getElementById(tid);
-  console.log(tarea);
+
   if (tarea.setSelectionRange > '') {
     var p0 = tarea.selectionStart;
     var p1 = tarea.selectionEnd;
@@ -77,3 +99,5 @@ function insMarkup() {
   } else { tarea.value += mopen + mtext + mclose; }
   return;
 }
+
+
