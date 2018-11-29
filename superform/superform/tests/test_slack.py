@@ -9,7 +9,7 @@ import time
 json_data = open(os.path.dirname(os.path.abspath(__file__)) + '/../config.json')
 data = json.load(json_data)
 
-cha_conf = json.dumps({"token": data["SLACK_SECRET"],
+cha_conf = json.dumps({"token": data["BOT_TOKEN"],
                        "channel name": "testing-bot"})  # Getted from db
 
 
@@ -84,8 +84,8 @@ def test_run():
     new_publish = Publish(0, "testing slack", "This is not a description", None,
                           None, "29-11-2018", "30-12-9999")
 
-    slack_master = SlackClient(data["SLACK_SECRET"])
-    slack_user = SlackClient(data["SLACK_OTHER_SECRET"])
+    slack_master = SlackClient(data["BOT_TOKEN"])
+    slack_user = SlackClient(data["OTHER_TOKEN"])
     run(new_publish, cha_conf)
     for channel in slack_user.api_call("conversations.list")['channels']:
         if channel['name'] == "testing-bot":
