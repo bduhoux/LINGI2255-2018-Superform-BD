@@ -396,15 +396,19 @@
             }
             elementArray = document.getElementsByClassName("search_arrow")
             for (var i = 0; i < elementArray.length; i++) {
-                // PERFORM STUFF ON THE ELEMENT
                 elementArray[i].style.display = 'none';
             }
-            console.log("arrow_" + n + "_" + dir)
             document.getElementById("arrow_" + n + "_" + dir).style.display = '';
-            if (order[n] == "asc") {
-                order[n] = "desc";
-            } else {
-                order[n] = "asc";
+            for (var i = 0; i < 5; i++) {
+                if (i == n) {
+                    if (order[i] == "asc") {
+                        order[i] = "desc";
+                    } else {
+                        order[i] = "asc";
+                    }
+                } else {
+                    order[i] = "asc";
+                }
             }
         }
     </script>
