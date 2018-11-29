@@ -1,5 +1,6 @@
 from flask import current_app
 import json
+from superform import app
 
 FIELDS_UNAVAILABLE = ['Title', 'Description', 'Linkurl', 'Image']
 CONFIG_FIELDS = []
@@ -7,21 +8,18 @@ CONFIG_FIELDS = []
 
 def run(publishing):
 
-    # status_list = [y for x, y in json.loads(publishing.extra)['capsules']]
+    print("ICTV_LIST :")
+    print(json.loads(publishing.extra)['ictv_list'][0])
+
+    # status_list = json.loads(publishing.extra)['ictv_list'][0]
     # if publishing.image_url is not '':
-    #     if publishing.logo is not '':
-    #         return publish_list(status_list, image=publishing.image_url, logo=publishing.logo)
-    #     else:
-    #         return publish_list(status_list, image=publishing.image_url)
+    #     return publish_list(status_list, image=publishing.image_url)
     # else:
     #     return publish_list(status_list)
 
-    print(publishing)
 
-
-# def publish_list(statuslist, image=None, logo=None):
+# def publish_list(status_list, image=None):
 #     a = []
-#     for status in statuslist[:-1]:
-#         a.append(status)
-#     a.append(statuslist[len(statuslist) - 1], image, logo)
+#     if status_list[len(status_list) - 1] != "":
+#         a.append(twitter_api.PostUpdate(status_list[len(status_list) - 1], image))
 #     return a
