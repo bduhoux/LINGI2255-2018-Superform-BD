@@ -85,7 +85,7 @@ def test_run():
                           None, "29-11-2018", "30-12-9999")
 
     slack_master = SlackClient(data["SLACK_SECRET"])
-    slack_user = SlackClient("xoxp-478281424595-487440443619-492145808935-e1aaa765bb41ed0b300d279261999110")
+    slack_user = SlackClient(data["SLACK_OTHER_SECRET"])
     run(new_publish, cha_conf)
     for channel in slack_user.api_call("conversations.list")['channels']:
         if channel['name'] == "testing-bot":
