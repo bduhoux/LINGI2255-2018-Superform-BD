@@ -30,8 +30,10 @@
                 trim: true
             },
             defaultConfig: {
-                type: JSON,
-                default: {}
+                type: Array,
+                default: () => {
+                    return []
+                }
             }
         },
         data() {
