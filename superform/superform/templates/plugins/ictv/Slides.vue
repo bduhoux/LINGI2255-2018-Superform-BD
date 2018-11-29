@@ -28,6 +28,10 @@
                 type: String,
                 required: true,
                 trim: true
+            },
+            defaultConfig: {
+                type: JSON,
+                default: {}
             }
         },
         data() {
@@ -39,7 +43,7 @@
         methods: {
             addSlide() {
                 if (this.nbSlides === this.nbMaxSlides) {
-                    alert(`You can't create more than ${this.nbMaxSlides}`)
+                    alert(`You can't create more than ${this.nbMaxSlides} slides`)
                 } else {
                     this.nbSlides++;
                 }
