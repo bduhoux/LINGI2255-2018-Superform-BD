@@ -1,11 +1,8 @@
 <template>
     <div>
         <transition-group name="fade">
-            <slide v-for="i in nbSlides" :channel="channel" :id="i" :key="i"></slide>
+            <slide v-for="(slide, id) in slides" :content="slide" :channel="channel" :id="id+1" :key="id+1"></slide>
         </transition-group>
-
-
-        <div v-html="getCounter"></div>
 
         <button type="button" @click="addSlide">
             Add
@@ -32,35 +29,46 @@
             defaultConfig: {
                 type: Array,
                 default: () => {
-                    return []
+                    return [{
+                        title: '',
+                        subtitle: '',
+                        text: '',
+                        logo: '',
+                        image: '',
+                        background: '',
+                        duration: 1000
+                    }]
                 }
             }
         },
         data() {
             return {
-                nbSlides: 1,
-                nbMaxSlides: 5
+                slides: this.defaultConfig
             }
         },
         methods: {
             addSlide() {
-                if (this.nbSlides === this.nbMaxSlides) {
-                    alert(`You can't create more than ${this.nbMaxSlides} slides`)
-                } else {
-                    this.nbSlides++;
-                }
+                this.slides.push({
+                    title: '',
+                    subtitle: '',
+                    text: '',
+                    logo: '',
+                    image: '',
+                    background: '',
+                    duration: 1000
+                })
             },
             removeSlide() {
                 if (this.nbSlides === 1) {
                     alert("You must at least fill one slide !");
                 } else {
-                    this.nbSlides--;
+                    this.slides.pop()
                 }
             }
         },
         computed: {
-            getCounter() {
-                return `${this.nbSlides}/${this.nbMaxSlides}`
+            nbSlides() {
+                return this.slides.length
             }
         }
 

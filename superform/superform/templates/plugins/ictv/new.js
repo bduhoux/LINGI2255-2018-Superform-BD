@@ -1,11 +1,13 @@
 Vue.component('slide', {
     data() {
         return {
-            title: '',
-            subtitle: '',
-            text: '',
-            backgroundColor: '',
-            duration: 1000
+            title: this.content.title,
+            subtitle: this.content.subtitle,
+            text: this.content.text,
+            background: this.content.background,
+            duration: this.content.duration,
+            image: this.content.image,
+            logo: this.content.logo
         }
     },
     props: {
@@ -17,6 +19,10 @@ Vue.component('slide', {
         id: {
             required: true,
             type: Number
+        },
+        content: {
+            required: true,
+            type: Object
         }
     },
     computed: {
@@ -35,7 +41,7 @@ Vue.component('slide', {
             <label>
                 Title<br>
             </label>
-            <input class="form-control" :name="getChannelId + 'title'" :id="getChannelId + 'title'"
+            <input class="form-control" :name="getChannelId + 'title-1'" :id="getChannelId + 'title-1'"
                    v-model="title" type="text" required>
         </div>
 
@@ -43,55 +49,55 @@ Vue.component('slide', {
             <label>
                 Subtitle<br>
             </label>
-                <input class="form-control" :name="getChannelId + 'subtitle'" :id="getChannelId + 'subtitle'"
-                       v-model="subtitle"
-                       type="text" required>
+            <input class="form-control" :name="getChannelId + 'subtitle-1'" :id="getChannelId + 'subtitle-1'"
+                   v-model="subtitle"
+                   type="text" required>
         </div>
 
         <div class="form-group">
             <label>
                 Text<br>
             </label>
-                <textarea rows="5" class="form-control" :name="getChannelId + 'text'" :id="getChannelId + 'text'"
-                       v-model="text"
-                       type="text" required></textarea>
+            <textarea rows="5" class="form-control" :name="getChannelId + 'text-1'" :id="getChannelId + 'text-1'"
+                      v-model="text"
+                      type="text" required></textarea>
         </div>
 
         <div class="form-group">
             <label>
                 Logo<br>
             </label>
-                <input :name="getChannelId + 'logo'" :id="getChannelId + 'logo'"
-                       class="form-control"
-                       type="text">
+            <input :name="getChannelId + 'logo-1'" :id="getChannelId + 'logo-1'"
+                   class="form-control"
+                   type="text" v-model="logo">
         </div>
 
         <div class="form-group">
             <label>
                 Image<br>
             </label>
-                <input :name="getChannelId + 'image'" :id="getChannelId + 'image'"
-                       class="form-control"
-                       type="text">
+            <input :name="getChannelId + 'image-1'" :id="getChannelId + 'image-1'"
+                   class="form-control"
+                   type="text" v-model="image">
         </div>
 
         <div class="form-group">
             <label>
                 Background color<br>
             </label>
-                <input class="form-control" :name="getChannelId + 'background-color'"
-                       :id="getChannelId + 'background-color'"
-                       v-model="backgroundColor"
-                       type="text">
+            <input class="form-control" :name="getChannelId + 'background-1'"
+                   :id="getChannelId + 'background-1'"
+                   v-model="background"
+                   type="text">
         </div>
 
         <div class="form-group">
             <label>
                 Duration<br>
             </label>
-                <input class="form-control" :name="getChannelId + 'duration'" :id="getChannelId + 'duration'"
-                       v-model="duration"
-                       type="number">
+            <input class="form-control" :name="getChannelId + 'duration-1'" :id="getChannelId + 'duration-1'"
+                   v-model="duration"
+                   type="number">
         </div>
     </div>
   `
@@ -103,43 +109,57 @@ Vue.component('slides', {
             type: String,
             required: true,
             trim: true
+        },
+        defaultConfig: {
+            type: Array,
+            default: () => {
+                return [{
+                    title: '',
+                    subtitle: '',
+                    text: '',
+                    logo: '',
+                    image: '',
+                    background: '',
+                    duration: 1000
+                }]
+            }
         }
     },
     data() {
         return {
-            nbSlides: 1,
-            nbMaxSlides: 5
+            slides: this.defaultConfig
         }
     },
     methods: {
         addSlide() {
-            if (this.nbSlides === this.nbMaxSlides) {
-                alert(`You can't create more than ${this.nbMaxSlides} slides`)
-            } else {
-                this.nbSlides++;
-            }
+            this.slides.push({
+                title: '',
+                subtitle: '',
+                text: '',
+                logo: '',
+                image: '',
+                background: '',
+                duration: 1000
+            })
         },
         removeSlide() {
             if (this.nbSlides === 1) {
                 alert("You must at least fill one slide !");
             } else {
-                this.nbSlides--;
+                this.slides.pop()
             }
         }
     },
     computed: {
-        getCounter() {
-            return `${this.nbSlides}/${this.nbMaxSlides}`
+        nbSlides() {
+            return this.slides.length
         }
     },
     template: `
     <div>
-    <transition-group name="fade">
-        <slide v-for="i in nbSlides" :channel="channel" :id="i" :key="i"></slide>
-</transition-group>
-
-
-        <div v-html="getCounter"></div>
+        <transition-group name="fade">
+            <slide v-for="(slide, id) in slides" :content="slide" :channel="channel" :id="id+1" :key="id+1"></slide>
+        </transition-group>
 
         <button type="button" @click="addSlide">
             Add
