@@ -44,7 +44,6 @@ def setup_db():
                 link_url="http://facebook.com/", image_url="pas", date_from=datetime_converter("2018-07-01"),
                 date_until=datetime_converter("2018-07-01"))
     db.session.add(post)
-
     db.session.commit()
     return id_channel, id_post
 
