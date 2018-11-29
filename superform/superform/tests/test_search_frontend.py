@@ -25,22 +25,43 @@ def client():
 
 
 def setup_db():
-    id_channel = 0
-    channel = Channel(id=id_channel, name="Test_channel", module="superform.plugins.Twitter", config="{}")
+    id_channels = [0, -1, -2]
+    id_posts = [0, -1, -2]
+    channel = Channel(id=id_channels[0], name="Test_channel_1", module="superform.plugins.Twitter", config="{}")
     db.session.add(channel)
-    authorization = Authorization(user_id="myself", channel_id=id_channel, permission=2)
+    channel = Channel(id=id_channels[1], name="Test_channel_2", module="superform.plugins.Twitter", config="{}")
+    db.session.add(channel)
+    channel = Channel(id=id_channels[2], name="Test_channel_3", module="superform.plugins.Twitter", config="{}")
+    db.session.add(channel)
+
+    authorization = Authorization(user_id="myself", channel_id=id_channels[0], permission=2)
+
     db.session.add(authorization)
-    id_post = 0
-    post = Post(id=id_post, user_id="myself", title="first title #123456789123456789123456789title",
+
+    post = Post(id=id_posts[0], user_id="myself", title="first title #123456789123456789123456789title",
                 description="This is a test, yes it really is. #123456789123456789123456789descr",
                 link_url="http://facebook.com/", image_url="pas", date_from=datetime_converter("2018-08-08"),
                 date_until=datetime_converter("2018-08-10"))
     db.session.add(post)
+
+    publishing = Publishing(post_id=id_posts[0], channel_id=id_channels[0], state=0, title="first title #123456789123456789123456789title",
+                            description="This is a test, yes it really is. #123456789123456789123456789descr",
+                            link_url="http://facebook.com/", image_url="pas",
+                            date_from=datetime_converter("2018-08-08"),
+                            date_until=datetime_converter("2018-08-10"), extra="{}")
+    db.session.add(publishing)
+    publishing = Publishing(post_id=id_posts[0], channel_id=id_channels[1], state=0, title="first title #123456789123456789123456789title",
+                            description="This is a test, yes it really is. #123456789123456789123456789descr",
+                            link_url="http://facebook.com/", image_url="pas",
+                            date_from=datetime_converter("2018-11-11"),
+                            date_until=datetime_converter("2018-11-12"), extra="{}")
+    db.session.add(publishing)
+
     try:
         db.session.commit()
     except:
         db.session.rollback()
-    return id_channel, id_post
+    return id_channels, id_posts
 
 
 def teardown_db(id_channels, id_posts):
@@ -66,7 +87,7 @@ def teardown_db(id_channels, id_posts):
 class TestLiveServer:
 
     def test_basic(self, client):
-        setup_db()
+        id_channels, id_posts = setup_db()
         driver = webdriver.Firefox()
         try:
             driver.get('http://127.0.0.1:5000/')
@@ -117,19 +138,19 @@ class TestLiveServer:
             rows = table_results.find_elements_by_tag_name("tr")
             assert len(rows) == 1
         except AssertionError as e:
-            teardown_db([0], [0])
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, str(e)
         except InvalidRequestError as e:
-            teardown_db([0], [0])
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, "An error occured while testing: {}".format(str(e))
-        teardown_db([0], [0])
+        teardown_db(id_channels, id_posts)
         driver.close()
         driver.close()
 
     def test_search_date(self, client):
-        setup_db()
+        id_channels, id_posts = setup_db()
         driver = webdriver.Firefox()
         try:
             driver.get('http://127.0.0.1:5000/')
@@ -166,20 +187,20 @@ class TestLiveServer:
             rows = table_results.find_elements_by_tag_name("tr")
             assert len(rows) == 1
         except AssertionError as e:
-            teardown_db([0], [0])
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, str(e)
         except InvalidRequestError as e:
-            teardown_db([0], [0])
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, "An error occured while testing: {}".format(str(e))
 
-        teardown_db([0], [0])
+        teardown_db(id_channels, id_posts)
         driver.close()
 
     """
     def test_search_status(self, client):
-        setup_db()
+        id_channels, id_posts = setup_db()
         driver = webdriver.Firefox()
         try:
             driver = webdriver.Firefox()
@@ -208,19 +229,18 @@ class TestLiveServer:
             driver.find_element_by_id("submit_search").click()
             assert driver.title == 'Search - Superform', driver.title
         except AssertionError as e:
-            teardown_db(0, 0)
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, str(e)
         except Exception as e:
-            teardown_db(0, 0)
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, "An error occured while testing: {}".format(str(e))
-        teardown_db(0, 0)
         driver.close()
-        teardown_db(0,0)
+        teardown_db(id_channels, id_posts)
     """
     def test_search_searching_fields(self, client):
-        setup_db()
+        id_channels, id_posts = setup_db()
         driver = webdriver.Firefox()
         try:
             driver.get('http://127.0.0.1:5000/')
@@ -254,20 +274,19 @@ class TestLiveServer:
             rows = table_results.find_elements_by_tag_name("tr")
             assert len(rows) == 1
         except AssertionError as e:
-            teardown_db([0], [0])
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, str(e)
         except Exception as e:
-            teardown_db([0], [0])
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, "An error occured while testing: {}".format(str(e))
-        teardown_db([0], [0])
         driver.close()
-        teardown_db([0], [0])
+        teardown_db(id_channels, id_posts)
 
     """
     def test_search_order(self, client):
-        setup_db()
+        id_channels, id_posts = setup_db()
         driver = webdriver.Firefox()
         try:
             driver.get('http://127.0.0.1:5000/')
@@ -280,13 +299,12 @@ class TestLiveServer:
             wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
 
         except AssertionError as e:
-            teardown_db(0, 0)
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, str(e)
         except Exception as e:
-            teardown_db(0, 0)
+            teardown_db(id_channels, id_posts)
             driver.close()
             assert False, "An error occured while testing: {}".format(str(e))
-        teardown_db(0, 0)
         driver.close()
-        teardown_db(0,0)"""
+        teardown_db(id_channels, id_posts)"""
