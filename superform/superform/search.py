@@ -165,7 +165,7 @@ def filter_query_title_content(title, content, searched_words, split_words,table
         elif title:
             return table.title.contains(searched_words)
         else:
-            return table.description.contains(searched_words)
+            return table.title.contains(searched_words) | table.description.contains(searched_words)
     else:
         return table.post_id != None if table == Publishing else (table.id != None) # Return true means all publishings are accepted
 
