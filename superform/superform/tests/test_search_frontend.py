@@ -215,7 +215,6 @@ class TestLiveServer:
         id_channels, id_posts = setup_db()
         driver = webdriver.Firefox()
         try:
-            driver = webdriver.Firefox()
             driver.get('http://127.0.0.1:5000/')
             driver.find_element_by_link_text("Login").click()
             driver.find_element_by_name("j_username").send_keys("myself")
@@ -340,10 +339,10 @@ class TestLiveServer:
             fields = rows[0].find_elements_by_tag_name("th")
             fields[0].click()
             rows = table_results.find_elements_by_tag_name("tr")
-            assert [row.find_elements_by_tag_name("td")[0].text for row in rows[1:]] == ["Test_channel_3", "Test_channel_2", "Test_channel_1"], "Error ordering channel"
+            assert [row.find_elements_by_tag_name("td")[0].text for row in rows[1:]] == ["Test_channel_1", "Test_channel_2", "Test_channel_3"], "Error ordering channel"
             fields[0].click()
             rows = table_results.find_elements_by_tag_name("tr")
-            assert [row.find_elements_by_tag_name("td")[0].text for row in rows[1:]] == ["Test_channel_1", "Test_channel_2", "Test_channel_3"], "Error ordering channel"
+            assert [row.find_elements_by_tag_name("td")[0].text for row in rows[1:]] == ["Test_channel_3", "Test_channel_2", "Test_channel_1"], "Error ordering channel"
             fields[1].click()
             rows = table_results.find_elements_by_tag_name("tr")
             assert [row.find_elements_by_tag_name("td")[0].text for row in rows[1:]] == ["Test_channel_3", "Test_channel_1", "Test_channel_2"], "Error ordering subject"
@@ -415,3 +414,4 @@ class TestLiveServer:
             assert False, "An error occurred while testing: {}".format(str(e))
         driver.close()
         teardown_db(id_channels, id_posts)
+
