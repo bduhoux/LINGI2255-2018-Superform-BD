@@ -7,7 +7,7 @@
                 Title<br>
             </label>
             <input class="form-control" :name="getChannelId + 'title'" :id="getChannelId + 'title'"
-                   v-model="title" type="text" required>
+                   v-model="title" type="text" @blur="sendData" required>
         </div>
 
         <div class="form-group">
@@ -16,7 +16,7 @@
             </label>
             <input class="form-control" :name="getChannelId + 'subtitle'" :id="getChannelId + 'subtitle'"
                    v-model="subtitle"
-                   type="text" required>
+                   type="text" @blur="sendData" required>
         </div>
 
         <div class="form-group">
@@ -25,7 +25,7 @@
             </label>
             <textarea rows="5" class="form-control" :name="getChannelId + 'text'" :id="getChannelId + 'text'"
                       v-model="text"
-                      type="text" required></textarea>
+                      type="text" @blur="sendData" required></textarea>
         </div>
 
         <div class="form-group">
@@ -34,7 +34,7 @@
             </label>
             <input :name="getChannelId + 'logo'" :id="getChannelId + 'logo'"
                    class="form-control"
-                   type="text" v-model="logo">
+                   type="text" @blur="sendData" v-model="logo">
         </div>
 
         <div class="form-group">
@@ -43,7 +43,7 @@
             </label>
             <input :name="getChannelId + 'image'" :id="getChannelId + 'image'"
                    class="form-control"
-                   type="text" v-model="image">
+                   type="text" @blur="sendData" v-model="image">
         </div>
 
         <div class="form-group">
@@ -53,7 +53,7 @@
             <input class="form-control" :name="getChannelId + 'background'"
                    :id="getChannelId + 'background'"
                    v-model="background"
-                   type="text">
+                   type="text" @blur="sendData">
         </div>
 
         <div class="form-group">
@@ -62,7 +62,7 @@
             </label>
             <input class="form-control" :name="getChannelId + 'duration'" :id="getChannelId + 'duration'"
                    v-model="duration"
-                   type="number">
+                   type="number" @blur="sendData">
         </div>
     </div>
 </template>
@@ -102,6 +102,32 @@
             },
             getChannel() {
                 return `Slide n°${this.id}`
+            }
+        },
+        methods: {
+            sendData() {
+                const data = {
+                    'title-1': {
+                        text: this.title
+                    },
+                    'subtitle-1': {
+                        text: this.subtitle
+                    },
+                    'text-1': {
+                        text: this.text
+                    },
+                    'logo-1': {
+                        src: this.logo
+                    },
+                    'image-1': {
+                        src: this.image
+                    },
+                    'background-1': {
+                        color: this.background
+                    },
+                    duration: this.duration
+                };
+                this.$emit('data', data)
             }
         }
     }

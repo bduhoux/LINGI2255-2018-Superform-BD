@@ -1,7 +1,12 @@
 <template>
     <div>
+        <transition name="fade">
+            <previews :slides="slides" v-if="isShowingPreview" @close="togglePreview"></previews>
+        </transition>
+
         <transition-group name="fade">
-            <slide v-for="(slide, id) in slides" :content="slide" :channel="channel" :id="id+1" :key="id+1"></slide>
+            <slide v-for="(slide, id) in slides" :content="slide" :channel="channel" :id="id+1" :key="id+1"
+                   @data="setData($event, id)"></slide>
         </transition-group>
 
         <button type="button" @click="addSlide">
@@ -11,15 +16,20 @@
         <button type="button" @click="removeSlide">
             Remove
         </button>
+
+        <button type="button" @click="togglePreview" v-html="textButtonPreview">
+            Preview
+        </button>
     </div>
 </template>
 
 <script>
     import Slide from 'Slide'
+    import Previews from 'Previews'
 
     export default {
         name: "Slides",
-        components: {Slide},
+        components: {Slide, Previews},
         props: {
             channel: {
                 type: String,
@@ -55,7 +65,8 @@
         },
         data() {
             return {
-                slides: this.defaultConfig
+                slides: this.defaultConfig,
+                isShowingPreview: false
             }
         },
         methods: {
@@ -88,11 +99,20 @@
                 } else {
                     this.slides.pop()
                 }
+            },
+            togglePreview() {
+                this.isShowingPreview = !this.isShowingPreview
+            },
+            setData(event, id) {
+                this.slides.splice(id, 1, event);
             }
         },
         computed: {
             nbSlides() {
                 return this.slides.length
+            },
+            textButtonPreview() {
+                return this.isShowingPreview ? 'Close' : 'Preview';
             }
         }
 
