@@ -156,14 +156,18 @@ def filter_query_title_content(title, content, searched_words, split_words,table
                 condition = condition | table.title.contains(word) | table.description.contains(word)
             elif title:
                 condition = condition | table.title.contains(word)
-            else:
+            elif content:
                 condition = condition | table.description.contains(word)
+            else:
+                condition = condition | table.title.contains(word) | table.description.contains(word)
         return condition
     elif not split_words:
         if title & content:
             return table.title.contains(searched_words) | table.description.contains(searched_words)
         elif title:
             return table.title.contains(searched_words)
+        elif content:
+            return table.description.contains(searched_words)
         else:
             return table.title.contains(searched_words) | table.description.contains(searched_words)
     else:

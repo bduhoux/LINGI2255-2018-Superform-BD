@@ -130,6 +130,7 @@ class TestLiveServer:
             assert len(rows) == 3, "Error test 1"
             assert [row.find_elements_by_tag_name("td")[0].text for row in rows[1:]] == ["-1", "0"], "Error test 1"
 
+            driver.find_element_by_id("search_word").clear()
             driver.find_element_by_id("search_word").send_keys("#123456789123456789123456789title")
             driver.find_element_by_id("submit_search").click()
             table_results = driver.find_element_by_id("result_tab")
@@ -137,6 +138,7 @@ class TestLiveServer:
             assert len(rows) == 3, "Error test 2"
             assert [row.find_elements_by_tag_name("td")[0].text for row in rows[1:]] == ["-1", "0"], "Error test 2"
 
+            driver.find_element_by_id("search_word").clear()
             driver.find_element_by_id("search_word").send_keys("#123456789123456789123456789descr")
             driver.find_element_by_id("submit_search").click()
             table_results = driver.find_element_by_id("result_tab")
@@ -144,6 +146,7 @@ class TestLiveServer:
             assert len(rows) == 3, "Error test 3"
             assert [row.find_elements_by_tag_name("td")[0].text for row in rows[1:]] == ["-1", "0"], "Error test 3"
 
+            driver.find_element_by_id("search_word").clear()
             driver.find_element_by_id("search_word").send_keys("#123456789123456789123456789YOUPIDOU420")
             driver.find_element_by_id("submit_search").click()
 
@@ -159,7 +162,6 @@ class TestLiveServer:
             driver.close()
             assert False, "An error occurred while testing: {}".format(str(e))
         teardown_db(id_channels, id_posts)
-        driver.close()
         driver.close()
 
     def test_search_date(self, client):
@@ -317,7 +319,7 @@ class TestLiveServer:
         driver.close()
         teardown_db(id_channels, id_posts)
 
-    
+
     def test_search_order(self, client):
         id_channels, id_posts = setup_db()
         driver = webdriver.Firefox()
@@ -414,4 +416,5 @@ class TestLiveServer:
             assert False, "An error occurred while testing: {}".format(str(e))
         driver.close()
         teardown_db(id_channels, id_posts)
+
 
