@@ -1,4 +1,4 @@
-from flask import request, jsonify, Blueprint, url_for, redirect, abort
+from flask import request, jsonify, Blueprint, url_for, redirect, abort, session
 import json
 import facebook
 from superform.models import db, Post, Publishing, Channel
@@ -37,6 +37,7 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
             link=link
 
         )
+        put_extra(publishing, status1['id'])
 
 
 @facebook_plugin.route('/appid')
@@ -87,3 +88,24 @@ def get_link(publishing):
 
 def get_image(publishing):
     return publishing.image_url
+
+
+def delete(post_id):
+    api = get_api(get_config(get_page_id(), fb_token))
+    api.delete_object(post_id)
+
+
+def put_extra(publishing, post_id):
+    pub = db.session.query(Publishing).filter(Publishing.post_id == publishing.post_id, Publishing.channel_id == publishing.channel_id).first()
+    pub.date_from = publishing.date_from
+    pub.date_until = publishing.date_until
+    pub.title = publishing.title
+    pub.description = publishing.description
+    pub.link_url = publishing.link_url
+    pub.image_url = publishing.image_url
+    extra = dict()
+    extra['facebook_post_id'] = post_id
+    pub.extra = json.dumps(extra)
+    db.session.commit()
+
+
