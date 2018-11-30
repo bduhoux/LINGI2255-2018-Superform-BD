@@ -34,33 +34,44 @@ def get_channel_fields(form, chan):
     ictv_list = []
     end = False
     i = 1
+
     while not end:
         dictionary = {}
         if chan is None:
             title = form.get('ictv_' + str(i) + '_title')
             subtitle = form.get('ictv_' + str(i) + '_subtitle')
             text = form.get('ictv_' + str(i) + '_text')
-            background_color = form.get('ictv_' + str(i) + '_background-color')
+            background_color = form.get('ictv_' + str(i) + '_background')
             duration = form.get('ictv_' + str(i) + '_duration')
+            logo = form.get('ictv_' + str(i) + '_logo')
+            image = form.get('ictv_' + str(i) + '_image')
 
-            dictionary['ictv_' + str(i) + '_title'] = title
-            dictionary['ictv_' + str(i) + '_subtitle'] = subtitle
-            dictionary['ictv_' + str(i) + '_text'] = text
-            dictionary['ictv_' + str(i) + '_background-color'] = background_color
-            dictionary['ictv_' + str(i) + '_duration'] = duration
+            dictionary['title-1'] = {'text': title}
+            dictionary['subtitle-1'] = {'text': subtitle}
+            dictionary['text-1'] = {'text': text}
+            dictionary['background-1'] = {'color': background_color}
+            dictionary['duration'] = duration
+            dictionary['logo-1'] = {'src': logo}
+            dictionary['image-1'] = {'src': image}
+
         else:
             title = form.get(chan + '_' + str(i) + '_title')
             subtitle = form.get(chan + '_' + str(i) + '_subtitle')
             text = form.get(chan + '_' + str(i) + '_text')
-            background_color = form.get(chan + '_' + str(i) + '_background-color')
+            background_color = form.get(chan + '_' + str(i) + '_background')
             duration = form.get(chan + '_' + str(i) + '_duration')
+            logo = form.get(chan + '_' + str(i) + '_logo')
+            image = form.get(chan + '_' + str(i) + '_image')
 
-            dictionary[chan + '_' + str(i) + '_title'] = title
-            dictionary[chan + '_' + str(i) + '_subtitle'] = subtitle
-            dictionary[chan + '_' + str(i) + '_text'] = text
-            dictionary[chan + '_' + str(i) + '_background-color'] = background_color
-            dictionary[chan + '_' + str(i) + '_duration'] = duration
-        if len(dictionary) > 0:
+            dictionary['title-1'] = {'text': title}
+            dictionary['subtitle-1'] = {'text': subtitle}
+            dictionary['text-1'] = {'text': text}
+            dictionary['background-1'] = {'color': background_color}
+            dictionary['duration'] = duration
+            dictionary['logo-1'] = {'src': logo}
+            dictionary['image-1'] = {'src': image}
+
+        if title is not None:
             ictv_list.append(dictionary)
         else:
             end = True

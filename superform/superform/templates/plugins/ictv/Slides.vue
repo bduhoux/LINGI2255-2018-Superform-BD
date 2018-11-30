@@ -30,12 +30,24 @@
                 type: Array,
                 default: () => {
                     return [{
-                        title: '',
-                        subtitle: '',
-                        text: '',
-                        logo: '',
-                        image: '',
-                        background: '',
+                        'title-1': {
+                            text: ''
+                        },
+                        'subtitle-1': {
+                            text: ''
+                        },
+                        'text-1': {
+                            text: ''
+                        },
+                        'logo-1': {
+                            src: ''
+                        },
+                        'image-1': {
+                            src: ''
+                        },
+                        'background-1': {
+                            color: ''
+                        },
                         duration: 1000
                     }]
                 }
@@ -49,12 +61,24 @@
         methods: {
             addSlide() {
                 this.slides.push({
-                    title: '',
-                    subtitle: '',
-                    text: '',
-                    logo: '',
-                    image: '',
-                    background: '',
+                    'title-1': {
+                        text: ''
+                    },
+                    'subtitle-1': {
+                        text: ''
+                    },
+                    'text-1': {
+                        text: ''
+                    },
+                    'logo-1': {
+                        src: ''
+                    },
+                    'image-1': {
+                        src: ''
+                    },
+                    'background-1': {
+                        color: ''
+                    },
                     duration: 1000
                 })
             },

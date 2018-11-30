@@ -2,7 +2,8 @@
 
 <div id="ictv">
 
+
     <div class="form-group">
-        <slides :default-config="{{ [{'title': 'hello', 'subtitle': 'yolo', 'text': 'a big text', 'logo': 'a little logo', 'image': 'a little image', 'duration': 1000, 'background':'#101010'}] }}"  channel="{{ chan.name }}"></slides>
+        <slides :default-config="{{ pub.extra['ictv_list'] }}"  channel="{{ chan.name }}"></slides>
     </div>
 </div>
