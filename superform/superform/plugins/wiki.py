@@ -9,7 +9,7 @@ CONFIG_FIELDS = ["Author", "Wiki's url"]  # This lets the manager of your module
 
 
 # appelé dans publishings.py
-def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
+def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     author = get_author(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
     url = get_url(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
 
@@ -19,15 +19,17 @@ def run(publishing,channel_config): #publishing:DB channelconfig:DB channel
     picture = publishing.image_url
     link = publishing.link_url
 
-    post_fields = {'n':page,'text':publishing.description,'action':'edit','post':1,'author':author}
+    post_fields = {'n': page, 'text': publishing.description, 'action': 'edit', 'post': 1, 'author': author}
 
     request = Request(url, urlencode(post_fields).encode())
 
     response = urlopen(request)
 
+
 def get_author(config):
     json_data = json.loads(config)
     return json_data["Author"]
+
 
 def get_url(config):
     json_data = json.loads(config)
