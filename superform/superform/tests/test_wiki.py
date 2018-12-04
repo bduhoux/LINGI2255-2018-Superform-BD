@@ -10,7 +10,6 @@ from superform import app, db, User, Post
 from superform.models import Publishing, Channel
 from superform.plugins import wiki
 
-
 @pytest.fixture
 def client():
     app.app_context().push()
