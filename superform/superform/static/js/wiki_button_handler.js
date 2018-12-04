@@ -20,12 +20,12 @@ function previewFunction() {
     console.log(tarea);
     var divpreview = document.createElement('div');
     console.log(divpreview);
-    divpreview.setAttribute("id", "previewWiki");
+    divpreview.setAttribute("id", "preview");
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
     }, false;
     divpreview.appendAfter(tarea.parentElement);
-    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('previewWiki').innerHTML = this.value;};
+    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('preview').innerHTML = this.value;};
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
