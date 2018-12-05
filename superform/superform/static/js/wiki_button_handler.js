@@ -17,28 +17,32 @@ let string = "A '''god''' damn ''good'' \n" +
 console.log(window.markdown.toHTML(string));
 
 function previewFunction() {
-    tid = arguments[0].id;
-    console.log(tid);
-    tarea = document.getElementById(tid);
-    console.log(tarea);
-    var divpreview = document.createElement('div');
-    console.log(divpreview);
-    divpreview.setAttribute("id", "previewWiki");
+    let tid = arguments[0].id;
+    let tarea = document.getElementById(tid);
+    let divpreview = document.createElement('div');
+    divpreview.setAttribute("id", "previewZone");
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
     }, false;
     divpreview.appendAfter(tarea.parentElement);
-    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('preview').innerHTML = this.value;};
+    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('previewZone').innerHTML = interpreter(this.value);};
 }
 
-function insButton(mopen, mclose, mtext, mlabel, mkey) {
-  console.log("insButton");
-  if (mkey > '') { mkey = 'accesskey="' + mkey + '" ' }
-  document.write("<a tabindex='-1' " + mkey + "onclick=\"insMarkup('"
-    + mopen + "','"
-    + mclose + "','"
-    + mtext + "');\">"
-    + mlabel + "</a>");
+function interpreter(str) {
+  let res = str.replace(/'''/g," ");
+  res = res.replace(/''/g," ");
+  res = res.replace(/'\+/g," ");
+  res = res.replace(/\+'/g," ");
+  res = res.replace(/\[\[/g," ");
+  res = res.replace(/]]/g," ");
+  res = res.replace(/'-/g," ");
+  res = res.replace(/-'/g," ");
+  res = res.replace(/'_/g," ");
+  res = res.replace(/_'/g," ");
+  res = res.replace(/'\^/g," ");
+  res = res.replace(/\^'/g," ");
+  res = res.replace(/!!/g," ");
+  return res;
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
