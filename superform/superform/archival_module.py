@@ -17,6 +17,13 @@ FORM_MONTH_KEY = 'arch_date_month'
 FORM_DAY_KEY = 'arch_date_week'
 FORM_HOUR_KEY = 'arch_date_hour'
 
+FREQUENCIES = {
+    -1: 'None',
+    0: 'Monthly',
+    1: 'Weekly',
+    2: 'Daily'
+}
+
 scheduler = BackgroundScheduler()
 scheduler.start()
 
@@ -37,7 +44,8 @@ def is_valid_data(data):
             or not isTimeFormat(data[FORM_HOUR_KEY])\
             or not isNumberBetween(data[FORM_MONTH_KEY], 1, 29)\
             or not isNumberBetween(data[FORM_DAY_KEY], 1, 8)\
-            or not isNumberBetween(data[FORM_FREQ_KEY], -1, 3):
+            or not isNumberBetween(data[FORM_FREQ_KEY], float('-inf'), float('inf')) \
+            or int(data[FORM_FREQ_KEY]) not in FREQUENCIES:
         return False
     return True
 

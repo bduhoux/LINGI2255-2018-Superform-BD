@@ -1,10 +1,9 @@
 <div class="form-group" onload="update_form()">
     <label for="arch_frequency">Archival frequency</label>
     <select class="form-control" id="arch_frequency" name="arch_frequency" onchange="update_form();">
-        <option value="-1" {% if archival_f == -1 %} selected="selected" {% endif %}>None</option>
-        <option value="0" {% if archival_f ==  0 %} selected="selected" {% endif %}>Monthly</option>
-        <option value="1" {% if archival_f ==  1 %} selected="selected" {% endif %}>Weekly</option>
-        <option value="2" {% if archival_f ==  2 %} selected="selected" {% endif %}>Daily</option>
+        {% for f, name in archival_f_dict.items() %}
+            <option value={{ f }} {% if archival_f ==  f %} selected="selected" {% endif %}>{{ name }}</option>
+        {% endfor %}
     </select>
     <small id="arch_fr_help" class="form-text text-muted">
       The frequency at which the archival service will be launched for this channel.

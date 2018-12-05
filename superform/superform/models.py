@@ -75,11 +75,10 @@ class Channel(db.Model):
     name = db.Column(db.Text, nullable=False)
     module = db.Column(db.String(100), nullable=False)
     config = db.Column(db.Text, nullable=False)
-    # for the archival module :
-    #    the frequency : (-1 for None, 0 for monthly, 1 weekly, 2 daily)
+    # Archival Module :
     archival_frequency = db.Column(db.Integer, nullable=False)
-    #    the date : the relevant part will be considered in function of archival_frequency
     archival_date = db.Column(db.DateTime, nullable=False)
+    # End of Archival Module
 
     publishings = db.relationship("Publishing", backref="channel", lazy=True)
     authorizations = db.relationship("Authorization", cascade="all, delete", backref="channel", lazy=True)

@@ -6,7 +6,7 @@ from datetime import datetime
 import ast
 
 # For the archival module :
-from archival_module import configure_job
+from archival_module import configure_job, FREQUENCIES
 
 channels_page = Blueprint('channels', __name__)
 
@@ -56,7 +56,7 @@ def configure_channel(id):
             d = ast.literal_eval(c.config)
             setattr(c, "config_dict", d)
         return render_template("channel_configure.html", channel=c, config_fields=config_fields,
-                               archival_f=c.archival_frequency, archival_d=c.archival_date)
+                               archival_f_dict=FREQUENCIES, archival_f=c.archival_frequency, archival_d=c.archival_date)
     str_conf = "{"
     cfield = 0
     for field in config_fields:
