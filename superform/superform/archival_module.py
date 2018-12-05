@@ -37,8 +37,9 @@ def get_sqlalchemy_config():
     return data[SQL_URI_KEY], data[SQL_TRACK_KEY]
 
 def delete_job(ch_id):
-    # TODO
-    pass
+    job = scheduler.get_job(str(ch_id))
+    if job:
+        job.remove()
 
 def is_valid_data(data):
     if FORM_FREQ_KEY not in data \
