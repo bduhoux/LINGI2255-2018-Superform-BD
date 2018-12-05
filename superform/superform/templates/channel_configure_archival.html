@@ -1,0 +1,63 @@
+<!--TODO stash, modify previous commit to add Antonio -->
+<!--TODO add first ... of the month ?-->
+<div class="form-group" onload="update_form()">
+    <label for="arch_frequency">Archival frequency</label>
+    <select class="form-control" id="arch_frequency" onchange="update_form();">
+        <option value="-1">None</option>
+        <option value="0">Monthly</option>
+        <option value="1">Weekly</option>
+        <option value="2">Daily</option>
+    </select>
+    <small id="arch_fr_help" class="form-text text-muted">
+      The frequency at which the archival service will be launched for this channel.
+    </small>
+</div>
+
+<div id="day_of_month" class="form-group">
+    <label for="arch_date_month">Day of the month</label>
+    <select class="form-control" id="arch_date_month">
+        {% for i in range(1, 29) %}
+            <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div id="day_of_week" class="form-group">
+    <label for="arch_date_week">Day of the week</label>
+    <select class="form-control" id="arch_date_week">
+        <option value="1">Monday</option>
+        <option value="2">Tuesday</option>
+        <option value="3">Wednesday</option>
+        <option value="4">Thursday</option>
+        <option value="5">Friday</option>
+        <option value="6">Saturday</option>
+        <option value="7">Sunday</option>
+    </select>
+</div>
+
+<div id="hour" class="form-group">
+    <label for="arch_date_hour">Hour</label>
+    <input class="form-control" type="time" id="arch_date_hour">
+</div>
+
+<script>
+    function update_form() {
+        const month_elem = document.getElementById("day_of_month");
+        const week_elem = document.getElementById("day_of_week");
+        const hour_elem = document.getElementById("hour");
+        month_elem.style.display = 'none';
+        week_elem.style.display = 'none';
+        hour_elem.style.display = 'none';
+        f = document.getElementById("arch_frequency").value;
+        if (f === '-1') {
+            return
+        }
+        hour_elem.style.display = 'block';
+        if (f === '0') {
+            month_elem.style.display = 'block';
+        } else if (f === '1') {
+            week_elem.style.display = 'block';
+        }
+    }
+    update_form()
+</script>
