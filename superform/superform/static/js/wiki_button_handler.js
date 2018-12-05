@@ -17,8 +17,6 @@ let string = "A '''god''' damn ''good'' \n" +
 console.log(window.markdown.toHTML(string));
 
 function previewFunction() {
-    let area = document.createElement('label');
-    area.innerText = Preview;
     let tid = arguments[0].id;
     let tarea = document.getElementById(tid);
     let divpreview = document.createElement('div');
@@ -26,7 +24,6 @@ function previewFunction() {
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
     }, false;
-    area.appendAfter(tarea.parentElement);
     divpreview.appendAfter(tarea.parentElement);
     tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('previewZone').innerHTML = interpreter(this.value);};
 }
