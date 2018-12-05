@@ -30,7 +30,7 @@ def get_url_wiki():
 
 def test_wiki_create(client):
     url = get_url_wiki()
-    post_fields = {'n': "PmWiki.Titre", 'text': "violet", 'action': 'edit', 'post': 1}
+    post_fields = {'n': "PmWiki.WikiDumbPageForTestingSuperform2018", 'text': "violet", 'action': 'edit', 'post': 1}
     request = Request(url, urlencode(post_fields).encode())
     response = urlopen(request)
     mybytes = response.read()
@@ -43,7 +43,7 @@ def test_wiki_create(client):
 
 def test_wiki_edit(client):
     url = get_url_wiki()
-    post_fields = {'n': "PmWiki.Titre", 'text': "Magenta", 'action': 'edit', 'post': 1}
+    post_fields = {'n': "PmWiki.WikiDumbPageForTestingSuperform2018", 'text': "Magenta", 'action': 'edit', 'post': 1}
     request = Request(url, urlencode(post_fields).encode())
     response = urlopen(request)
     mybytes = response.read()
@@ -56,7 +56,7 @@ def test_wiki_edit(client):
 
 def test_wiki_delete(client):
     url = get_url_wiki()
-    post_fields = {'n': "PmWiki.Titre", 'text': "delete", 'action': 'edit', 'post': 1}
+    post_fields = {'n': "PmWiki.WikiDumbPageForTestingSuperform2018", 'text': "delete", 'action': 'edit', 'post': 1}
     request = Request(url, urlencode(post_fields).encode())
     with pytest.raises(urllib.error.HTTPError):
         urlopen(request)
