@@ -46,7 +46,7 @@ def is_valid_data(data):
             or FORM_HOUR_KEY not in data \
             or FORM_MONTH_KEY not in data\
             or not isTimeFormat(data[FORM_HOUR_KEY])\
-            or not isNumberBetween(data[FORM_MONTH_KEY], 1, 29)\
+            or not isNumberBetween(data[FORM_MONTH_KEY], 1, 32)\
             or not isNumberBetween(data[FORM_DAY_KEY], 1, 8)\
             or not isNumberBetween(data[FORM_FREQ_KEY], float('-inf'), float('inf')) \
             or int(data[FORM_FREQ_KEY]) not in FREQUENCIES:
@@ -102,7 +102,7 @@ def configure_job_from_form(ch_id, data):
     if freq == 1: # weekly
         date = datetime(2018, 1, int(data[FORM_DAY_KEY]), hour, minute)  # since January 1, 2018 is a Monday
     else: # daily, monthly
-        date = datetime(2018, 1, int(data[FORM_MONTH_KEY]), hour, minute)  # since January 1, 2018 is a Monday
+        date = datetime(2018, 1, int(data[FORM_MONTH_KEY]), hour, minute)  # since January has 31 days
 
     return configure_job(ch_id, freq, date)
 

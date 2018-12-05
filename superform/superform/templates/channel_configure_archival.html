@@ -1,5 +1,5 @@
 <div class="form-group" onload="update_form()">
-    <label for="arch_frequency">Archival frequency</label>
+    <label for="arch_frequency">Archival service : Frequency</label>
     <select class="form-control" id="arch_frequency" name="arch_frequency" onchange="update_form();">
         {% for f, name in archival_f_dict.items() %}
             <option value={{ f }} {% if archival_f ==  f %} selected="selected" {% endif %}>{{ name }}</option>
@@ -11,16 +11,16 @@
 </div>
 
 <div id="day_of_month" class="form-group">
-    <label for="arch_date_month">Day of the month</label>
+    <label for="arch_date_month">Archival service : Day of the month</label>
     <select class="form-control" id="arch_date_month" name="arch_date_month">
-        {% for i in range(1, 29) %}
+        {% for i in range(1, 32) %}
             <option value="{{ i }}">{{ i }}</option>
         {% endfor %}
     </select>
 </div>
 
 <div id="day_of_week" class="form-group">
-    <label for="arch_date_week">Day of the week</label>
+    <label for="arch_date_week">Archival service : Day of the week</label>
     <select class="form-control" id="arch_date_week" name="arch_date_week">
         <option value="1">Monday</option>
         <option value="2">Tuesday</option>
@@ -33,7 +33,7 @@
 </div>
 
 <div id="hour" class="form-group">
-    <label for="arch_date_hour">Hour</label>
+    <label for="arch_date_hour">Archival service : Hour</label>
     <input class="form-control" type="time" id="arch_date_hour" name="arch_date_hour">
 </div>
 
