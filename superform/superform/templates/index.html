@@ -92,21 +92,7 @@
                     <td>
                         <a href="#" class="btn btn-outline-primary" role="button">Edit</a>
                         <a href="#" class="btn btn-outline-primary">Copy</a>
-                        <a href="#" class="btn btn-outline-warning" role="button" onclick="openDeleteForm(this)">Delete</a>
-                        <div class="form-check" style="display: none" id="deleteForm">
-                            <form action="{{ url_for('delete.delete_post', id=item.id) }}" method="post" class="form-check">
-                                <h4>Delete options</h4>
-                                {% for pub in publishings %}
-                                    {% if pub.post_id == item.id %}
-                                        {% if pub.channel_id == 3 %}
-                                            <input type="checkbox" name="Facebook"> Facebook<br>
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                                <input type="submit" value="Confirm" class="btn btn-outline-warning">
-                                <a onclick="closeDeleteForm(this)" class="btn btn-outline-danger" role="button">Cancel</a>
-                            </form>
-                        </div>
+                        <a href="{{ url_for('delete.delete', id=item.id) }}" class="btn btn-outline-warning" role="button">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -119,15 +105,4 @@
     {% endif %}
 
 
-{% endblock %}
-
-{% block scripts %}
-    <script>
-        function openDeleteForm(elem) {
-            elem.nextElementSibling.style.display = "block";
-        }
-        function closeDeleteForm(elem) {
-            elem.parentNode.parentNode.style.display = "none";
-        }
-    </script>
 {% endblock %}
