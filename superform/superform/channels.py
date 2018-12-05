@@ -52,7 +52,8 @@ def configure_channel(id):
         if (c.config is not ""):
             d = ast.literal_eval(c.config)
             setattr(c, "config_dict", d)
-        return render_template("channel_configure.html", channel=c, config_fields=config_fields)
+        return render_template("channel_configure.html", channel=c, config_fields=config_fields,
+                               archival_f=c.archival_frequency, archival_d=c.archival_date)
     str_conf = "{"
     cfield = 0
     for field in config_fields:

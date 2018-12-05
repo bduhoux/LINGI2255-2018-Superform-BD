@@ -1,10 +1,10 @@
 <div class="form-group" onload="update_form()">
     <label for="arch_frequency">Archival frequency</label>
     <select class="form-control" id="arch_frequency" onchange="update_form();">
-        <option value="-1">None</option>
-        <option value="0">Monthly</option>
-        <option value="1">Weekly</option>
-        <option value="2">Daily</option>
+        <option value="-1" {% if archival_f == -1 %} selected="selected" {% endif %}>None</option>
+        <option value="0" {% if archival_f ==  0 %} selected="selected" {% endif %}>Monthly</option>
+        <option value="1" {% if archival_f ==  1 %} selected="selected" {% endif %}>Weekly</option>
+        <option value="2" {% if archival_f ==  2 %} selected="selected" {% endif %}>Daily</option>
     </select>
     <small id="arch_fr_help" class="form-text text-muted">
       The frequency at which the archival service will be launched for this channel.
@@ -57,5 +57,20 @@
             week_elem.style.display = 'block';
         }
     }
-    update_form()
+
+    const month_set = document.getElementById("arch_date_month");
+    const day_set = document.getElementById("arch_date_week");
+    const hour_set = document.getElementById("arch_date_hour");
+
+    update_form();
+
+    var date = new Date(Date.parse('{{archival_d}}'));
+    var hour = (date.getHours() < 10 ? "0" + date.getHours() : date.getHours())
+        + ":"
+        + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes());
+
+    hour_set.value = hour;
+    day_set.value = (date.getDay() === 0 ? 7 : date.getDay());
+    month_set.value = (date.getDate() > 28 ? 1 : date.getDate());
+
 </script>
