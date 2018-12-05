@@ -16,7 +16,8 @@ from superform.plugins.facebook import facebook_plugin
 from superform.search import search_page
 
 # for the archival module
-from superform.archival_module import archival_page, run_default_job
+from superform.archival_module import archival_page
+# todo run archival services
 
 app = Flask(__name__)
 app.config.from_json("config.json")
@@ -72,4 +73,3 @@ def notfound(error):
 
 if __name__ == '__main__':
     app.run()
-    run_default_job()

@@ -5,6 +5,9 @@ from superform.models import db, Channel
 from datetime import datetime
 import ast
 
+# For the archival module :
+from archival_module import configure_job
+
 channels_page = Blueprint('channels', __name__)
 
 
@@ -63,5 +66,8 @@ def configure_channel(id):
         cfield += 1
     str_conf += "}"
     c.config = str_conf
+    # Archival Module :
+    configure_job(id, request.form)
+    # End of Archival Module
     db.session.commit()
     return redirect(url_for('channels.channel_list'))

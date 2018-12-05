@@ -1,6 +1,6 @@
 <div class="form-group" onload="update_form()">
     <label for="arch_frequency">Archival frequency</label>
-    <select class="form-control" id="arch_frequency" onchange="update_form();">
+    <select class="form-control" id="arch_frequency" name="arch_frequency" onchange="update_form();">
         <option value="-1" {% if archival_f == -1 %} selected="selected" {% endif %}>None</option>
         <option value="0" {% if archival_f ==  0 %} selected="selected" {% endif %}>Monthly</option>
         <option value="1" {% if archival_f ==  1 %} selected="selected" {% endif %}>Weekly</option>
@@ -13,7 +13,7 @@
 
 <div id="day_of_month" class="form-group">
     <label for="arch_date_month">Day of the month</label>
-    <select class="form-control" id="arch_date_month">
+    <select class="form-control" id="arch_date_month" name="arch_date_month">
         {% for i in range(1, 29) %}
             <option value="{{ i }}">{{ i }}</option>
         {% endfor %}
@@ -22,7 +22,7 @@
 
 <div id="day_of_week" class="form-group">
     <label for="arch_date_week">Day of the week</label>
-    <select class="form-control" id="arch_date_week">
+    <select class="form-control" id="arch_date_week" name="arch_date_week">
         <option value="1">Monday</option>
         <option value="2">Tuesday</option>
         <option value="3">Wednesday</option>
@@ -35,7 +35,7 @@
 
 <div id="hour" class="form-group">
     <label for="arch_date_hour">Hour</label>
-    <input class="form-control" type="time" id="arch_date_hour">
+    <input class="form-control" type="time" id="arch_date_hour" name="arch_date_hour">
 </div>
 
 <script>
