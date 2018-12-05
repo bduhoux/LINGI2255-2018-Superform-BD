@@ -39,28 +39,34 @@
 </div>
 
 <script>
+    const month_input = document.getElementById("arch_date_month");
+    const day_input = document.getElementById("arch_date_week");
+    const hour_input = document.getElementById("arch_date_hour");
+
     function update_form() {
-        const month_elem = document.getElementById("day_of_month");
-        const week_elem = document.getElementById("day_of_week");
-        const hour_elem = document.getElementById("hour");
-        month_elem.style.display = 'none';
-        week_elem.style.display = 'none';
-        hour_elem.style.display = 'none';
+        const month_div = document.getElementById("day_of_month");
+        const week_div = document.getElementById("day_of_week");
+        const hour_div = document.getElementById("hour");
+        month_div.style.display = 'none';
+        week_div.style.display = 'none';
+        hour_div.style.display = 'none';
+        month_input.required = false;
+        day_input.required = false;
+        hour_input.required = false;
         f = document.getElementById("arch_frequency").value;
         if (f === '-1') {
             return
         }
-        hour_elem.style.display = 'block';
+        hour_div.style.display = 'block';
+        hour_input.required = true;
         if (f === '0') {
-            month_elem.style.display = 'block';
+            month_div.style.display = 'block';
+            month_input.required = true;
         } else if (f === '1') {
-            week_elem.style.display = 'block';
+            week_div.style.display = 'block';
+            day_input.required = true;
         }
     }
-
-    const month_set = document.getElementById("arch_date_month");
-    const day_set = document.getElementById("arch_date_week");
-    const hour_set = document.getElementById("arch_date_hour");
 
     update_form();
 
@@ -69,8 +75,7 @@
         + ":"
         + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes());
 
-    hour_set.value = hour;
-    day_set.value = (date.getDay() === 0 ? 7 : date.getDay());
-    month_set.value = (date.getDate() > 28 ? 1 : date.getDate());
-
+    hour_input.value = hour;
+    day_input.value = (date.getDay() === 0 ? 7 : date.getDay());
+    month_input.value = (date.getDate() > 28 ? 1 : date.getDate());
 </script>
