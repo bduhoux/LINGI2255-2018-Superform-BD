@@ -108,10 +108,7 @@ def records():
         for b in a.publishings:
             rec.append(b)
     isAdmin = session.get("logged_in", "") and session.get("admin", "")
-    archival_config = get_archival_config()
-    # Added code ----------
-    return render_template('records.html', records=rec, channel=channel, isAdmin=isAdmin,
-                           archival_hour=("%02d" % archival_config[HOUR_KEY]),
-                           archival_minut=("%02d" % archival_config[MINUT_KEY]))
+    # Enf of Added code ---
+    return render_template('records.html', records=rec, channel=channel, isAdmin=isAdmin)
 
 
