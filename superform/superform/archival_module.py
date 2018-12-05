@@ -24,6 +24,9 @@ FREQUENCIES = {
     2: 'Daily'
 }
 
+DEFAULT_FREQUENCY = 2 # Daily
+DEFAULT_DATE = datetime(2018, 1, 1, 0, 0) # 2018/01/01 (Monday) 00:00
+
 scheduler = BackgroundScheduler()
 scheduler.start()
 
@@ -49,36 +52,47 @@ def is_valid_data(data):
         return False
     return True
 
-def configure_job(ch_id, data):
+def configure_job(ch_id, freq, date):
+    if not isinstance(freq, int) \
+            or freq not in FREQUENCIES \
+            or not isinstance(date, datetime):
+        return None
+
+    if freq == -1: # none
+        delete_job(ch_id)
+        return (freq, date)
+
+    if freq == 0: # monthly
+        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
+                              day=date.day, hour=date.hour, minute=date.minute)
+    elif freq == 1: # weekly
+        day = date.weekday()
+        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
+                              day_of_week=day, hour=date.hour, minute=date.minute)
+    elif freq == 2: # daily
+        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
+                              hour=date.hour, minute=date.minute)
+    return (freq, date)
+
+def configure_job_from_form(ch_id, data):
     if not is_valid_data(data):
         return None
 
     freq = int(data[FORM_FREQ_KEY])
-    date = datetime.today()
 
     if freq == -1:
-        delete_job(ch_id)
-        return (freq, date)
+        return configure_job(ch_id, freq, datetime.today())
 
     timer = data[FORM_HOUR_KEY].split(":")
     hour = int(timer[0])
     minute = int(timer[1])
 
-    if freq == 0: # monthly
-        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
-                              day=data[FORM_MONTH_KEY], hour=hour, minute=minute)
-        date = datetime(2018, 1, int(data[FORM_MONTH_KEY]), hour, minute)
-    elif freq == 1: # weekly
-        day = int(data[FORM_DAY_KEY])
-        date = datetime(2018, 1, day, hour, minute) # since January 1, 2018 is a Monday
-        day -= 1
-        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
-                              day_of_week=day, hour=hour, minute=minute)
-    elif freq == 2: # daily
-        date = datetime(2018, 1, 1, hour, minute)
-        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
-                              hour=hour, minute=minute)
-    return (freq, date)
+    if freq == 1: # weekly
+        date = datetime(2018, 1, int(data[FORM_DAY_KEY]), hour, minute)  # since January 1, 2018 is a Monday
+    else: # daily, monthly
+        date = datetime(2018, 1, int(data[FORM_MONTH_KEY]), hour, minute)  # since January 1, 2018 is a Monday
+
+    return configure_job(ch_id, freq, date)
 
 def archival_job(ch_id):
     sql_config = get_sqlalchemy_config()

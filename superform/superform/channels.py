@@ -6,7 +6,7 @@ from datetime import datetime
 import ast
 
 # For the archival module :
-from archival_module import configure_job, FREQUENCIES
+from archival_module import configure_job, configure_job_from_form, FREQUENCIES, DEFAULT_DATE, DEFAULT_FREQUENCY
 
 channels_page = Blueprint('channels', __name__)
 
@@ -20,11 +20,14 @@ def channel_list():
             name = request.form.get('name')
             module = request.form.get('module')
             if module in get_modules_names(current_app.config["PLUGINS"].keys()):
-                archival_date = datetime(2018, 1, 1, 0, 0)
                 channel = Channel(name=name, module=get_module_full_name(module), config="{}",
-                                  archival_frequency=2, archival_date=archival_date)
+                                  archival_frequency=DEFAULT_FREQUENCY, archival_date=DEFAULT_DATE)
                 db.session.add(channel)
                 db.session.commit()
+                # Archival Module :
+                configure_job(channel.id, DEFAULT_FREQUENCY, DEFAULT_DATE)
+                # End of Archival Module
+
         elif action == "delete":
             channel_id = request.form.get("id")
             channel = Channel.query.get(channel_id)
@@ -67,7 +70,7 @@ def configure_channel(id):
     str_conf += "}"
     c.config = str_conf
     # Archival Module :
-    arch_config = configure_job(id, request.form)
+    arch_config = configure_job_from_form(id, request.form)
     if arch_config:
         c.archival_frequency = arch_config[0]
         if arch_config[0] != -1:

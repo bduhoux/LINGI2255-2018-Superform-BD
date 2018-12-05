@@ -100,13 +100,17 @@ def records():
     posts = db.session.query(Post).filter(Post.user_id == session.get("user_id", ""))
     records = [(p) for p in posts if p.is_a_record()]
     # Added code ----------
-    channel = db.session.query(Channel).all()
+    # todo quid if channel has been deleted ?
+    channels_list = db.session.query(Channel).all()
+    channels_dict = {}
+    for ch in channels_list:
+        channels_dict[ch.id] = ch.name
     rec = []
     for a in records:
         for b in a.publishings:
             rec.append(b)
     isAdmin = session.get("logged_in", "") and session.get("admin", "")
     # Enf of Added code ---
-    return render_template('records.html', records=rec, channel=channel, isAdmin=isAdmin)
+    return render_template('records.html', records=rec, channel=channels_dict, isAdmin=isAdmin)
 
 
