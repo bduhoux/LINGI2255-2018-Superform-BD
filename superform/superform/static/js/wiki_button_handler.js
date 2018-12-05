@@ -12,25 +12,20 @@
     Script maintained by Petko Yotov www.pmwiki.org/petko
 */
 
-import {toHTML} from wiki_preview_markdown.js
-
 let string = "A '''god''' damn ''good'' \n" +
     "!! description\n";
-console.log(toHTML(string));
+console.log(window.markdown.toHTML(string));
 
 function previewFunction() {
     let tid = arguments[0].id;
-    console.log(tid);
     let tarea = document.getElementById(tid);
-    console.log(tarea);
     let divpreview = document.createElement('div');
-    divpreview.setAttribute("id", "preview");
+    divpreview.setAttribute("id", "previewZone");
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
     }, false;
     divpreview.appendAfter(tarea.parentElement);
-    console.log( markdown.toHTML(document.getElementById('preview').innerHTML));
-    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('preview').innerHTML = toHTML(this.value);};
+    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('previewZone').innerHTML = this.value;};
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
