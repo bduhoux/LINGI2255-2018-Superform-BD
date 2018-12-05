@@ -1,12 +1,14 @@
-from flask import Blueprint, url_for, redirect, session, render_template
+from flask import Blueprint, url_for, redirect, session, render_template, request
 
 from superform.utils import login_required
 from superform.models import db, Post, Publishing, User
 
+from superform.plugins.facebook import delete
+
 delete_page = Blueprint('delete', __name__)
 
 
-@delete_page.route('/delete/<int:id>')
+@delete_page.route('/delete/<int:id>', methods=['GET', 'POST'])
 @login_required()
 def delete_post(id):
     user = User.query.get(session.get("user_id", "")) if session.get("logged_in", False) else None
@@ -19,10 +21,18 @@ def delete_post(id):
                 publishings = db.session.query(Publishing).filter(Publishing.post_id == id).all()
                 post_del_cond = True
                 for pub in publishings:
-                    # If the publishing is not yet validated (if it has already been posted)
+                    # If the publishing is not yet validated
                     if is_not_validated(pub):
                         db.session.delete(pub)
                         db.session.commit()
+                    # If the publishing has been posted already (not archived)
+                    elif pub.state == 1:
+                        # If the checkbox for Facebook is checked
+                        if request.form.get('Facebook'):
+                            # Delete post on Facebook
+                            #fb_post_id = pub.extra
+                            # delete(fb_post_id)
+                            pass
                     else:
                         post_del_cond = False
 
