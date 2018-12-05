@@ -43,13 +43,14 @@ def is_valid_data(data):
 
 def configure_job(ch_id, data):
     if not is_valid_data(data):
-        return
+        return None
 
     freq = int(data[FORM_FREQ_KEY])
+    date = datetime.today()
 
     if freq == -1:
         delete_job(ch_id)
-        return
+        return (freq, date)
 
     timer = data[FORM_HOUR_KEY].split(":")
     hour = int(timer[0])
@@ -58,14 +59,18 @@ def configure_job(ch_id, data):
     if freq == 0: # monthly
         scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
                               day=data[FORM_MONTH_KEY], hour=hour, minute=minute)
+        date = datetime(2018, 1, int(data[FORM_MONTH_KEY]), hour, minute)
     elif freq == 1: # weekly
         day = int(data[FORM_DAY_KEY])
+        date = datetime(2018, 1, day, hour, minute) # since January 1, 2018 is a Monday
         day -= 1
         scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
                               day_of_week=day, hour=hour, minute=minute)
     elif freq == 2: # daily
+        date = datetime(2018, 1, 1, hour, minute)
         scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
                               hour=hour, minute=minute)
+    return (freq, date)
 
 def archival_job(ch_id):
     sql_config = get_sqlalchemy_config()

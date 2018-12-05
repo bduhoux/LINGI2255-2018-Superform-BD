@@ -67,7 +67,11 @@ def configure_channel(id):
     str_conf += "}"
     c.config = str_conf
     # Archival Module :
-    configure_job(id, request.form)
+    arch_config = configure_job(id, request.form)
+    if arch_config:
+        c.archival_frequency = arch_config[0]
+        if arch_config[0] != -1:
+            c.archival_date = arch_config[1]
     # End of Archival Module
     db.session.commit()
     return redirect(url_for('channels.channel_list'))
