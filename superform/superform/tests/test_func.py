@@ -12,7 +12,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from superform.models import db, Publishing, Channel
 
-browser = webdriver.Chrome('/home/maitre/Downloads/chromedriver')
+web_driver_location = os.getcwd() + '/superform/superform/static/plugins/facebook/chromedriver'
+browser = webdriver.Chrome(web_driver_location)
+# browser = webdriver.Chrome('/home/maitre/Downloads/chromedriver')
 
 
 @pytest.fixture
@@ -70,7 +72,7 @@ def test_facebook_functional(client):
     time.sleep(1)
     browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
     window_before = browser.window_handles[0]
-    time.sleep(2)
+    time.sleep(5)
     browser.find_element(By.CLASS_NAME, "fb_iframe_widget").click()
     time.sleep(2)
     window_after = browser.window_handles[1]
@@ -82,10 +84,11 @@ def test_facebook_functional(client):
     time.sleep(1)
     # browser.find_element(By.XPATH, "//button[@name='__CONFIRM__']").click()
     browser.switch_to.window(window_before)
-    time.sleep(5)
-    print("clicking")
+    time.sleep(3)
     browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
-    time.sleep(5)
+    time.sleep(3)
+    browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
+    time.sleep(3)
     browser.get('https://www.facebook.com/pg/Test-453122048545115/posts/?ref=page_internal')
 
 
