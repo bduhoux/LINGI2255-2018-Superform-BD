@@ -2,18 +2,17 @@ import os
 import tempfile
 import pytest
 import time
-import threading
+from datetime import datetime
+from datetime import timedelta
+
 
 from superform import app, db
-from superform.models import Post, Publishing
-from superform.utils import datetime_converter
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from superform.models import db, Publishing, Channel
 
 browser = webdriver.Chrome('/home/maitre/Downloads/chromedriver')
-# browser = webdriver.Firefox('/home/maitre/Downloads/geckodriver')
 
 
 @pytest.fixture
@@ -31,20 +30,64 @@ def client():
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
 
+def get_time_string(date):
+    if date.month < 10:
+        month = "0" + str(date.month)
+    else:
+        month = str(date.month)
+    if date.day < 10:
+        day = "0" + str(date.day)
+    else:
+        day = str(date.day)
+    year = str(date.year)
+    return month + day + year
 
 def test_facebook_functional(client):
     assert True == True
-    # threading.Thread(target=app.run, daemon=True).start() # stop serveur quand test est fini
-
     time.sleep(1)
     browser.get('http://localhost:5000/login')
     browser.maximize_window()
-    #login_button = browser.find_element_by_link_text('Login')
-    #login_button.click()
     browser.find_element_by_name("j_username").send_keys("myself")
     browser.find_element_by_name("j_password").send_keys("myself")
     browser.find_element(By.XPATH, "//input[@value='Login']").click()
-    time.sleep(5)
+    time.sleep(1)
     browser.find_element(By.XPATH, "//a[@href='/new']").click()
-    #browser.get('http://localhost:5000/new')
+    browser.find_element(By.XPATH, "//input[@id='titlepost']").send_keys("Title")
+    browser.find_element(By.XPATH, "//textarea[@id='descriptionpost']").send_keys("This is the description")
+    browser.find_element(By.XPATH, "//input[@data-module='superform.plugins.facebook']").click()
+
+    now = datetime.now()
+    browser.find_element(By.XPATH, "//input[@id='datefrompost']").click()
+    browser.find_element(By.XPATH, "//input[@id='datefrompost']").send_keys(get_time_string(now))
+    then = now + timedelta(days=3)
+    browser.find_element(By.XPATH, "//input[@id='dateuntilpost']").click()
+    browser.find_element(By.XPATH, "//input[@id='dateuntilpost']").send_keys(get_time_string(then))
+    time.sleep(1)
+    browser.find_element(By.XPATH, "//button[@id='publish-button']").click()
+
+    pub_id = db.session.query(Publishing).order_by(Publishing.post_id.desc()).first().post_id
+    browser.get('http://localhost:5000/moderate/' + str(pub_id) +'/1')
+    time.sleep(1)
+    browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
+    window_before = browser.window_handles[0]
+    time.sleep(2)
+    browser.find_element(By.CLASS_NAME, "fb_iframe_widget").click()
+    time.sleep(2)
+    window_after = browser.window_handles[1]
+    browser.switch_to.window(window_after)
+    browser.find_element(By.XPATH, "//input[@id='email']").send_keys("guiste10@hotmail.be")
+    browser.find_element(By.XPATH, "//input[@id='pass']").send_keys("soft@123")
+    browser.find_element(By.XPATH, "//input[@value='Log In']").click()
+    #browser.switch_to.window(window_before)
+    time.sleep(1)
+    # browser.find_element(By.XPATH, "//button[@name='__CONFIRM__']").click()
+    browser.switch_to.window(window_before)
     time.sleep(5)
+    print("clicking")
+    browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
+    time.sleep(5)
+    browser.get('https://www.facebook.com/pg/Test-453122048545115/posts/?ref=page_internal')
+
+
+
+
