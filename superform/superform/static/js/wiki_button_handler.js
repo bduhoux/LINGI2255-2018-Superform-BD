@@ -12,20 +12,25 @@
     Script maintained by Petko Yotov www.pmwiki.org/petko
 */
 
+import {toHTML} from wiki_preview_markdown.js
+
+let string = "A '''god''' damn ''good'' \n" +
+    "!! description\n";
+console.log(toHTML(string));
 
 function previewFunction() {
-    tid = arguments[0].id;
+    let tid = arguments[0].id;
     console.log(tid);
-    tarea = document.getElementById(tid);
+    let tarea = document.getElementById(tid);
     console.log(tarea);
-    var divpreview = document.createElement('div');
-    console.log(divpreview);
+    let divpreview = document.createElement('div');
     divpreview.setAttribute("id", "preview");
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
     }, false;
     divpreview.appendAfter(tarea.parentElement);
-    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('preview').innerHTML = this.value;};
+    console.log( markdown.toHTML(document.getElementById('preview').innerHTML));
+    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('preview').innerHTML = toHTML(this.value);};
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
@@ -49,9 +54,7 @@ function insMarkup() {
     var mopen = arguments[0], mclose = arguments[1], mtext = arguments[2];
     if(arguments.length > 3) {
         tid = arguments[3];
-        console.log(tid);
         tid = tid.id;
-        console.log(tid);
     }
   }
 
@@ -81,7 +84,7 @@ function insMarkup() {
   } else if (document.selection) {
     var str = document.selection.createRange().text;
     tarea.focus();
-    range = document.selection.createRange();
+    let range = document.selection.createRange();
     if (str == '') {
       range.text = mopen + mtext + mclose;
       range.moveStart('character', -mclose.length - mtext.length );

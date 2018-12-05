@@ -13,15 +13,4 @@
     <a tabindex="-1" onclick="insMarkup('\n!! ','\n','Heading',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/h.gif" title="Heading" style="border:0px;"></a>
     <a tabindex="-1" onclick="insMarkup('%center%','','',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/center.gif" title="Center" style="border:0px;"></a>
     <a href="#" id="previewButton" role="button" onclick="previewFunction({{ chan.name }}_descriptionpost);">Preview</a>
-    <script>
-      function Editor(input, preview) {
-        this.update = function () {
-          preview.innerHTML = markdown.toHTML(input.value);
-        };
-        input.editor = this;
-        this.update();
-      }
-      var $ = function (id) { return document.getElementById(id); };
-      new Editor($("{{ chan.name }}_descriptionpost)"), $("preview"));
-    </script>
 </div>
