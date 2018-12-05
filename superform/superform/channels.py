@@ -2,6 +2,7 @@ from flask import Blueprint, current_app, url_for, request, make_response, redir
 
 from superform.utils import login_required, get_instance_from_module_path, get_modules_names, get_module_full_name
 from superform.models import db, Channel
+from datetime import datetime
 import ast
 
 channels_page = Blueprint('channels', __name__)
@@ -16,7 +17,9 @@ def channel_list():
             name = request.form.get('name')
             module = request.form.get('module')
             if module in get_modules_names(current_app.config["PLUGINS"].keys()):
-                channel = Channel(name=name, module=get_module_full_name(module), config="{}")
+                archival_date = datetime(2018, 1, 1, 0, 0)
+                channel = Channel(name=name, module=get_module_full_name(module), config="{}",
+                                  archival_frequency=2, archival_date=archival_date)
                 db.session.add(channel)
                 db.session.commit()
         elif action == "delete":
