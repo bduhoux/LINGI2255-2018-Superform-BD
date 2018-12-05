@@ -5,6 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from superform.utils import login_required
 import json, time
 from flask import Blueprint, url_for, redirect, request, Flask
+from models import Channel
 
 archival_page = Blueprint('archival', __name__)
 
@@ -51,6 +52,17 @@ def is_valid_data(data):
             or int(data[FORM_FREQ_KEY]) not in FREQUENCIES:
         return False
     return True
+
+def start_jobs_from_db():
+    sql_config = get_sqlalchemy_config()
+    app = Flask(__name__)
+    app.config[SQL_URI_KEY] = sql_config[0]
+    app.config[SQL_TRACK_KEY] = sql_config[1]
+    with app.app_context():
+        db.init_app(app)
+        channels = db.session.query(Channel).all()
+        for ch in channels:
+            configure_job(ch.id, ch.archival_frequency, ch.archival_date)
 
 def configure_job(ch_id, freq, date):
     if not isinstance(freq, int) \
