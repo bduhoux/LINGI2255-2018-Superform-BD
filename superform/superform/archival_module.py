@@ -4,7 +4,7 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from superform.utils import login_required
 import json, time
-from flask import Blueprint, url_for, redirect, Flask, Response
+from flask import Blueprint, url_for, redirect, Flask, Response, request
 from models import Channel
 
 archival_page = Blueprint('archival', __name__)
@@ -135,17 +135,39 @@ def update_now():
     archival_job(-1)
     return redirect(url_for('posts.records'))
 
+@archival_page.route('/download_some_records', methods=['POST'])
+def download_some_records():
+    ch_ids = []
+    data = request.form.getlist('download_cb')
+    for ch in data:
+        try:
+            ch_ids.append(int(ch))
+        except ValueError:
+            print("[Archival Module - ERR] : error with /download_some_records : cannot cast str to int")
+    return download_records(ch_ids)
+
 @archival_page.route('/get_all_records', methods=['GET', 'POST'])
 @login_required(admin_required=True)
-def download_records():
+def download_all_records():
+    return download_records(None)
+
+def download_records(ch_ids):
     sql_config = get_sqlalchemy_config()
     app = Flask(__name__)
     app.config[SQL_URI_KEY] = sql_config[0]
     app.config[SQL_TRACK_KEY] = sql_config[1]
     with app.app_context():
         db.init_app(app)
-        channels_objects = db.session.query(Channel).all()
-        archived_p = db.session.query(Publishing).filter(Publishing.state == 2).all()
+
+        if ch_ids is not None and len(ch_ids) > 0:
+            channels_objects = db.session.query(Channel).filter(Channel.id.in_(ch_ids)).all()
+            archived_p = db.session.query(Publishing).filter(Publishing.state == 2, Publishing.channel_id.in_(ch_ids)).all()
+        elif ch_ids is None:
+            channels_objects = db.session.query(Channel).all()
+            archived_p = db.session.query(Publishing).filter(Publishing.state == 2).all()
+        else:
+            channels_objects = []
+            archived_p = []
 
         records = []
         channels = []

@@ -111,6 +111,6 @@ def records():
             rec.append(b)
     isAdmin = session.get("logged_in", "") and session.get("admin", "")
     # Enf of Added code ---
-    return render_template('records.html', records=rec, channel=channels_dict, isAdmin=isAdmin)
+    return render_template('records.html', records=rec, channels=channels_dict, isAdmin=isAdmin)
 
 

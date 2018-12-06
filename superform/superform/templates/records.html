@@ -16,28 +16,19 @@
 
 {% block content %}
     <h1 style="display: flex; align-items: center">My Records
+        <!-- Archival Module : (the gear next to the page title) -->
         {% if isAdmin %}
-            <!-- Archival Module : (the gear next to the page title) -->
             <a class="btn btn-sm btn-secondary" data-toggle="collapse" href="#collapseConfiguration" role="button" aria-expanded="false" aria-controls="collapseConfiguration"
                style="margin-left: 1rem">
                 <i class="fa fa-cog"></i>
             </a>
-            <!-- End of Archival Module-->
         {% endif %}
+        <!-- End of Archival Module-->
     </h1>
-    <!-- Archival Module : (the buttons to refresh/download) -->
-    <div class="collapse" id="collapseConfiguration">
-        <div class="card card-body" style="width: 18rem;">
-            <a href="/update_archival_states" style="float: right" class="btn btn-primary">Update now</a>
-            <small class="form-text text-muted">
-              It will run all archival services once.
-            </small>
-            <a href="/get_all_records" style="float: right" class="btn btn-primary" download="records.json">Download</a>
-            <small class="form-text text-muted">
-              To download all records in a JSON file.
-            </small>
-        </div>
-    </div>
+    <!-- Archival Module : Buttons -->
+    {% if isAdmin %}
+        {% include 'records_actions.html' %}
+    {% endif %}
     <!-- End of Archival Module -->
     <br>
     <div class="row">
@@ -75,7 +66,7 @@
                             {{ rec.description }}
                         </td>
                         <td>
-                            {{ channel[rec.channel_id]}}
+                            {{ channels[rec.channel_id]}}
                         </td>
                         <td>
                             <button type="button" class="btn btn-outline-primary" contenteditable="true">Edit</button>
