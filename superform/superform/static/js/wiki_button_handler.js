@@ -64,7 +64,7 @@ function interpreter(str) {
     res = replace_exp1(res);
     res = replace_exp2(res);
     res = res.replace(/!!/g," ");
-    res = replace_center(res);
+    //res = replace_center(res);
 
     return res;
 }
@@ -144,13 +144,26 @@ function replace_italic(str){
 }
 
 function replace_link1(str){
-    let str2 = "<a class=\"urllink\">";
+    let href = get_href(str);
+    let str2 = "<a class=\"urllink\" href="+href+">";
     return str.replace(/\[\[/g,str2);
 }
 
 function replace_link2(str){
     let str2 = "</a>";
     return str.replace(/]]/g,str2);
+}
+
+function get_href(str){
+    var count1 = (temp.match(/\[\[/g) || []).length; //occurence de [[
+    var count2 = (temp.match(/]]/g) || []).length; //occurence de ]]
+
+    if(count1 >= 1){
+        var pos1 = str.indexOf("[[");
+        var pos2 = str.indexOf("]]");
+        var str2 = str.substring(pos1, pos2);
+        return str2;
+    }
 }
 
 function replace_big1(str) {
