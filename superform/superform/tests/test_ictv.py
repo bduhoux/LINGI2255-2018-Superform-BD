@@ -4,7 +4,6 @@ import json
 import os
 import urllib.request
 import pytest
-from datetime import datetime
 from superform.plugins import ictv
 from superform import app
 from superform.models import Publishing
@@ -105,8 +104,8 @@ def test_run():
                            "DescriptionTestForTheICTV_ChannelSlide1",
                            "",
                            None,
-                           datetime.strptime('Jun 29 2018  1:33PM', '%b %d %Y %I:%M%p'),
-                           datetime.strptime('Jun 30 2018  1:33PM', '%b %d %Y %I:%M%p'),
+                           datetime.datetime.strptime('Jun 29 2018  1:33PM', '%b %d %Y %I:%M%p'),
+                           datetime.datetime.strptime('Jun 30 2018  1:33PM', '%b %d %Y %I:%M%p'),
                            {"ictv_list":
                                [{'title-1':{'text': 'Awesome title!'},
                                  'subtitle-1':{'text': 'Subtile subtitle'},
