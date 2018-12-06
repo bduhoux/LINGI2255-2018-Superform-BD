@@ -47,7 +47,7 @@ function previewFunction() {
 
 function interpreter(str) {
 
-    let res = str.replace(/\n/g,"\n");
+    let res = str.replace(/\n/g,"<br>");
     res = replace_double_bold(res);
     res = replace_bold_italic(res);
     res = replace_double_italic(res);
@@ -63,7 +63,7 @@ function interpreter(str) {
     res = replace_sub2(res);
     res = replace_exp1(res);
     res = replace_exp2(res);
-    res = res.replace(/!!/g," ");
+    //res = replace_heading(res);
     //res = replace_center(res);
 
     return res;
@@ -145,7 +145,7 @@ function replace_italic(str){
 
 function replace_link1(str){
     let href = get_href(str);
-    let str2 = "<a class=\"urllink\" href="+href+">";
+    let str2 = "<a class=\"urllink\" href=\""+href+"\">";
     return str.replace(/\[\[/g,str2);
 }
 
@@ -155,11 +155,11 @@ function replace_link2(str){
 }
 
 function get_href(str){
-    var count1 = (temp.match(/\[\[/g) || []).length; //occurence de [[
-    var count2 = (temp.match(/]]/g) || []).length; //occurence de ]]
+    var count1 = (str.match(/\[\[/g) || []).length; //occurence de [[
+    var count2 = (str.match(/]]/g) || []).length; //occurence de ]]
 
     if(count1 >= 1){
-        var pos1 = str.indexOf("[[");
+        var pos1 = str.indexOf("[[")+2;
         var pos2 = str.indexOf("]]");
         var str2 = str.substring(pos1, pos2);
         return str2;
@@ -207,8 +207,12 @@ function replace_sub2(str) {
 }
 
 function replace_heading(str) {
-    let str2 = "</sub>";
-    return str.replace(/_'/g,str2);
+    str = str.replace(/!!/,"<h1>");
+    var i = str.charAt("<h1>");
+    do {
+        i++;
+    }while (str.substring(i,i+2) !== "\n")
+    str = str.substring(0,i) + "</h1>" + str.substring(i+2,str.length);
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
