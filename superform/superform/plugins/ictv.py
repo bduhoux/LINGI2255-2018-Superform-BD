@@ -47,7 +47,7 @@ def run(publishing, channel_config):
 
     if response.status_code is not 201:
         response.raise_for_status()
-        return
+        return False
 
     location = response.headers['location']
 
@@ -68,9 +68,10 @@ def run(publishing, channel_config):
 
         if response.status_code is not 201:
             response.raise_for_status()
-            return
+            return False
 
         id_slide += 1
+    return True
 
 
 def get_channel_fields(form, chan):

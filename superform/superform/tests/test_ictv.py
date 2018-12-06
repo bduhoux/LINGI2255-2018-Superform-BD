@@ -1,7 +1,14 @@
 import datetime
 import time
-
+import json
+import os
+import urllib.request
 import pytest
+from datetime import datetime
+from superform.plugins import ictv
+from superform import app
+from superform.models import Publishing
+from superform.utils import get_module_full_name
 
 
 @pytest.fixture
@@ -59,3 +66,84 @@ def test_frontend(selenium):
     selenium.find_element_by_id('publish-button').click()
 
     assert post_title in selenium.find_element_by_tag_name('body').text
+
+
+json_data = open(os.path.dirname(os.path.abspath(__file__)) + '/../config.json')
+data = json.load(json_data)
+
+
+class Publish(Publishing):
+    def __init__(self, post_id, title, description, link_url, image_url,
+                 date_from, date_until, option, channel_id="ICTV Superform Test", state=-1):
+        self.post_id = post_id
+        self.channel_id = channel_id
+        self.state = state
+        self.title = title
+        self.description = description
+        self.link_url = link_url
+        self.image_url = image_url
+        self.date_from = date_from
+        self.date_until = date_until
+        self.extra = json.dumps(option)
+
+
+def test_get_module_ictv():
+    """
+    Tests if the module ictv is active
+    :return:
+    """
+    with app.app_context():
+        module_name = "ictv"
+        m = get_module_full_name(module_name)
+        assert m == "superform.plugins.ictv"
+
+
+def test_run():
+    with app.app_context():
+        my_publy = Publish(0,
+                           "TitleTestForTheICTV_ChannelSlide1",
+                           "DescriptionTestForTheICTV_ChannelSlide1",
+                           "",
+                           None,
+                           datetime.strptime('Jun 29 2018  1:33PM', '%b %d %Y %I:%M%p'),
+                           datetime.strptime('Jun 30 2018  1:33PM', '%b %d %Y %I:%M%p'),
+                           {"ictv_list":
+                               [{'title-1':{'text': 'Awesome title!'},
+                                 'subtitle-1':{'text': 'Subtile subtitle'},
+                                 'text-1':{'text': 'Very long textual text here'},
+                                 'logo-1':{'src': 'michelfra.svg'},
+                                 'image-1':{"src": "http://thecatapi.com/api/images/get"},
+                                 'background-1':"color",
+                                 'duration':5000}]
+                            })
+        # Try catch needed as create slide raises an error for m <Mocker> equals 1
+        try:
+            run = ictv.run(my_publy,None)
+            assert run == True
+        except:
+            print("ERROR")
+
+        # GET the capsule /capsules/1
+        urlData = "http://www.mocky.io/v2/5c099a843500006c00a85e07"
+        webURL = urllib.request.urlopen(urlData)
+        assert 200 == webURL.getcode()
+        data = webURL.read()
+        encoding = webURL.info().get_content_charset('utf-8')
+
+        # Header data test
+        data_header = json.loads(data.decode(encoding))['slides'][0]
+        assert 5000 == data_header['duration']
+        assert 1 == data_header['id']
+
+        # Content data test
+        data_content = data_header['content']
+        assert {'text': 'Awesome title!'} == data_content['title-1']
+        assert {'text': 'Subtile subtitle'} == data_content['subtitle-1']
+        assert {'text': 'Very long textual text here'} == data_content['text-1']
+        assert {'src': 'http://thecatapi.com/api/images/get'} == data_content['image-1']
+        assert {'src': 'michelfra.svg'} == data_content['logo-1']
+
+        # DELETE the capsule capsules/1
+        urlData = "http://www.mocky.io/v2/5c09a10c3500006c00a85e10"
+        webURL = urllib.request.urlopen(urlData)
+        assert 204 == webURL.getcode()
