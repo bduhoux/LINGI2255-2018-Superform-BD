@@ -44,20 +44,18 @@ function previewFunction() {
 }
 
 function interpreter(str) {
-    let old_string = str;
-    let new_string = str;
-    do{
-        old_string = new_string;
-        new_string = old_string.replace(/''''''/, "</br><br>" );
-    }while(old_string!=new_string);
 
     let res = new_string.replace(/\n/g,"\n");
 
     res = replace_link1(res);
     res = replace_link2(res);
-
     res = res.replace(/'''/g,"");
     res = res.replace(/''/g," ");
+    res = replace_double_bold(res);
+    res = replace_bold_italic(res);
+    res = replace_double_italic(res);
+    res = replace_bold(res);
+    res = replace_italic(res);
     res = replace_big1(res);
     res = replace_big2(res);
     res = replace_small1(res);
@@ -69,6 +67,75 @@ function interpreter(str) {
     res = res.replace(/!!/g," ");
 
     return res;
+}
+
+function replace_double_bold(str){
+    let old_string = str;
+    let new_string = str;
+    do{
+        old_string = new_string;
+        new_string = old_string.replace(/''''''/, "</br><br>" );
+    }while(old_string!=new_string);
+}
+
+function replace_bold_italic(str){
+    let old_string = str;
+    let new_string = str;
+    let opened = false;
+    do{
+        old_string = new_string;
+        if(opened) {
+            new_string = old_string.replace(/'''''/, "</br></em>");
+            opened = false;
+        }
+        else{
+            new_string = old_string.replace(/'''''/, "<br><em>");
+            opened = true;
+        }
+    }while(old_string!=new_string);
+}
+
+function replace_double_italic(str){
+    let old_string = str;
+    let new_string = str;
+    do{
+        old_string = new_string;
+        new_string = old_string.replace(/''''/, "</em><em>" );
+    }while(old_string!=new_string);
+}
+
+function replace_bold(str){
+    let old_string = str;
+    let new_string = str;
+    let opened = false;
+    do{
+        old_string = new_string;
+        if(opened) {
+            new_string = old_string.replace(/'''/, "</br>");
+            opened = false;
+        }
+        else{
+            new_string = old_string.replace(/'''/, "<br>");
+            opened = true;
+        }
+    }while(old_string!=new_string);
+}
+
+function replace_italic(str){
+    let old_string = str;
+    let new_string = str;
+    let opened = false;
+    do{
+        old_string = new_string;
+        if(opened) {
+            new_string = old_string.replace(/''/, "</em>");
+            opened = false;
+        }
+        else{
+            new_string = old_string.replace(/''/, "<em>");
+            opened = true;
+        }
+    }while(old_string!=new_string);
 }
 
 function replace_link1(str){
