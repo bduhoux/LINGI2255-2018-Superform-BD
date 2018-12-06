@@ -92,7 +92,7 @@
                     <td>
                         <a href="#" class="btn btn-outline-primary" role="button">Edit</a>
                         <a href="#" class="btn btn-outline-primary">Copy</a>
-                        <a href="{{ url_for('delete.delete', id=item.id) }}" class="btn btn-outline-warning" role="button">Delete</a>
+                        <a href="{{ url_for('delete.delete', id=item.id) }}" class="btn btn-outline-warning" role="button" onclick="return confirm('Are you sure?')">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}

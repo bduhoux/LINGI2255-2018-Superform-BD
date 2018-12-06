@@ -1,12 +1,10 @@
 from flask import Blueprint, url_for, redirect, session, render_template, request
 
-import webbrowser
-
 from superform.utils import login_required
 from superform.models import db, Post, Publishing, User, Channel
-from superform.users import get_moderate_channels_for_user, is_moderator
+from superform.users import is_moderator
 
-from superform.plugins.facebook import delete
+from superform.plugins.facebook import delete as fb_delete
 
 import json
 
@@ -53,10 +51,10 @@ def delete(id):
 
                         channel = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
                         # The channel is Facebook
-                        if channel == "superform.plugins.facebook":
+                        if channel.module == "superform.plugins.facebook":
                             is_facebook = True
                         # The channel is Wiki
-                        elif channel == "superform.plugins.wiki":
+                        elif channel.module == "superform.plugins.wiki":
                             is_wiki = True
 
                     # The publishing has been archived
@@ -137,7 +135,7 @@ def delete_publishing(post_id, channel_id):
                             if channel.module == "superform.plugins.facebook":
                                 # TODO: check if user is connected
                                 extra = json.loads(pub.extra)
-                                delete(extra["facebook_post_id"])
+                                fb_delete(extra["facebook_post_id"])
 
                             # It is posted on Wiki
                             elif channel.module == "superform.plugins.wiki":
