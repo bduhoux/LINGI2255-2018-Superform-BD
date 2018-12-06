@@ -80,8 +80,8 @@ class Channel(db.Model):
     module = db.Column(db.String(100), nullable=False)
     config = db.Column(db.Text, nullable=False)
     # Archival Module :
-    archival_frequency = db.Column(db.Integer, nullable=False)
-    archival_date = db.Column(db.DateTime, nullable=False)
+    archival_frequency = db.Column(db.Integer, nullable=False, default=-1) # By default, no archival service
+    archival_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.today())
     # End of Archival Module
 
     publishings = db.relationship("Publishing", backref="channel", lazy=True)
