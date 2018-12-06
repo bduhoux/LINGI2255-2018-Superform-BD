@@ -1,4 +1,4 @@
-from flask import Blueprint, url_for, redirect, session, render_template, request
+from flask import Blueprint, url_for, redirect, session, render_template, flash
 
 from superform.utils import login_required
 from superform.models import db, Post, Publishing, User, Channel
@@ -62,15 +62,12 @@ def delete(id):
                         pass
             else:
                 # The user trying to delete the post is not the one who created it
-                # TODO: flash message informing
-                return render_template('403.html'), 403
+                flash("You don't have the rights to delete this post (not the creator)")
         else:
             # The post does not exist
-            # TODO: flash message informing
             return render_template('404.html'), 404
     else:
         # User is not connected
-        # TODO: flash message informing
         return render_template('403.html'), 403
 
     if has_draft or has_unmoderated or has_posted:
@@ -103,19 +100,15 @@ def delete_post(id):
                     db.session.delete(post)
                     db.session.commit()
                 else:
-                    # TODO: notify the user about remaining publishings (using flash msg)
-                    pass
+                    flash("At least one publishing remains, cannot delete post")
             else:
                 # The user trying to delete the post is not the one who created it
-                # TODO: flash message informing
-                return render_template('403.html'), 403
+                flash("You don't have the rights to delete this post (not the creator)")
         else:
             # The post does not exist
-            # TODO: flash message informing
             return render_template('404.html'), 404
     else:
         # User is not connected
-        # TODO: flash message informing
         return render_template('403.html'), 403
 
     return redirect(url_for('index'))
@@ -140,14 +133,11 @@ def delete_publishing(post_id, channel_id):
                         if pub.state == 1:
                             # It is posted on Facebook
                             if channel.module == "superform.plugins.facebook":
-                                # TODO: check if user is connected
                                 from superform.plugins.facebook import fb_token
                                 if fb_token == 0:
                                     # User is not connected on Facebook
-                                    # TODO: flash message informing
+                                    flash("You are not connected on Facebook!")
                                     fb_connected = False
-                                    print("Not connected on Facebook")
-                                    pass
                                 else:
                                     extra = json.loads(pub.extra)
                                     fb_delete(extra["facebook_post_id"])
@@ -161,15 +151,12 @@ def delete_publishing(post_id, channel_id):
 
             else:
                 # The user is trying to delete the publishing linked to a post he did not create
-                # TODO: flash message informing
-                return render_template('403.html'), 403
+                flash("You don't have the rights to delete this post (not the creator)")
         else:
             # The post does not exist
-            # TODO: flash message informing
             return render_template('404.html'), 404
     else:
         # User is not connected
-        # TODO: flash message informing
         return render_template('403.html'), 403
 
     return redirect(url_for('delete.delete', id=post_id))
