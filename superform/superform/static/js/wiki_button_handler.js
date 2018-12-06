@@ -18,18 +18,29 @@ console.log(window.markdown.toHTML(string));
 
 function previewFunction() {
     let tid = arguments[0].id;
-    let tarea = document.getElementById(tid);
+
+    let larea = document.getElementById(tid);
+    let labelpreview = document.createElement('label');
+    labelpreview.setAttribute("id","previewLabel");
+    labelpreview.innerText = "Preview";
+
+    let tarea = document.getElementById("previewLabel");
     let divpreview = document.createElement('div');
+
     divpreview.setAttribute("id", "previewZone");
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
     }, false;
+
+    labelpreview.appendAfter(larea.parentElement);
     divpreview.appendAfter(tarea.parentElement);
+
     tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('previewZone').innerHTML = interpreter(this.value);};
 }
 
 function interpreter(str) {
-  let res = str.replace(/'''/g," ");
+  let res = str.replace(/\n/g,"\n");
+  res = res.replace(/'''/g," ");
   res = res.replace(/''/g," ");
   res = res.replace(/'\+/g," ");
   res = res.replace(/\+'/g," ");
