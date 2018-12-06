@@ -65,6 +65,7 @@ function interpreter(str) {
     res = replace_exp1(res);
     res = replace_exp2(res);
     res = res.replace(/!!/g," ");
+    res = replace_center(res);
 
     return res;
 }
@@ -189,7 +190,20 @@ function replace_sub2(str) {
 }
 
 function replace_heading(str) {
+    let str2 = "</sub>";
+    return str.replace(/_'/g,str2);
+}
 
+function replace_center(str) {
+    var pos1 = str.indexOf("%");           // 3
+    var pos2 = str.indexOf("%", pos1 + 1);
+    var i = pos2 - pos1 - 1;
+
+    var str2 = str.substring(0, pos1) + "<center>" + str.substring(pos2+1);
+
+    pos1 = str2.indexOf("%");
+
+    return str2.substring(0, pos1) + "</center>" + str2.substring(pos2+1);
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
