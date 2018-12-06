@@ -216,6 +216,7 @@ function replace_heading(str) {
         i++;
     }while (str.substring(i,i+2) !== "\n")
     str = str.substring(0,i) + "</h1>" + str.substring(i+2,str.length);
+    return str;
 }
 
 function replace_center(str) {
@@ -225,6 +226,7 @@ function replace_center(str) {
         i++;
     }while (str.substring(i,i+2) !== "\n")
     str = str.substring(0,i) + "</center><br>" + str.substring(i+2,str.length);
+    return str;
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
