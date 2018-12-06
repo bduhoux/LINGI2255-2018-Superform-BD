@@ -145,7 +145,7 @@ def download_records():
     with app.app_context():
         db.init_app(app)
         channels_objects = db.session.query(Channel).all()
-        archived_p = db.session.query(Publishing).all()
+        archived_p = db.session.query(Publishing).filter(Publishing.state == 2).all()
 
         records = []
         channels = []
