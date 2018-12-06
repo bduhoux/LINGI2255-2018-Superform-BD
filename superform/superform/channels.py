@@ -34,7 +34,7 @@ def channel_list():
                 db.session.delete(channel)
                 db.session.commit()
                 # Archival Module :
-                archival.delete_job(channel_id)
+                delete_job(channel_id)
                 # End of Archival Module
         elif action == "edit":
             channel_id = request.form.get("id")
