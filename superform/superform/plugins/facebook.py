@@ -35,7 +35,6 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
             connection_name="feed",
             message=msg,
             link=link
-
         )
         put_extra(publishing, status1['id'])
 
