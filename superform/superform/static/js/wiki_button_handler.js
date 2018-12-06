@@ -42,14 +42,13 @@ function previewFunction() {
 
     text_area.onkeyup = text_area.onkeypress = function () {
         document.getElementById('text_area_preview').innerHTML = interpreter(this.value);
-        let button = document.getElementById("previewButton");
-        button.setAttribute("disabled", "true");
         //console.log(interpreter(this.value));};
     }
+    let button = document.getElementById("previewButton");
+    button.setAttribute("disabled", "true");
 }
 
 function interpreter(str) {
-
     let res = str.replace(/\n/g,"<br>");
     res = replace_double_bold(res);
     res = replace_bold_italic(res);
