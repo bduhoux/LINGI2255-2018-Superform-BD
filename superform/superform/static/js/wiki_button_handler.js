@@ -220,7 +220,7 @@ function replace_heading(str) {
 
 function replace_center(str) {
     str = str.replace(/%center%/,"<br><center>");
-    var i = str.charAt("<center>") + 8;
+    var i = str.charAt("<center>") + 7;
     do {
         i++;
     }while (str.substring(i,i+2) !== "\n")
