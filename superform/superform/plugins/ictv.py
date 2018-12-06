@@ -9,15 +9,6 @@ import time
 FIELDS_UNAVAILABLE = ['Title', 'Description', 'Linkurl', 'Image']
 CONFIG_FIELDS = []
 
-adapter = requests_mock.Adapter()
-session = requests.Session()
-session.mount('mock', adapter)
-
-adapter.register_uri('POST', 'mock://ictv.com/capsules', text='capsule created', status_code=201, headers={
-    'location': 'mock://ictv.com/capsules/1'
-})
-
-
 @requests_mock.Mocker()
 def create_slide(m, id_capsule, id_slide, dictionary):
     print(m)
@@ -28,15 +19,14 @@ def create_slide(m, id_capsule, id_slide, dictionary):
     return requests.post('mock://ictv.com/capsules/' + id_capsule + '/slides', dictionary).status_code
 
 
-def run(publishing):
-
+def run(publishing, channel_config):
     # Load the useful data
 
     ictv_list = json.loads(publishing.extra)['ictv_list']
 
     title = publishing.title
-    date_from = datetime.strptime(publishing.date_from.strip(), '%d-%M-%Y').timetuple()
-    date_until = datetime.strptime(publishing.date_from.strip(), '%d-%M-%Y').timetuple()
+    date_from = publishing.date_from.timetuple()
+    date_until = publishing.date_until.timetuple()
 
     # Create the capsule
 
@@ -49,7 +39,11 @@ def run(publishing):
         ]
     }
 
-    response = requests.post('mock://ictv.com/capsules', dictionary)
+    with requests_mock.Mocker() as mock:
+        mock.post('mock://ictv.com/capsules', text='capsule created', status_code=201, headers={
+            'location': 'mock://ictv.com/capsules/1'
+        })
+        response = requests.post('mock://ictv.com/capsules', dictionary)
 
     if response.status_code is not 201:
         response.raise_for_status()
@@ -60,8 +54,6 @@ def run(publishing):
     url_list = location.split('/')
 
     id_capsule = url_list[len(url_list) - 1]
-
-    print(id_capsule)
 
     # Create the slides
 
@@ -79,8 +71,6 @@ def run(publishing):
             return
 
         id_slide += 1
-
-    print("OK")
 
 
 def get_channel_fields(form, chan):
@@ -137,4 +127,3 @@ def get_channel_fields(form, chan):
     extra = dict()
     extra['ictv_list'] = ictv_list
     return extra
-
