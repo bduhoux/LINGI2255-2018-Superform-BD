@@ -2,11 +2,10 @@ from flask import Blueprint, current_app, url_for, request, make_response, redir
 
 from superform.utils import login_required, get_instance_from_module_path, get_modules_names, get_module_full_name
 from superform.models import db, Channel
-import superform.archival_module as archival
 import ast
 
 # For the archival module :
-from archival_module import configure_job, configure_job_from_form, FREQUENCIES, DEFAULT_DATE, DEFAULT_FREQUENCY
+from superform.archival_module import configure_job, configure_job_from_form, delete_job, FREQUENCIES, DEFAULT_DATE, DEFAULT_FREQUENCY
 
 channels_page = Blueprint('channels', __name__)
 
@@ -34,7 +33,9 @@ def channel_list():
             if channel:
                 db.session.delete(channel)
                 db.session.commit()
+                # Archival Module :
                 archival.delete_job(channel_id)
+                # End of Archival Module
         elif action == "edit":
             channel_id = request.form.get("id")
             channel = Channel.query.get(channel_id)

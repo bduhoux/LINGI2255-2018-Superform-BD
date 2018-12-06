@@ -5,7 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from superform.utils import login_required
 import json, time
 from flask import Blueprint, url_for, redirect, Flask, Response, request
-from models import Channel
+from superform.models import Channel
 
 archival_page = Blueprint('archival', __name__)
 
