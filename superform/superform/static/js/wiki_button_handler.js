@@ -213,7 +213,7 @@ function replace_heading(str) {
     var i = str.charAt("<h1>") + 4;
     do {
         i++;
-    }while (str.substring(i,i+2) !== "\n")
+    }while (str.substring(i,i+2) !== "\n");
     str = str.substring(0,i) + "</h1>" + str.substring(i+2,str.length);
     return str;
 }
@@ -223,7 +223,7 @@ function replace_center(str) {
     var i = str.charAt("<center>") + 7;
     do {
         i++;
-    }while (str.substring(i,i+2) !== "\n")
+    }while (str.substring(i,i+2) !== "\n");
     str = str.substring(0,i) + "</center><br>" + str.substring(i+2,str.length);
     return str;
 }
