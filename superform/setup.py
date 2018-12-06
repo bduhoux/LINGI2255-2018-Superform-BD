@@ -15,7 +15,7 @@ setup(
         'feedgen',
         'python-twitter',
         'requests-mock',
-        'requests'
+        'requests',
         'selenium',
         'pytest-selenium',
         'pytest-flask',
