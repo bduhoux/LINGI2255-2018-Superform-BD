@@ -9,13 +9,36 @@ import time
 FIELDS_UNAVAILABLE = ['Title', 'Description', 'Linkurl', 'Image']
 CONFIG_FIELDS = []
 
+adapter = requests_mock.Adapter()
+session = requests.Session()
+session.mount('mock', adapter)
+
+adapter.register_uri('POST', 'mock://ictv.com/capsules', text='capsule created', status_code=201, headers={
+    'location': 'mock://ictv.com/capsules/1'
+})
+
+
+@requests_mock.Mocker()
+def create_slide(m, id_capsule, id_slide, dictionary):
+    print(m)
+    m.post('mock://ictv.com/capsules/' + id_capsule + '/slides', text='slide created', status_code=201, headers={
+        'location': "mock://ictv.com/capsules/" + id_capsule + "/slides/" + id_slide
+    })
+
+    return requests.post('mock://ictv.com/capsules/' + id_capsule + '/slides', dictionary).status_code
+
 
 def run(publishing):
+
+    # Load the useful data
+
     ictv_list = json.loads(publishing.extra)['ictv_list']
 
     title = publishing.title
     date_from = datetime.strptime(publishing.date_from.strip(), '%d-%M-%Y').timetuple()
     date_until = datetime.strptime(publishing.date_from.strip(), '%d-%M-%Y').timetuple()
+
+    # Create the capsule
 
     dictionary = {
         'name': title,
@@ -38,7 +61,26 @@ def run(publishing):
 
     id_capsule = url_list[len(url_list) - 1]
 
+    print(id_capsule)
 
+    # Create the slides
+
+    id_slide = 1
+    for slide in ictv_list:
+        post_slide = {
+            'duration': slide['duration'],
+            'content': slide
+        }
+
+        response = create_slide(id_capsule, id_slide, post_slide)
+
+        if response.status_code is not 201:
+            response.raise_for_status()
+            return
+
+        id_slide += 1
+
+    print("OK")
 
 
 def get_channel_fields(form, chan):
@@ -96,19 +138,3 @@ def get_channel_fields(form, chan):
     extra['ictv_list'] = ictv_list
     return extra
 
-adapter = requests_mock.Adapter()
-session = requests.Session()
-session.mount('mock', adapter)
-
-adapter.register_uri('POST', 'mock://ictv.com/capsules', text='capsule created', status_code=201, headers={
-    'location': 'mock://ictv.com/capsules/1'
-})
-
-
-@requests_mock.Mocker()
-def create_slide(m, id_capsule, id_slide, dictionary):
-    m.post('mock://ictv.com/capsules/' + id_capsule + '/slides', text='slide created', status_code=201, headers={
-        'location': "mock://ictv.com/capsules/" + id_capsule + "/slides/" + id_slide
-    })
-
-    return requests.post('mock://ictv.com/capsules/' + id_capsule + '/slides', dictionary).status_code
