@@ -65,8 +65,9 @@ function interpreter(str) {
     res = replace_sub2(res);
     res = replace_exp1(res);
     res = replace_exp2(res);
-    res = replace_heading(res);
-    res = replace_center(res);
+    //res = replace_heading(res);
+    //res = replace_center(res);
+    //res = res.replace(/\n/g,"<br>");
 
     return res;
 }
@@ -213,8 +214,8 @@ function replace_heading(str) {
     var i = str.charAt("<h1>") + 4;
     do {
         i++;
-    }while (str.substring(i,i+2) !== "\n");
-    str = str.substring(0,i) + "</h1>" + str.substring(i+2,str.length);
+    }while (str.substring(i,i+4) !== "<br>" );
+    str = str.substring(0,i) + "</h1>" + str.substring(i+4,str.length);
     return str;
 }
 
@@ -223,8 +224,8 @@ function replace_center(str) {
     var i = str.charAt("<center>") + 7;
     do {
         i++;
-    }while (str.substring(i,i+2) !== "\n");
-    str = str.substring(0,i) + "</center><br>" + str.substring(i+2,str.length);
+    }while (str.substring(i,i+4) !== "<br>");
+    str = str.substring(0,i) + "</center><br>" + str.substring(i+4,str.length);
     return str;
 }
 

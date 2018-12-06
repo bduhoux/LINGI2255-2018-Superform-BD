@@ -34,3 +34,13 @@ def get_author(config):
 def get_url(config):
     json_data = json.loads(config)
     return json_data["Wiki's url"]
+
+
+def delete(titre, channel_config):
+    author = get_author(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
+    url = get_url(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
+
+    post_fields = {'n': titre, 'text': 'delete', 'action': 'edit', 'post': 1, 'author': author}
+    request = Request(url, urlencode(post_fields).encode())
+
+    urlopen(request)
