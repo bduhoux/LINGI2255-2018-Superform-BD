@@ -26,11 +26,12 @@ function previewFunction() {
     labelpreview.innerText = "Preview";
     labelpreview.setAttribute("for", "text_area_preview");
 
-    let text_area_preview = document.createElement('textarea');
-    text_area_preview.setAttribute("readonly","true");
+    //let text_area_preview = document.createElement('textarea');
+    //text_area_preview.setAttribute("readonly","true");
+    let text_area_preview = document.createElement('div');
     text_area_preview.setAttribute("id", "text_area_preview");
-    text_area_preview.setAttribute("class", "form-control");
-    text_area_preview.setAttribute("rows", "5");
+    //text_area_preview.setAttribute("class", "form-control");
+    //text_area_preview.setAttribute("rows", "5");
 
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
@@ -40,22 +41,20 @@ function previewFunction() {
     div_preview.appendChild(labelpreview);
     div_preview.appendChild(text_area_preview);
 
-    text_area.onkeyup = text_area.onkeypress = function(){document.getElementById('text_area_preview').value = interpreter(this.value);};
+    text_area.onkeyup = text_area.onkeypress = function(){document.getElementById('text_area_preview').innerHTML = interpreter(this.value);
+    console.log(interpreter(this.value));};
 }
 
 function interpreter(str) {
 
-    let res = new_string.replace(/\n/g,"\n");
-
-    res = replace_link1(res);
-    res = replace_link2(res);
-    res = res.replace(/'''/g,"");
-    res = res.replace(/''/g," ");
+    let res = str.replace(/\n/g,"\n");
     res = replace_double_bold(res);
     res = replace_bold_italic(res);
     res = replace_double_italic(res);
     res = replace_bold(res);
     res = replace_italic(res);
+    res = replace_link1(res);
+    res = replace_link2(res);
     res = replace_big1(res);
     res = replace_big2(res);
     res = replace_small1(res);
@@ -75,8 +74,9 @@ function replace_double_bold(str){
     let new_string = str;
     do{
         old_string = new_string;
-        new_string = old_string.replace(/''''''/, "</br><br>" );
-    }while(old_string!=new_string);
+        new_string = old_string.replace(/''''''/, "</strong><strong>" );
+    }while(old_string!==new_string);
+    return new_string;
 }
 
 function replace_bold_italic(str){
@@ -86,14 +86,15 @@ function replace_bold_italic(str){
     do{
         old_string = new_string;
         if(opened) {
-            new_string = old_string.replace(/'''''/, "</br></em>");
+            new_string = old_string.replace(/'''''/, "</strong></em>");
             opened = false;
         }
         else{
-            new_string = old_string.replace(/'''''/, "<br><em>");
+            new_string = old_string.replace(/'''''/, "<strong><em>");
             opened = true;
         }
-    }while(old_string!=new_string);
+    }while(old_string!==new_string);
+    return new_string;
 }
 
 function replace_double_italic(str){
@@ -102,7 +103,8 @@ function replace_double_italic(str){
     do{
         old_string = new_string;
         new_string = old_string.replace(/''''/, "</em><em>" );
-    }while(old_string!=new_string);
+    }while(old_string!==new_string);
+    return new_string;
 }
 
 function replace_bold(str){
@@ -112,14 +114,15 @@ function replace_bold(str){
     do{
         old_string = new_string;
         if(opened) {
-            new_string = old_string.replace(/'''/, "</br>");
+            new_string = old_string.replace(/'''/, "</strong>");
             opened = false;
         }
         else{
-            new_string = old_string.replace(/'''/, "<br>");
+            new_string = old_string.replace(/'''/, "<strong>");
             opened = true;
         }
-    }while(old_string!=new_string);
+    }while(old_string!==new_string);
+    return new_string;
 }
 
 function replace_italic(str){
@@ -136,7 +139,8 @@ function replace_italic(str){
             new_string = old_string.replace(/''/, "<em>");
             opened = true;
         }
-    }while(old_string!=new_string);
+    }while(old_string!==new_string);
+    return new_string;
 }
 
 function replace_link1(str){
@@ -194,22 +198,10 @@ function replace_heading(str) {
     return str.replace(/_'/g,str2);
 }
 
-function replace_center(str) {
-    var pos1 = str.indexOf("%");           // 3
-    var pos2 = str.indexOf("%", pos1 + 1);
-    var i = pos2 - pos1 - 1;
-
-    var str2 = str.substring(0, pos1) + "<center>" + str.substring(pos2+1);
-
-    pos1 = str2.indexOf("%");
-
-    return str2.substring(0, pos1) + "</center>" + str2.substring(pos2+1);
-}
-
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
     console.log("insButton");
     if (mkey > '') { mkey = 'accesskey="' + mkey + '" ' }
-    document.write("<a tabindex='-1' " + mkey + "onclick=\"insMarkup('"
+    document.write("<a tabindex='-1' "+ mkey + "onclick=\"insMarkup('"
         + mopen + "','"
         + mclose + "','"
         + mtext + "');\">"
