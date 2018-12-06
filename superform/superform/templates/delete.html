@@ -151,19 +151,19 @@
                             </td>
                             <td>
                                 <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" onclick="return confirm('Are you sure?')">Delete</a>
+                                {% if is_facebook %}
+                                    <div>
+                                        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                                        </fb:login-button>
+                                        <p id="status"></p>
+                                    </div>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                     </table>
                 {% endif %}
-            {% endif %}
-            {% if is_facebook %}
-                <div>
-                    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-                    </fb:login-button>
-                    <p id="status"></p>
-                </div>
             {% endif %}
         </div>
         </div>
