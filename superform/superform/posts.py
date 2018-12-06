@@ -104,7 +104,10 @@ def records():
     channels_list = db.session.query(Channel).all()
     channels_dict = {}
     for ch in channels_list:
-        channels_dict[ch.id] = ch.name
+        channels_dict[ch.id] = {
+            'name': ch.name,
+            'module': ch.module
+        }
     rec = []
     for a in records:
         for b in a.publishings:

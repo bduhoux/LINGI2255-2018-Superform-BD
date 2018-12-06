@@ -29,11 +29,17 @@
         </button>
       </div>
       <div class="modal-body">
-        {% for id, name in channels.items() %}
+        {% for id in channels %}
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="{{id}}" id="download_cb" name="download_cb">
             <label class="form-check-label" for="download_cb">
-              {{ name }}
+                {% set module_name = channels[id].module.split('.')[2].lower() %}
+                {% set img_path = "plugins/" + module_name + "/logo.png" %}
+                {% if img_path %}
+                <img src="{{ url_for('static', filename = img_path) }}"
+                     width="15" height="15" alt="">
+                {% endif %}
+                {{ channels[id].name }}
             </label>
           </div>
         {% endfor %}
