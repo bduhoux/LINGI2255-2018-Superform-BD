@@ -14,7 +14,6 @@
 
 function previewFunction() {
     let tid = arguments[0].id;
-
     let text_area = document.getElementById(tid);
 
     let div_preview = document.createElement('div');
@@ -22,7 +21,7 @@ function previewFunction() {
     div_preview.setAttribute("id", "div_preview");
 
     let labelpreview = document.createElement('label');
-    labelpreview.setAttribute("id","previewLabel");
+    labelpreview.setAttribute("id", "previewLabel");
     labelpreview.innerText = "Preview";
     labelpreview.setAttribute("for", "text_area_preview");
 
@@ -41,8 +40,12 @@ function previewFunction() {
     div_preview.appendChild(labelpreview);
     div_preview.appendChild(text_area_preview);
 
-    text_area.onkeyup = text_area.onkeypress = function(){document.getElementById('text_area_preview').innerHTML = interpreter(this.value);
-    console.log(interpreter(this.value));};
+    text_area.onkeyup = text_area.onkeypress = function () {
+        document.getElementById('text_area_preview').innerHTML = interpreter(this.value);
+        let button = document.getElementById("previewButton");
+        button.setAttribute("disabled", "true");
+        //console.log(interpreter(this.value));};
+    }
 }
 
 function interpreter(str) {
@@ -63,8 +66,8 @@ function interpreter(str) {
     res = replace_sub2(res);
     res = replace_exp1(res);
     res = replace_exp2(res);
-    //res = replace_heading(res);
-    //res = replace_center(res);
+    res = replace_heading(res);
+    res = replace_center(res);
 
     return res;
 }
@@ -208,11 +211,20 @@ function replace_sub2(str) {
 
 function replace_heading(str) {
     str = str.replace(/!!/,"<h1>");
-    var i = str.charAt("<h1>");
+    var i = str.charAt("<h1>") + 4;
     do {
         i++;
     }while (str.substring(i,i+2) !== "\n")
     str = str.substring(0,i) + "</h1>" + str.substring(i+2,str.length);
+}
+
+function replace_center(str) {
+    str = str.replace(/%center%/,"<br><center>");
+    var i = str.charAt("<center>") + 8;
+    do {
+        i++;
+    }while (str.substring(i,i+2) !== "\n")
+    str = str.substring(0,i) + "</center><br>" + str.substring(i+2,str.length);
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
