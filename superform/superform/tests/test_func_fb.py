@@ -10,7 +10,7 @@ from superform import app, db
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from superform.models import db, Publishing, Channel
+from superform.models import db, Publishing, Post
 
 web_driver_location = os.getcwd() + '/superform/superform/static/plugins/facebook/chromedriver'
 browser = webdriver.Chrome(web_driver_location)
@@ -54,8 +54,8 @@ def test_facebook_functional(client):
     browser.find_element(By.XPATH, "//input[@value='Login']").click()
     time.sleep(1)
     browser.find_element(By.XPATH, "//a[@href='/new']").click()
-    browser.find_element(By.XPATH, "//input[@id='titlepost']").send_keys("Title")
-    browser.find_element(By.XPATH, "//textarea[@id='descriptionpost']").send_keys("This is the description")
+    browser.find_element(By.XPATH, "//input[@id='titlepost']").send_keys("jving")
+    browser.find_element(By.XPATH, "//textarea[@id='descriptionpost']").send_keys("beschri")
     browser.find_element(By.XPATH, "//input[@data-module='superform.plugins.facebook']").click()
 
     now = datetime.now()
@@ -84,12 +84,18 @@ def test_facebook_functional(client):
     time.sleep(1)
     # browser.find_element(By.XPATH, "//button[@name='__CONFIRM__']").click()
     browser.switch_to.window(window_before)
-    time.sleep(3)
+    time.sleep(1)
     browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
-    time.sleep(3)
+    time.sleep(1)
     browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
-    time.sleep(3)
+    time.sleep(1)
     browser.get('https://www.facebook.com/pg/Test-453122048545115/posts/?ref=page_internal')
+
+    publishing = db.session.query(Publishing).filter(Publishing.post_id == pub_id).first()
+    post = db.session.query(Post).filter_by(id=pub_id).first()
+    db.session.delete(publishing)
+    db.session.delete(post)
+    db.session.commit()
 
 
 
