@@ -48,7 +48,7 @@ function interpreter(str) {
     let new_string = str;
     do{
         old_string = new_string;
-        new_string = old_string.replace(/''''''/, "<\\br><br>" );
+        new_string = old_string.replace(/''''''/, "</br><br>" );
     }while(old_string!=new_string);
 
     let res = new_string.replace(/\n/g,"\n");
@@ -58,14 +58,14 @@ function interpreter(str) {
 
   res = res.replace(/'''/g,"");
   res = res.replace(/''/g," ");
-  res = res.replace(/'\+/g," ");
-  res = res.replace(/\+'/g," ");
-  res = res.replace(/'-/g," ");
-  res = res.replace(/-'/g," ");
-  res = res.replace(/'_/g," ");
-  res = res.replace(/_'/g," ");
-  res = res.replace(/'\^/g," ");
-  res = res.replace(/\^'/g," ");
+  res = replace_big1(res);
+  res = replace_big2(res);
+  res = replace_small1(res);
+  res = replace_small2(res);
+  res = replace_sub1(res);
+  res = replace_sub2(res);
+  res = replace_exp1(res);
+  res = replace_exp2(res);
   res = res.replace(/!!/g," ");
 
   return res;
@@ -77,8 +77,52 @@ function replace_link1(str){
 }
 
 function replace_link2(str){
-  let str2 = "<\\a>";
-  return str.replace(/]]/g,str2);
+    let str2 = "</a>";
+    return str.replace(/]]/g,str2);
+}
+
+function replace_big1(str) {
+    let str2 = "<big>";
+    return str.replace(/'\+/g,str2);
+}
+
+function replace_big2(str) {
+    let str2 = "</big>";
+    return str.replace(/\+'/g,str2);
+}
+
+function replace_small1(str) {
+    let str2 = "<small>";
+    return str.replace(/'-/g,str2);
+}
+
+function replace_small2(str) {
+    let str2 = "</small>";
+    return str.replace(/-'/g,str2);
+}
+
+function replace_exp1(str) {
+    let str2 = "<sup>";
+    return str.replace(/'\^/g,str2);
+}
+
+function replace_exp2(str) {
+    let str2 = "</sup>";
+    return str.replace(/\^'/g,str2);
+}
+
+function replace_sub1(str) {
+    let str2 = "<sub>";
+    return str.replace(/'_/g,str2);
+}
+
+function replace_sub2(str) {
+    let str2 = "</sub>";
+    return str.replace(/_'/g,str2);
+}
+
+function replace_heading(str) {
+
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
