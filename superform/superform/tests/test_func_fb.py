@@ -1,20 +1,18 @@
 import os
 import tempfile
 import pytest
-import time
-from datetime import datetime
-from datetime import timedelta
 
 
-from superform import app, db
+from superform.tests.func_util import create_post, login, publish_fb
+from superform import app
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from superform.models import db, Publishing, Post
 
+
 web_driver_location = os.getcwd() + '/superform/superform/static/plugins/facebook/chromedriver'
-browser = webdriver.Chrome(web_driver_location)
-# browser = webdriver.Chrome('/home/maitre/Downloads/chromedriver')
+driver = webdriver.Chrome(web_driver_location)
 
 
 @pytest.fixture
@@ -46,50 +44,12 @@ def get_time_string(date):
 
 def test_facebook_functional(client):
     assert True == True
-    time.sleep(1)
-    browser.get('http://localhost:5000/login')
-    browser.maximize_window()
-    browser.find_element_by_name("j_username").send_keys("myself")
-    browser.find_element_by_name("j_password").send_keys("myself")
-    browser.find_element(By.XPATH, "//input[@value='Login']").click()
-    time.sleep(1)
-    browser.find_element(By.XPATH, "//a[@href='/new']").click()
-    browser.find_element(By.XPATH, "//input[@id='titlepost']").send_keys("jving")
-    browser.find_element(By.XPATH, "//textarea[@id='descriptionpost']").send_keys("beschri")
-    browser.find_element(By.XPATH, "//input[@data-module='superform.plugins.facebook']").click()
+    login(driver)
 
-    now = datetime.now()
-    browser.find_element(By.XPATH, "//input[@id='datefrompost']").click()
-    browser.find_element(By.XPATH, "//input[@id='datefrompost']").send_keys(get_time_string(now))
-    then = now + timedelta(days=3)
-    browser.find_element(By.XPATH, "//input[@id='dateuntilpost']").click()
-    browser.find_element(By.XPATH, "//input[@id='dateuntilpost']").send_keys(get_time_string(then))
-    time.sleep(1)
-    browser.find_element(By.XPATH, "//button[@id='publish-button']").click()
+    create_post(driver, "test", "test fonctionnel facebook")
 
-    pub_id = db.session.query(Publishing).order_by(Publishing.post_id.desc()).first().post_id
-    browser.get('http://localhost:5000/moderate/' + str(pub_id) +'/1')
-    time.sleep(1)
-    browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
-    window_before = browser.window_handles[0]
-    time.sleep(5)
-    browser.find_element(By.CLASS_NAME, "fb_iframe_widget").click()
-    time.sleep(2)
-    window_after = browser.window_handles[1]
-    browser.switch_to.window(window_after)
-    browser.find_element(By.XPATH, "//input[@id='email']").send_keys("guiste10@hotmail.be")
-    browser.find_element(By.XPATH, "//input[@id='pass']").send_keys("soft@123")
-    browser.find_element(By.XPATH, "//input[@value='Log In']").click()
-    #browser.switch_to.window(window_before)
-    time.sleep(1)
-    # browser.find_element(By.XPATH, "//button[@name='__CONFIRM__']").click()
-    browser.switch_to.window(window_before)
-    time.sleep(1)
-    browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
-    time.sleep(1)
-    browser.find_element(By.XPATH, "//button[@id='pub-button']").click()
-    time.sleep(1)
-    browser.get('https://www.facebook.com/pg/Test-453122048545115/posts/?ref=page_internal')
+    pub_id = publish_fb(driver)
+    driver.get('https://www.facebook.com/pg/Test-453122048545115/posts/?ref=page_internal')
 
     publishing = db.session.query(Publishing).filter(Publishing.post_id == pub_id).first()
     post = db.session.query(Post).filter_by(id=pub_id).first()
