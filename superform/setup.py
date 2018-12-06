@@ -13,6 +13,8 @@ setup(
         'pytest',
         'facebook-sdk',
         'feedgen',
-        'python-twitter'
+        'python-twitter',
+        'requests-mock',
+        'requests'
     ]
 )

@@ -2,28 +2,76 @@ from flask import current_app
 import json
 from superform import app
 import requests
+import requests_mock
+from datetime import datetime
+import time
 
 FIELDS_UNAVAILABLE = ['Title', 'Description', 'Linkurl', 'Image']
 CONFIG_FIELDS = []
 
+@requests_mock.Mocker()
+def create_slide(m, id_capsule, id_slide, dictionary):
+    print(m)
+    m.post('mock://ictv.com/capsules/' + id_capsule + '/slides', text='slide created', status_code=201, headers={
+        'location': "mock://ictv.com/capsules/" + id_capsule + "/slides/" + id_slide
+    })
 
-def run(publishing):
-
-    print("ICTV_LIST :")
-    print(json.loads(publishing.extra)['ictv_list'][0])
-
-    # status_list = json.loads(publishing.extra)['ictv_list'][0]
-    # if publishing.image_url is not '':
-    #     return publish_list(status_list, image=publishing.image_url)
-    # else:
-    #     return publish_list(status_list)
+    return requests.post('mock://ictv.com/capsules/' + id_capsule + '/slides', dictionary).status_code
 
 
-# def publish_list(status_list, image=None):
-#     a = []
-#     if status_list[len(status_list) - 1] != "":
-#         a.append(twitter_api.PostUpdate(status_list[len(status_list) - 1], image))
-#     return a
+def run(publishing, channel_config):
+    # Load the useful data
+
+    ictv_list = json.loads(publishing.extra)['ictv_list']
+
+    title = publishing.title
+    date_from = publishing.date_from.timetuple()
+    date_until = publishing.date_until.timetuple()
+
+    # Create the capsule
+
+    dictionary = {
+        'name': title,
+        'theme': "ictv",
+        "validity": [
+            int(time.mktime(date_from)),
+            int(time.mktime(date_until))
+        ]
+    }
+
+    with requests_mock.Mocker() as mock:
+        mock.post('mock://ictv.com/capsules', text='capsule created', status_code=201, headers={
+            'location': 'mock://ictv.com/capsules/1'
+        })
+        response = requests.post('mock://ictv.com/capsules', dictionary)
+
+    if response.status_code is not 201:
+        response.raise_for_status()
+        return
+
+    location = response.headers['location']
+
+    url_list = location.split('/')
+
+    id_capsule = url_list[len(url_list) - 1]
+
+    # Create the slides
+
+    id_slide = 1
+    for slide in ictv_list:
+        post_slide = {
+            'duration': slide['duration'],
+            'content': slide
+        }
+
+        response = create_slide(id_capsule, id_slide, post_slide)
+
+        if response.status_code is not 201:
+            response.raise_for_status()
+            return
+
+        id_slide += 1
+
 
 def get_channel_fields(form, chan):
     """
@@ -79,10 +127,3 @@ def get_channel_fields(form, chan):
     extra = dict()
     extra['ictv_list'] = ictv_list
     return extra
-
-
-def test_simple(requests_mock):
-    with requests_mock.patch('/api/test') as patch:
-        patch.returns = requests_mock.good('hello')
-        response = requests.get('https://test.api/api/test')
-        assert response.text == 'hello'
