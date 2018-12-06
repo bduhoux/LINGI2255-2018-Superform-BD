@@ -261,7 +261,7 @@ Vue.component('preview', {
     },
     template: `
     <div class="preview" :style="{backgroundColor: slide['background-1'].color}">
-        <picture class="logo">
+        <picture v-if="slide['logo-1'].src !== ''" class="logo">
             <img :src="slide['logo-1'].src" alt="logo">
         </picture>
 
@@ -270,7 +270,7 @@ Vue.component('preview', {
 
         <p v-html="slide['text-1'].text"></p>
 
-        <picture class="image">
+        <picture v-if="slide['image-1'].src !== ''" class="image">
             <img :src="slide['image-1'].src" alt="image">
         </picture>
         
