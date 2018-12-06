@@ -62,12 +62,15 @@ def delete(id):
                         pass
             else:
                 # The user trying to delete the post is not the one who created it
+                # TODO: flash message informing
                 return render_template('403.html'), 403
         else:
             # The post does not exist
+            # TODO: flash message informing
             return render_template('404.html'), 404
     else:
         # User is not connected
+        # TODO: flash message informing
         return render_template('403.html'), 403
 
     if has_draft or has_unmoderated or has_posted:
@@ -104,12 +107,15 @@ def delete_post(id):
                     pass
             else:
                 # The user trying to delete the post is not the one who created it
+                # TODO: flash message informing
                 return render_template('403.html'), 403
         else:
             # The post does not exist
+            # TODO: flash message informing
             return render_template('404.html'), 404
     else:
         # User is not connected
+        # TODO: flash message informing
         return render_template('403.html'), 403
 
     return redirect(url_for('index'))
@@ -129,29 +135,41 @@ def delete_publishing(post_id, channel_id):
                 channel = db.session.query(Channel).filter(Channel.id == channel_id).first()
                 for pub in publishings:
                     if pub.channel_id == channel.id:
+                        fb_connected = True
                         # The publishing has been posted
                         if pub.state == 1:
                             # It is posted on Facebook
                             if channel.module == "superform.plugins.facebook":
                                 # TODO: check if user is connected
-                                extra = json.loads(pub.extra)
-                                fb_delete(extra["facebook_post_id"])
+                                from superform.plugins.facebook import fb_token
+                                if fb_token == 0:
+                                    # User is not connected on Facebook
+                                    # TODO: flash message informing
+                                    fb_connected = False
+                                    print("Not connected on Facebook")
+                                    pass
+                                else:
+                                    extra = json.loads(pub.extra)
+                                    fb_delete(extra["facebook_post_id"])
 
                             # It is posted on Wiki
                             elif channel.module == "superform.plugins.wiki":
                                 pass
-
-                        db.session.delete(pub)
-                        db.session.commit()
+                        if fb_connected:
+                            db.session.delete(pub)
+                            db.session.commit()
 
             else:
-                # The user trying to delete the post is not the one who created it
+                # The user is trying to delete the publishing linked to a post he did not create
+                # TODO: flash message informing
                 return render_template('403.html'), 403
         else:
             # The post does not exist
+            # TODO: flash message informing
             return render_template('404.html'), 404
     else:
         # User is not connected
+        # TODO: flash message informing
         return render_template('403.html'), 403
 
     return redirect(url_for('delete.delete', id=post_id))
