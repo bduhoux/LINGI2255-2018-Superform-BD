@@ -71,6 +71,5 @@ def notfound(error):
 if __name__ == '__main__':
     app.run()
 
-# Archival Module : (start all jobs)
-start_jobs_from_db()
-# End of Archival Module
+    # Archival Module : (start all jobs)
+    start_jobs_from_db()

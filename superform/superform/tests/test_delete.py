@@ -37,32 +37,6 @@ def login(client, login):
             sess['user_id'] = login
 
 
-def test_delete_post(client):
-    user_id = "myself"
-    login(client, user_id)
-
-    title_post = "title_test"
-    descr_post = "description"
-    link_post = "link"
-    image_post = "img"
-    date_from = datetime_converter("2018-01-01")
-    date_until = datetime_converter("2018-01-10")
-    p = Post(user_id=user_id, title=title_post, description=descr_post, link_url=link_post, image_url=image_post,
-             date_from=date_from, date_until=date_until)
-    db.session.add(p)
-    db.session.commit()
-
-    id_post = p.id
-
-    path = '/delete/' + str(id_post)
-
-    client.get(path)
-
-    deleted_post = db.session.query(Post).filter_by(id=id_post).first()
-
-    assert deleted_post is None
-
-
 def test_delete_publishing(client):
     user_id = "myself"
     login(client, user_id)
