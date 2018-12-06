@@ -7,7 +7,7 @@
             <a class="nav-link active" data-toggle="tab" href="#home">General</a>
         </li>
         {% for chan in l_chan %}
-            <li class="nav-item" id="li_{{ chan.name }}" style="display:none;">
+            <li class="nav-item" id="li_{{ chan.name }}" data-module="{{ chan.module }}" style="display:none;">
                 <a class="nav-link" data-toggle="tab" href="#menu{{ chan.id }}">{{ chan.name }}</a>
             </li>
         {% endfor %}

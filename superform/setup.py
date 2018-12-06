@@ -16,5 +16,8 @@ setup(
         'python-twitter',
         'requests-mock',
         'requests'
+        'selenium',
+        'pytest-selenium',
+        'pytest-flask',
     ]
 )
