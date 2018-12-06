@@ -2,28 +2,44 @@ from flask import current_app
 import json
 from superform import app
 import requests
+import requests_mock
+from datetime import datetime
+import time
 
 FIELDS_UNAVAILABLE = ['Title', 'Description', 'Linkurl', 'Image']
 CONFIG_FIELDS = []
 
 
 def run(publishing):
+    ictv_list = json.loads(publishing.extra)['ictv_list']
 
-    print("ICTV_LIST :")
-    print(json.loads(publishing.extra)['ictv_list'][0])
+    title = publishing.title
+    date_from = datetime.strptime(publishing.date_from.strip(), '%d-%M-%Y').timetuple()
+    date_until = datetime.strptime(publishing.date_from.strip(), '%d-%M-%Y').timetuple()
 
-    # status_list = json.loads(publishing.extra)['ictv_list'][0]
-    # if publishing.image_url is not '':
-    #     return publish_list(status_list, image=publishing.image_url)
-    # else:
-    #     return publish_list(status_list)
+    dictionary = {
+        'name': title,
+        'theme': "ictv",
+        "validity": [
+            int(time.mktime(date_from)),
+            int(time.mktime(date_until))
+        ]
+    }
+
+    response = requests.post('mock://ictv.com/capsules', dictionary)
+
+    if response.status_code is not 201:
+        response.raise_for_status()
+        return
+
+    location = response.headers['location']
+
+    url_list = location.split('/')
+
+    id_capsule = url_list[len(url_list) - 1]
 
 
-# def publish_list(status_list, image=None):
-#     a = []
-#     if status_list[len(status_list) - 1] != "":
-#         a.append(twitter_api.PostUpdate(status_list[len(status_list) - 1], image))
-#     return a
+
 
 def get_channel_fields(form, chan):
     """
@@ -80,9 +96,19 @@ def get_channel_fields(form, chan):
     extra['ictv_list'] = ictv_list
     return extra
 
+adapter = requests_mock.Adapter()
+session = requests.Session()
+session.mount('mock', adapter)
 
-def test_simple(requests_mock):
-    with requests_mock.patch('/api/test') as patch:
-        patch.returns = requests_mock.good('hello')
-        response = requests.get('https://test.api/api/test')
-        assert response.text == 'hello'
+adapter.register_uri('POST', 'mock://ictv.com/capsules', text='capsule created', status_code=201, headers={
+    'location': 'mock://ictv.com/capsules/1'
+})
+
+
+@requests_mock.Mocker()
+def create_slide(m, id_capsule, id_slide, dictionary):
+    m.post('mock://ictv.com/capsules/' + id_capsule + '/slides', text='slide created', status_code=201, headers={
+        'location': "mock://ictv.com/capsules/" + id_capsule + "/slides/" + id_slide
+    })
+
+    return requests.post('mock://ictv.com/capsules/' + id_capsule + '/slides', dictionary).status_code
