@@ -141,6 +141,10 @@ Vue.component('slides', {
             required: true,
             trim: true
         },
+        channelId: {
+            type:String,
+            required:true
+        },
         defaultConfig: {
             type: Array,
             default: () => {
@@ -171,10 +175,14 @@ Vue.component('slides', {
     data() {
         return {
             slides: this.defaultConfig,
-            isShowingPreview: false
+            isShowingPreview: false,
+            showModule:true
         }
     },
     methods: {
+        activateModule(e) {
+            this.showModule = e.target.checked;
+        },
         addSlide() {
             this.slides.push({
                 'title-1': {
@@ -220,8 +228,20 @@ Vue.component('slides', {
             return this.isShowingPreview ? 'Close' : 'Preview';
         }
     },
+    created() {
+        this.checkbox = document.getElementById('chan_option_' + this.channelId);
+    },
+    mounted() {
+        this.checkbox.addEventListener("change", this.activateModule);
+        this.showModule = this.checkbox.checked;
+    },
+    beforeDestroy() {
+        this.checkbox.removeEventListener("change", this.activateModule)
+    },
     template: `
     <div>
+        <template v-if="showModule">
+        
         <transition name="fade">
             <previews :slides="slides" v-if="isShowingPreview" @close="togglePreview"></previews>
         </transition>
@@ -241,6 +261,7 @@ Vue.component('slides', {
         <button type="button" @click="togglePreview" v-html="textButtonPreview">
             Preview
         </button>
+</template>
     </div>
     `
 });
