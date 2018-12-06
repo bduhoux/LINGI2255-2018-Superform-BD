@@ -4,7 +4,7 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from superform.utils import login_required
 import json, time
-from flask import Blueprint, url_for, redirect, request, Flask
+from flask import Blueprint, url_for, redirect, Flask, Response
 from models import Channel
 
 archival_page = Blueprint('archival', __name__)
@@ -135,6 +135,36 @@ def update_now():
     archival_job(-1)
     return redirect(url_for('posts.records'))
 
+@archival_page.route('/get_all_records', methods=['GET', 'POST'])
+@login_required(admin_required=True)
+def download_records():
+    sql_config = get_sqlalchemy_config()
+    app = Flask(__name__)
+    app.config[SQL_URI_KEY] = sql_config[0]
+    app.config[SQL_TRACK_KEY] = sql_config[1]
+    with app.app_context():
+        db.init_app(app)
+        channels_objects = db.session.query(Channel).all()
+        archived_p = db.session.query(Publishing).all()
+
+        records = []
+        channels = []
+        for p in archived_p:
+            records.append(p.to_dict())
+        for c in channels_objects:
+            channels.append(c.to_dict())
+
+        json_content = {
+            'CHANNELS': channels,
+            'RECORDS': records
+        }
+        json_content = json.dumps(json_content, ensure_ascii=False, cls=DateTimeEncoder)
+
+        return Response(json_content,
+                        mimetype='application/json',
+                        headers={'Content-Disposition': 'attachment;filename=records.json'})
+
+
 def isTimeFormat(input):
     try:
         time.strptime(input, '%H:%M')
@@ -149,3 +179,10 @@ def isNumberBetween(s, a, b):
         return a <= i and i < b
     except ValueError:
         return False
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.isoformat()
+
+        return json.JSONEncoder.default(self, o)

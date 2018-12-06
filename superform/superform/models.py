@@ -69,6 +69,10 @@ class Publishing(db.Model):
     def get_author(self):
         return db.session.query(Post).get(self.post_id).user_id
 
+    # Archival Module :
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Channel(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
@@ -87,6 +91,11 @@ class Channel(db.Model):
 
     def __repr__(self):
         return '<Channel {}>'.format(repr(self.id))
+
+    # Archival Module :
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 
 class Authorization(db.Model):
