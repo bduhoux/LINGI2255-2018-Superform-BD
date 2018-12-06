@@ -327,12 +327,17 @@ Vue.component('previews', {
         }
     },
     mounted() {
-        this.intervalEvent = setInterval(() => {
-            this.currentPreview = this.currentPreview === this.previews.length ? 1 : this.currentPreview + 1;
-        }, 3000)
+        let that = this;
+        this.intervalEvent = setTimeout(function request() {
+            that.currentPreview = that.currentPreview === that.previews.length ? 1 : that.currentPreview + 1;
+
+            that.intervalEvent = setTimeout(request, that.previews[that.currentPreview - 1].duration);
+
+        }, this.previews[this.currentPreview - 1].duration);
+
     },
     beforeDestroy() {
-        clearInterval(this.intervalEvent);
+        clearTimeout(this.intervalEvent);
     },
     template: `
     <div class="previews-wrapper">
