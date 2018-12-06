@@ -13,6 +13,7 @@ setup(
         'pytest',
         'facebook-sdk',
         'feedgen',
-        'python-twitter'
-    ]
+        'python-twitter',
+        'bond'
+    ],
 )
