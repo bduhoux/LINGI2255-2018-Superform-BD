@@ -12,35 +12,46 @@
     Script maintained by Petko Yotov www.pmwiki.org/petko
 */
 
-let string = "A '''god''' damn ''good'' \n" +
-    "!! description\n";
-console.log(window.markdown.toHTML(string));
-
 function previewFunction() {
     let tid = arguments[0].id;
 
-    let larea = document.getElementById(tid);
+    let text_area = document.getElementById(tid);
+
+    let div_preview = document.createElement('div');
+    div_preview.setAttribute("class", 'form-group');
+    div_preview.setAttribute("id", "div_preview");
+
     let labelpreview = document.createElement('label');
     labelpreview.setAttribute("id","previewLabel");
     labelpreview.innerText = "Preview";
+    labelpreview.setAttribute("for", "text_area_preview");
 
-    let tarea = document.getElementById("previewLabel");
-    let divpreview = document.createElement('div');
+    let text_area_preview = document.createElement('textarea');
+    text_area_preview.setAttribute("readonly","true");
+    text_area_preview.setAttribute("id", "text_area_preview");
+    text_area_preview.setAttribute("class", "form-control");
+    text_area_preview.setAttribute("rows", "5");
 
-    divpreview.setAttribute("id", "previewZone");
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
     }, false;
 
-    labelpreview.appendAfter(larea.parentElement);
-    divpreview.appendAfter(tarea.parentElement);
+    div_preview.appendAfter(text_area.parentElement);
+    div_preview.appendChild(labelpreview);
+    div_preview.appendChild(text_area_preview);
 
-    tarea.onkeyup = tarea.onkeypress = function(){document.getElementById('previewZone').innerHTML = interpreter(this.value);};
+    text_area.onkeyup = text_area.onkeypress = function(){document.getElementById('text_area_preview').value = interpreter(this.value);};
 }
 
 function interpreter(str) {
-  let res = str.replace(/\n/g,"\n");
-  res = res.replace(/'''/g," ");
+    let old_string = str;
+    let new_string = str;
+    do{
+        old_string = new_string;
+        new_string = old_string.replace(/''''''/, "<\\br><br>" );
+    }while(old_string!=new_string);
+  let res = new_string.replace(/\n/g,"\n");
+  res = res.replace(/'''/g,"");
   res = res.replace(/''/g," ");
   res = res.replace(/'\+/g," ");
   res = res.replace(/\+'/g," ");
