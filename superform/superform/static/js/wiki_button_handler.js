@@ -50,13 +50,16 @@ function interpreter(str) {
         old_string = new_string;
         new_string = old_string.replace(/''''''/, "<\\br><br>" );
     }while(old_string!=new_string);
-  let res = new_string.replace(/\n/g,"\n");
+
+    let res = new_string.replace(/\n/g,"\n");
+
+    res = replace_link1(res);
+    res = replace_link2(res);
+
   res = res.replace(/'''/g,"");
   res = res.replace(/''/g," ");
   res = res.replace(/'\+/g," ");
   res = res.replace(/\+'/g," ");
-  res = res.replace(/\[\[/g," ");
-  res = res.replace(/]]/g," ");
   res = res.replace(/'-/g," ");
   res = res.replace(/-'/g," ");
   res = res.replace(/'_/g," ");
@@ -64,7 +67,18 @@ function interpreter(str) {
   res = res.replace(/'\^/g," ");
   res = res.replace(/\^'/g," ");
   res = res.replace(/!!/g," ");
+
   return res;
+}
+
+function replace_link1(str){
+  let str2 = "<a class=\"urllink\">";
+  return str.replace(/\[\[/g,str2);
+}
+
+function replace_link2(str){
+  let str2 = "<\\a>";
+  return str.replace(/]]/g,str2);
 }
 
 function insButton(mopen, mclose, mtext, mlabel, mkey) {
