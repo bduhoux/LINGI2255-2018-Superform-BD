@@ -120,7 +120,7 @@ def test_archival_job(client):
     publishing.date_from = publishing.date_from - datetime.timedelta(days=7)
     publishing.date_until = publishing.date_until - datetime.timedelta(days=7)
     db.session.commit()
-    archival_job()
+    archival_job(publishing.channel_id)
 
     assert post_data['title'] in client.get('/records').data.decode()
 
