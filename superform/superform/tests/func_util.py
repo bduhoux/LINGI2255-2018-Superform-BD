@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 from datetime import timedelta
-from superform.models import db, Publishing
+from superform.models import db, Publishing, Channel
 
 
 from selenium.webdriver.common.by import By
@@ -26,7 +26,7 @@ def login(driver):
     driver.find_element(By.XPATH, "//input[@value='Login']").click()
     time.sleep(1)
 
-def create_post(driver, title, description):
+def create_post(driver, title, description, module):
     driver.find_element(By.XPATH, "//a[@href='/new']").click()
     driver.find_element(By.XPATH, "//input[@id='titlepost']").send_keys(title)
     driver.find_element(By.XPATH, "//textarea[@id='descriptionpost']").send_keys(description)
@@ -42,8 +42,10 @@ def create_post(driver, title, description):
     driver.find_element(By.XPATH, "//button[@id='publish-button']").click()
 
 def publish_fb(driver):
-    pub_id = db.session.query(Publishing).order_by(Publishing.post_id.desc()).first().post_id
-    driver.get('http://localhost:5000/moderate/' + str(pub_id) +'/1')
+    pub = db.session.query(Publishing).order_by(Publishing.post_id.desc()).first()
+    pub_id = pub.post_id
+    channel_id = pub.channel_id
+    driver.get('http://localhost:5000/moderate/' + str(pub_id) +'/'+str(channel_id))
     time.sleep(1)
     driver.find_element(By.XPATH, "//button[@id='pub-button']").click()
     login_fb(driver)
@@ -67,6 +69,45 @@ def login_fb(driver):
         driver.find_element(By.XPATH, "//input[@value='Log In']").click()
     except(IndexError):
         pass
-
     time.sleep(1)
     driver.switch_to.window(window_before)
+
+
+def create_post_wiki(driver, title, description, module):
+    driver.find_element(By.XPATH, "//a[@href='/new']").click()
+    driver.find_element(By.XPATH, "//input[@id='titlepost']").send_keys(title)
+    driver.find_element(By.XPATH, "//textarea[@id='descriptionpost']").send_keys(description)
+
+
+    # wiki_chan = db.session.query(Channel).filter(Channel.module == 'superform.plugins.wiki').first()
+    # chan_name = wiki_chan.name
+    # driver.find_element(By.XPATH, "//input[@data-namechan='chan_name']").click() # marche pas evidemment mais cmt faire??!!!
+    driver.find_element(By.XPATH, "//input[@data-module='superform.plugins.wiki']").click()
+
+    now = datetime.now()
+    driver.find_element(By.XPATH, "//input[@id='datefrompost']").click()
+    driver.find_element(By.XPATH, "//input[@id='datefrompost']").send_keys(get_time_string(now))
+    then = now + timedelta(days=3)
+    driver.find_element(By.XPATH, "//input[@id='dateuntilpost']").click()
+    driver.find_element(By.XPATH, "//input[@id='dateuntilpost']").send_keys(get_time_string(then))
+    time.sleep(1)
+
+
+    driver.find_element(By.XPATH, "//a[@href='/new']").click()
+
+
+    driver.find_element(By.XPATH, "//button[@id='publish-button']").click()
+
+
+def publish_wiki(driver):
+    pub = db.session.query(Publishing).order_by(Publishing.post_id.desc()).first()
+    pub_id = pub.post_id
+    channel_id = pub.channel_id
+    driver.get('http://localhost:5000/moderate/' + str(pub_id) +'/'+str(channel_id))
+    time.sleep(1)
+    driver.find_element(By.XPATH, "//button[@id='pub-button']").click()
+    time.sleep(2)
+    return pub_id
+
+
+

@@ -56,7 +56,7 @@
                             {{ p.get_author() }}
                         </td>
                         <td>
-                            <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" onclick="return confirm('Are you sure?')">Delete</a>
+                            <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" >Delete</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -106,7 +106,7 @@
                             {{ p.get_author() }}
                         </td>
                         <td>
-                            <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" onclick="return confirm('Are you sure?')">Delete</a>
+                            <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button">Delete</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -156,7 +156,7 @@
                                 {{ p.get_author() }}
                             </td>
                             <td>
-                                <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" onclick="return confirm('Are you sure?')">Delete</a>
+                                <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" >Delete</a>
                                 {% if is_facebook %}
                                     <div>
                                         <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
