@@ -115,7 +115,6 @@ def test_run():
                                  'background-1':"color",
                                  'duration':5000}]
                             })
-        # Try catch needed as create slide raises an error for m <Mocker> equals 1
         run = ictv.run(my_publy,None)
         assert run == True
 
