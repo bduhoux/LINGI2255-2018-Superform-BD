@@ -64,7 +64,6 @@ def new_post():
     list_of_channels = channels_available_for_user(user_id)
     for elem in list_of_channels:
         module = {"name":elem.name, "module":elem.module}
-        print(module)
         m = elem.module
         clas = get_instance_from_module_path(m)
         unaivalable_fields = ','.join(clas.FIELDS_UNAVAILABLE)
