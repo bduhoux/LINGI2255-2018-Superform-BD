@@ -5,6 +5,7 @@ from superform.models import db, Post, Publishing, User, Channel
 from superform.users import is_moderator
 
 from superform.plugins.facebook import delete as fb_delete
+from superform.plugins.wiki import delete as wiki_delete
 
 import json
 
@@ -144,7 +145,7 @@ def delete_publishing(post_id, channel_id):
 
                             # It is posted on Wiki
                             elif channel.module == "superform.plugins.wiki":
-                                pass
+                                wiki_delete(pub.title, channel.config)
                         if fb_connected:
                             db.session.delete(pub)
                             db.session.commit()
