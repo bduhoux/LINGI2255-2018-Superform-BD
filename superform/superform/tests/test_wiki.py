@@ -50,6 +50,8 @@ def test_wiki_edit(client):
     mystr = mybytes.decode("utf8")
     response.close()
 
+    not_expected_text = "violet"
+    assert not_expected_text not in mystr
     expected_text = "Magenta"
     assert expected_text in mystr
 
