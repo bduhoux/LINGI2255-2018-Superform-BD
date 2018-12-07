@@ -12,10 +12,22 @@
     Script maintained by Petko Yotov www.pmwiki.org/petko
 */
 
+function buttonsAfterTextarea() {
+    let tid = arguments[0].id;
+    let wiki_buttons = document.getElementById("form_wiki_buttons");
+    let text_area = document.getElementById(tid);
+    Element.prototype.appendAfter = function (element) {
+        element.parentNode.insertBefore(this, element.nextSibling);
+    }, false;
+
+    wiki_buttons.appendAfter(text_area.parentElement);
+}
+
 function previewFunction() {
     let tid = arguments[0].id;
     let text_area = document.getElementById(tid);
 
+    //creates preview and put it after descriptionpost
     let div_preview = document.createElement('div');
     div_preview.setAttribute("class", 'form-group');
     div_preview.setAttribute("id", "div_preview");
@@ -25,12 +37,8 @@ function previewFunction() {
     labelpreview.innerText = "Preview";
     labelpreview.setAttribute("for", "text_area_preview");
 
-    //let text_area_preview = document.createElement('textarea');
-    //text_area_preview.setAttribute("readonly","true");
     let text_area_preview = document.createElement('div');
     text_area_preview.setAttribute("id", "text_area_preview");
-    //text_area_preview.setAttribute("class", "form-control");
-    //text_area_preview.setAttribute("rows", "5");
 
     Element.prototype.appendAfter = function (element) {
         element.parentNode.insertBefore(this, element.nextSibling);
@@ -40,12 +48,15 @@ function previewFunction() {
     div_preview.appendChild(labelpreview);
     div_preview.appendChild(text_area_preview);
 
+    //when text is written in descriptionpost, put it in preview in HTML
     text_area.onkeyup = text_area.onkeypress = function () {
         document.getElementById('text_area_preview').innerHTML = interpreter(this.value);
-        //console.log(interpreter(this.value));};
-    }
+    };
+
     let button = document.getElementById("previewButton");
     button.setAttribute("disabled", "true");
+
+    document.getElementById('text_area_preview').innerHTML = interpreter(text_area.value);
 }
 
 function interpreter(str) {
@@ -296,6 +307,9 @@ function insMarkup() {
         }
         range.select();
     } else { tarea.value += mopen + mtext + mclose; }
+    if(document.getElementById("text_area_preview") !== null) {
+        document.getElementById('text_area_preview').innerHTML = interpreter(tarea.value);
+    }
     return;
 }
 

@@ -1,6 +1,6 @@
 
 
-<div class="form-group">
+<div id="form-wiki-buttons" class="form-group">
     <label for="{{ chan.name }}_titlepost">Editing</label><br>
     <a tabindex="-1" onclick="insMarkup('\'\' ',' \'\'','Emphasized',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/em.gif" title="Emphasized (italic)" style="border:0px;"></a>
     <a tabindex="-1" onclick="insMarkup('\'\'\' ',' \'\'\'','Strong',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/strong.gif" title="Strong (bold)" style="border:0px;"></a>
@@ -15,4 +15,5 @@
     <button href="#" id="previewButton" role="button" onclick="previewFunction({{ chan.name }}_descriptionpost);">Preview</button>
 </div>
 
-<script type="text/javascript" src="../static/js/wiki_button_handler.js"></script>
+<script type="text/javascript" src="../../../static/js/wiki_button_handler.js"></script>
+
