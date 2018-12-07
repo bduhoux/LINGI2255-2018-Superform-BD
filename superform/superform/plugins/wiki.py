@@ -19,7 +19,8 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     picture = publishing.image_url
     link = publishing.link_url
 
-    post_fields = {'n': page, 'text': publishing.description, 'action': 'edit', 'post': 1, 'author': author}
+    post_fields = {'n': page, 'text': publishing.description+"\n\n[["+link+"]]", 'action': 'edit', 'post': 1, 'author': author}
+    print(post_fields)
 
     request = Request(url, urlencode(post_fields).encode())
 
