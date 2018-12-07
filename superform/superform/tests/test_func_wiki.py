@@ -44,7 +44,7 @@ def test_wiki_functional(client):
 
 
     create_post_wiki(driver, post_title, "test fonctionnel delete unpublished post de wiki", 'superform.plugins.wiki')
-    time.sleep(2)
+    time.sleep(4)
     pub_id = db.session.query(Publishing).order_by(Publishing.post_id.desc()).first().post_id
     driver.get('http://localhost:5000/delete/' + str(pub_id))
     time.sleep(2)

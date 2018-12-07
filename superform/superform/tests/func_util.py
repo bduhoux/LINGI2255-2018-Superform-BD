@@ -92,10 +92,6 @@ def create_post_wiki(driver, title, description, module):
     driver.find_element(By.XPATH, "//input[@id='dateuntilpost']").send_keys(get_time_string(then))
     time.sleep(1)
 
-
-    driver.find_element(By.XPATH, "//a[@href='/new']").click()
-
-
     driver.find_element(By.XPATH, "//button[@id='publish-button']").click()
 
 
