@@ -49,7 +49,8 @@ function previewFunction() {
 }
 
 function interpreter(str) {
-    let res = str.replace(/\n/g,"<br>");
+    let res = str.replace(/\n\n/g,"<br> <br>");
+    res = res.replace(/\n/g,"");
     res = replace_double_bold(res);
     res = replace_bold_italic(res);
     res = replace_double_italic(res);
