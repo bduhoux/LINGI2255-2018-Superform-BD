@@ -222,6 +222,7 @@ function replace_sub2(str) {
 }
 
 function replace_heading(str) {
+    let index = str.indexOf(/!!/);
     str = str.replace(/!!/,"<h1>");
     var i = str.charAt("<h1>") + 4;
     do {
