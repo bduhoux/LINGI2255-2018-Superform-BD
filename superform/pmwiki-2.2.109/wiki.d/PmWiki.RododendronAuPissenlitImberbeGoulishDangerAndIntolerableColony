@@ -1,0 +1,21 @@
+version=pmwiki-2.2.109 ordered=1 urlencoded=1
+agent=Python-urllib/3.6
+author=Jean-Michel
+charset=ISO-8859-1
+csum=
+ctime=1543936098
+host=127.0.0.1
+name=PmWiki.RododendronAuPissenlitImberbeGoulishDangerAndIntolerableColony
+rev=3
+targets=
+text=bleu %0a  %0ableu aussi
+time=1543938771
+author:1543938771=Jean-Michel
+diff:1543938771:1543936178:=
+host:1543938771=127.0.0.1
+author:1543936178=Jean-Michel
+diff:1543936178:1543936098:=
+host:1543936178=127.0.0.1
+author:1543936098=Jean-Michel
+diff:1543936098:1543936098:=1,3d0%0a%3c bleu %0a%3c   %0a%3c bleu aussi%0a\ No newline at end of file%0a
+host:1543936098=127.0.0.1
