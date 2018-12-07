@@ -1,0 +1,18 @@
+version=pmwiki-2.2.109 ordered=1 urlencoded=1
+agent=Python-urllib/3.6
+author=Simon
+charset=ISO-8859-1
+csum=
+ctime=1543502773
+host=127.0.0.1
+name=PmWiki.Patate
+rev=2
+targets=
+text=poire
+time=1543581866
+author:1543581866=Simon
+diff:1543581866:1543502773:=1c1%0a%3c poire%0a\ No newline at end of file%0a---%0a> !! fefef%0a
+host:1543581866=127.0.0.1
+author:1543502773=Simon
+diff:1543502773:1543502773:=1d0%0a%3c !! fefef%0a
+host:1543502773=127.0.0.1
