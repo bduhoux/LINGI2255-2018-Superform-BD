@@ -12,7 +12,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from superform.models import db, Publishing, Post
 
-web_driver_location = os.getcwd() + '/superform/superform/static/plugins/facebook/chromedriver'
+web_driver_location = os.getcwd() + '/superform/static/plugins/facebook/chromedriver'
 driver = webdriver.Chrome(web_driver_location)
 
 
@@ -65,8 +65,8 @@ def test_facebook_functional(client):
     time.sleep(2)
     pub_id = publish_fb(driver)
 
-    # driver.get('https://www.facebook.com/pg/Test-453122048545115/posts/?ref=page_internal')
-    # time.sleep(10)
+    driver.get('https://www.facebook.com/pg/Test-453122048545115/posts/?ref=page_internal')
+    time.sleep(10)
 
     driver.get('http://localhost:5000')
     time.sleep(1)

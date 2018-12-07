@@ -1,9 +1,9 @@
 version=pmwiki-2.2.109 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+agent=Python-urllib/3.6
 charset=ISO-8859-1
 ctime=1541429382
 host=127.0.0.1
 name=PmWiki.RecentChanges
-rev=52
-text=* [[PmWiki/Titre]]  . . . December 07, 2018, at 12:35 PM EST by ?: [==]%0a* [[PmWiki/Test]]  . . . December 07, 2018, at 11:07 AM EST by [[~Simon]]: [==]%0a* [[PmWiki/Salut]]  . . . December 06, 2018, at 03:52 PM EST by [[~Simon]]: [==]%0a* [[PmWiki/RododendronAuPissenlitImberbeGoulishDangerAndIntolerableColony]]  . . . December 04, 2018, at 04:52 PM by [[~Jean-Michel]]: [==]%0a* [[PmWiki/Patate]]  . . . November 30, 2018, at 01:44 PM by [[~Simon]]: [==]%0a* [[PmWiki/Fefef]]  . . . November 29, 2018, at 03:45 PM by [[~Simon]]: [==]%0a* [[PmWiki/Fs]]  . . . November 27, 2018, at 03:32 PM by [[~Simon]]: [==]%0a* [[PmWiki/Dad]]  . . . November 20, 2018, at 01:50 PM by [[~Simon]]: [==]%0a* [[PmWiki/Jean-Charly]]  . . . November 08, 2018, at 03:43 PM by [[~Simon]]: [==]%0a* [[PmWiki/Jean-Charles]]  . . . November 08, 2018, at 03:41 PM by [[~Simon]]: [==]%0a* [[PmWiki/Scolopendre]]  . . . November 05, 2018, at 03:51 PM by [[~Simon Hick]]: [==]%0a
-time=1544182536
+rev=61
+text=* [[PmWiki/Pp]]  . . . December 07, 2018, at 01:32 PM EST by [[~guigui]]: [==]%0a* [[PmWiki/Titre65]]  . . . December 07, 2018, at 01:30 PM EST by [[~guigui]]: [==]%0a* [[PmWiki/Hhi]]  . . . December 07, 2018, at 01:28 PM EST by [[~guigui]]: [==]%0a* [[PmWiki/Coucou]]  . . . December 07, 2018, at 01:22 PM EST by ?: [==]%0a* [[PmWiki/Qwe]]  . . . December 07, 2018, at 01:11 PM EST by [[~guigui]]: [==]%0a* [[PmWiki/Titre]]  . . . December 07, 2018, at 12:35 PM EST by ?: [==]%0a* [[PmWiki/Test]]  . . . December 07, 2018, at 11:07 AM EST by [[~Simon]]: [==]%0a* [[PmWiki/Salut]]  . . . December 06, 2018, at 03:52 PM EST by [[~Simon]]: [==]%0a* [[PmWiki/RododendronAuPissenlitImberbeGoulishDangerAndIntolerableColony]]  . . . December 04, 2018, at 04:52 PM by [[~Jean-Michel]]: [==]%0a* [[PmWiki/Patate]]  . . . November 30, 2018, at 01:44 PM by [[~Simon]]: [==]%0a* [[PmWiki/Fefef]]  . . . November 29, 2018, at 03:45 PM by [[~Simon]]: [==]%0a* [[PmWiki/Fs]]  . . . November 27, 2018, at 03:32 PM by [[~Simon]]: [==]%0a* [[PmWiki/Dad]]  . . . November 20, 2018, at 01:50 PM by [[~Simon]]: [==]%0a* [[PmWiki/Jean-Charly]]  . . . November 08, 2018, at 03:43 PM by [[~Simon]]: [==]%0a* [[PmWiki/Jean-Charles]]  . . . November 08, 2018, at 03:41 PM by [[~Simon]]: [==]%0a* [[PmWiki/Scolopendre]]  . . . November 05, 2018, at 03:51 PM by [[~Simon Hick]]: [==]%0a
+time=1544185961

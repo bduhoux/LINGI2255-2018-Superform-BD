@@ -39,8 +39,12 @@ def get_url(config):
 def delete(titre, channel_config):
     author = get_author(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
     url = get_url(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
+    page = 'PmWiki.'+titre
 
-    post_fields = {'n': titre, 'text': 'delete', 'action': 'edit', 'post': 1, 'author': author}
+    post_fields = {'n': page, 'text': "delete", 'action': 'edit', 'post': 1, 'author': author}
     request = Request(url, urlencode(post_fields).encode())
 
-    urlopen(request)
+    try:
+        urlopen(request)
+    except:
+        pass
