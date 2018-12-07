@@ -116,11 +116,8 @@ def test_run():
                                  'duration':5000}]
                             })
         # Try catch needed as create slide raises an error for m <Mocker> equals 1
-        try:
-            run = ictv.run(my_publy,None)
-            assert run == True
-        except:
-            print("ERROR")
+        run = ictv.run(my_publy,None)
+        assert run == True
 
         # GET the capsule /capsules/1
         urlData = "http://www.mocky.io/v2/5c099a843500006c00a85e07"

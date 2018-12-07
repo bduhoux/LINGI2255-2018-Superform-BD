@@ -10,10 +10,9 @@ FIELDS_UNAVAILABLE = ['Title', 'Description', 'Linkurl', 'Image']
 CONFIG_FIELDS = []
 
 @requests_mock.Mocker()
-def create_slide(m, id_capsule, id_slide, dictionary):
-    print(m)
+def create_slide(id_capsule, id_slide, dictionary, m):
     m.post('mock://ictv.com/capsules/' + id_capsule + '/slides', text='slide created', status_code=201, headers={
-        'location': "mock://ictv.com/capsules/" + id_capsule + "/slides/" + id_slide
+        'location': "mock://ictv.com/capsules/" + id_capsule + "/slides/" + str(id_slide)
     })
 
     return requests.post('mock://ictv.com/capsules/' + id_capsule + '/slides', dictionary).status_code
@@ -66,7 +65,7 @@ def run(publishing, channel_config):
 
         response = create_slide(id_capsule, id_slide, post_slide)
 
-        if response.status_code is not 201:
+        if response is not 201:
             response.raise_for_status()
             return False
 
