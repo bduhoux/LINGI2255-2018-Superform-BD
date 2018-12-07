@@ -16,6 +16,7 @@ setup(
         'feedgen',
         'python-twitter',
         'selenium',
-        'pytest-flask'
+        'pytest-flask',
+        'pytest-helpers-namespace'
     ]
 )
