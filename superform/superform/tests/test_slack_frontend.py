@@ -14,10 +14,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from superform.models import Publishing
 from superform.utils import datetime_converter
 
+json_data = open(os.path.dirname(os.path.abspath(__file__)) + '/../config.json')
+data = json.load(json_data)
+
 channelName = "Slack_test"
 pluginName = "superform.plugins.slack"
 fieldTested = ["title", "description", "link"]
-configuration = {"token": "xoxb-478281424595-487185661847-YVh8O74HfdCtAJj7vuSw9Acv", "channel name": "testing-bot"}
+configuration = {"token": data["BOT_TOKEN"], "channel name": "testing-bot"}
 
 
 @pytest.fixture

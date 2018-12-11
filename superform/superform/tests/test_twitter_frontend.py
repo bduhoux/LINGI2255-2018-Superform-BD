@@ -17,11 +17,14 @@ from superform.plugins.Twitter import get_channel_fields
 from superform import db, app
 from selenium.webdriver.support import expected_conditions as EC
 
+json_data = open(os.path.dirname(os.path.abspath(__file__)) + '/../config.json')
+data = json.load(json_data)
+
 channelName = "Twitter_test"
 pluginName = "superform.plugins.Twitter"
 fieldTested = ["description", "link"]
-configuration = {"Access token": "1052533183151886336-RBoq1epkAOeRfGdd2pBrbi9uTxQBv6",
-                 "Access token secret": "vqM1nqgcst0uNDSryuMGjhCjT9ldCj4rFUpfxJfDzuTzc"}
+configuration = {"Access token": data["TWITTER_TEST_ACESS TOKEN"],
+                 "Access token secret": data["TWITTER_TEST_ACESS TOKEN_SECRET"]}
 
 
 @pytest.fixture
@@ -295,7 +298,8 @@ def test_characters(client):
         driver.find_element_by_link_text(channelName).click()
         assert driver.find_element_by_id("NumberCharacters_1").text == "(274 out of 280 characters)"
         assert driver.find_element_by_id("NumberCharacters_2").text == "(262 out of 280 characters)"
-        assert driver.find_element_by_id("status_too_many_chars").get_attribute('innerHTML') == " Too many characters for one tweet! "
+        assert driver.find_element_by_id("status_too_many_chars").get_attribute(
+            'innerHTML') == " Too many characters for one tweet! "
     except AssertionError as e:
         pytest.helpers.plugin.teardown_db(id_channel, id_post)
         driver.close()
@@ -470,4 +474,3 @@ def test_add_remove(client):
         assert False, "An error occurred while testing: {}".format(str(e))
     pytest.helpers.plugin.teardown_db(id_channel, id_post)
     driver.close()
-
