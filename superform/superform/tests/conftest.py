@@ -13,6 +13,11 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from superform.models import Channel, Authorization, Post, Publishing
 from superform.utils import datetime_converter
+from _pytest.warning_types import RemovedInPytest4Warning
+from sqlalchemy.exc import InvalidRequestError
+import warnings
+
+warnings.filterwarnings("ignore", category=RemovedInPytest4Warning)
 
 
 @pytest.helpers.plugin.register
@@ -39,6 +44,7 @@ def setup_db(channelName, pluginName):
         db.session.rollback()
     return id_channel, id_post
 
+
 @pytest.helpers.plugin.register
 def teardown_db(id_channel, id_post):
     post = db.session.query(Post).filter(Post.id == id_post).first()
@@ -56,11 +62,12 @@ def teardown_db(id_channel, id_post):
     except:
         db.session.rollback()
 
+
 @pytest.helpers.plugin.register
 def test_basic(client, channelName, pluginName, fieldTested):
+    id_channel, id_post = setup_db(channelName, pluginName)
+    driver = webdriver.Firefox()
     try:
-        id_channel, id_post = setup_db(channelName, pluginName)
-        driver = webdriver.Firefox()
         driver.get('http://127.0.0.1:5000/')
         wait = WebDriverWait(driver, 10)
         driver.find_element_by_link_text("Login").click()
@@ -103,18 +110,23 @@ def test_basic(client, channelName, pluginName, fieldTested):
         if "link" in fieldTested:
             assert driver.find_element_by_id(channelName + "_linkurlpost").get_attribute(
                 "value") == "http://127.0.0.1:5000/new"
-        driver.close()
+    except AssertionError as e:
         teardown_db(id_channel, id_post)
-    except Exception as e:
         driver.close()
+        assert False, str(e)
+    except InvalidRequestError as e:
         teardown_db(id_channel, id_post)
-        assert False, e
+        driver.close()
+        assert False, "An error occurred while testing: {}".format(str(e))
+    teardown_db(id_channel, id_post)
+    driver.close()
+
 
 @pytest.helpers.plugin.register
 def test_basic_moderate(client, channelName, pluginName, fieldTested):
+    id_channel, id_post = setup_db(channelName, pluginName)
+    driver = webdriver.Firefox()
     try:
-        id_channel, id_post = setup_db(channelName, pluginName)
-        driver = webdriver.Firefox()
         driver.get('http://127.0.0.1:5000/')
         wait = WebDriverWait(driver, 10)
         driver.find_element_by_link_text("Login").click()
@@ -169,18 +181,23 @@ def test_basic_moderate(client, channelName, pluginName, fieldTested):
         if "link" in fieldTested:
             assert driver.find_element_by_id("linkurlpost").get_attribute(
                 "value") == "http://127.0.0.1:5000/new"
-        driver.close()
+    except AssertionError as e:
         teardown_db(id_channel, id_post)
-    except Exception as e:
         driver.close()
+        assert False, str(e)
+    except InvalidRequestError as e:
         teardown_db(id_channel, id_post)
-        assert False, e
+        driver.close()
+        assert False, "An error occurred while testing: {}".format(str(e))
+    teardown_db(id_channel, id_post)
+    driver.close()
+
 
 @pytest.helpers.plugin.register
 def test_basic_warning(client, channelName, pluginName):
+    id_channel, id_post = setup_db(channelName, pluginName)
+    driver = webdriver.Firefox()
     try:
-        id_channel, id_post = setup_db(channelName, pluginName)
-        driver = webdriver.Firefox()
         driver.get('http://127.0.0.1:5000/')
         wait = WebDriverWait(driver, 10)
         driver.find_element_by_link_text("Login").click()
@@ -229,18 +246,23 @@ def test_basic_warning(client, channelName, pluginName):
         driver.find_element_by_id("pub-button").click()
         assert driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Moderate this publication'])[1]/following::div[1]").text == "Warning!: Please configure the channel first"
-        driver.close()
+    except AssertionError as e:
         teardown_db(id_channel, id_post)
-    except Exception as e:
         driver.close()
+        assert False, str(e)
+    except InvalidRequestError as e:
         teardown_db(id_channel, id_post)
-        assert False, e
+        driver.close()
+        assert False, "An error occurred while testing: {}".format(str(e))
+    teardown_db(id_channel, id_post)
+    driver.close()
+
 
 @pytest.helpers.plugin.register
 def test_basic_publish(client, channelName, pluginName, configuration, extra):
+    id_channel, id_post = setup_db(channelName, pluginName)
+    driver = webdriver.Firefox()
     try:
-        id_channel, id_post = setup_db(channelName, pluginName)
-        driver = webdriver.Firefox()
         driver.get('http://127.0.0.1:5000/')
         wait = WebDriverWait(driver, 10)
         driver.find_element_by_link_text("Login").click()
@@ -261,7 +283,8 @@ def test_basic_publish(client, channelName, pluginName, configuration, extra):
             driver.find_element_by_id(key).clear()
             driver.find_element_by_id(key).send_keys(configuration[key])
         driver.find_element_by_xpath(
-            "(.//*[normalize-space(text()) and normalize-space(.)='"+list(configuration.keys())[-1]+"'])[1]/following::button[1]").click()
+            "(.//*[normalize-space(text()) and normalize-space(.)='" + list(configuration.keys())[
+                -1] + "'])[1]/following::button[1]").click()
 
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
@@ -298,9 +321,13 @@ def test_basic_publish(client, channelName, pluginName, configuration, extra):
         driver.find_element_by_id("moderate_" + str(id_post)).click()
         driver.find_element_by_id("pub-button").click()
         assert driver.title == 'Index - Superform', driver.title
-        driver.close()
+    except AssertionError as e:
         teardown_db(id_channel, id_post)
-    except Exception as e:
         driver.close()
+        assert False, str(e)
+    except InvalidRequestError as e:
         teardown_db(id_channel, id_post)
-        assert False, e
+        driver.close()
+        assert False, "An error occurred while testing: {}".format(str(e))
+    teardown_db(id_channel, id_post)
+    driver.close()
