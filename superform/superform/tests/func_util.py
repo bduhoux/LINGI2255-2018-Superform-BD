@@ -32,7 +32,8 @@ def create_post(driver, title, description, module):
     driver.find_element(By.XPATH, "//textarea[@id='descriptionpost']").send_keys(description)
     driver.find_element(By.XPATH, "//input[@data-module='superform.plugins.facebook']").click()
 
-    now = datetime.now()
+    # now = datetime.now()
+    now = datetime.strptime('Jun 1 2025  1:33PM', '%b %d %Y %I:%M%p')
     driver.find_element(By.XPATH, "//input[@id='datefrompost']").click()
     driver.find_element(By.XPATH, "//input[@id='datefrompost']").send_keys(get_time_string(now))
     then = now + timedelta(days=3)

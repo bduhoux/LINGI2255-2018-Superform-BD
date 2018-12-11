@@ -8,6 +8,7 @@
                 <div class="col-md-8">
                     <div class="row">
                         <div class="col-md-12">
+                            {% include 'channel_configure_archival.html' %}
                             {% for field in config_fields %}
                                 <div class="form-group">
                                     <label for="{{ field }}">{{ field }}</label><br>

@@ -1,112 +1,191 @@
+import os
 from superform.models import db, Publishing
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.base import STATE_RUNNING
 from superform.utils import login_required
 import json, time
-from flask import Blueprint, url_for, redirect, request, Flask
+from flask import Blueprint, url_for, redirect, Flask, Response, request
+from superform.models import Channel
 
 archival_page = Blueprint('archival', __name__)
 
-scheduler = BackgroundScheduler()
-
-# By default, the archival_job is scheduled at 00:01 :
-HOUR_DEFAULT = 0
-MINUT_DEFAULT = 1
-
-FILE_PATH = "superform/config.json"
-ARCHIVAL_KEY = "ARCHIVAL_JOB"
-HOUR_KEY = "hour"
-MINUT_KEY = "minut"
+FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/config.json'
 SQL_URI_KEY = "SQLALCHEMY_DATABASE_URI"
 SQL_TRACK_KEY = "SQLALCHEMY_TRACK_MODIFICATIONS"
 
-def get_archival_config():
-    """
-    :return: a JSON as {<HOUR_KEY>: ..., <MINUT_KEY>: ... }
-    """
-    with open(FILE_PATH) as f:
-        data = json.load(f)
-    if ARCHIVAL_KEY not in data \
-            or HOUR_KEY not in data[ARCHIVAL_KEY] \
-            or MINUT_KEY not in data[ARCHIVAL_KEY] \
-            or not isTimeFormat(str(data[ARCHIVAL_KEY][HOUR_KEY])  +  ":"  +  str(data[ARCHIVAL_KEY][MINUT_KEY])):
-        set_archival_job_config(HOUR_DEFAULT, MINUT_DEFAULT)
-        data[ARCHIVAL_KEY] = {
-            HOUR_KEY: HOUR_DEFAULT,
-            MINUT_KEY: MINUT_DEFAULT
-        }
-    return data[ARCHIVAL_KEY]
+FORM_FREQ_KEY = 'arch_frequency'
+FORM_MONTH_KEY = 'arch_date_month'
+FORM_DAY_KEY = 'arch_date_week'
+FORM_HOUR_KEY = 'arch_date_hour'
+
+FREQUENCIES = {
+    -1: 'None',
+    0: 'Monthly',
+    1: 'Weekly',
+    2: 'Daily'
+}
+
+DEFAULT_FREQUENCY = 2 # Daily
+DEFAULT_DATE = datetime(2018, 1, 1, 0, 0) # 2018/01/01 (Monday) 00:00
+
+scheduler = BackgroundScheduler()
+scheduler.start()
 
 def get_sqlalchemy_config():
     with open(FILE_PATH) as f:
         data = json.load(f)
     return data[SQL_URI_KEY], data[SQL_TRACK_KEY]
 
-def set_archival_job_config(hour, minut):
-    with open(FILE_PATH) as f:
-        data = json.load(f)
-    settings = {
-        HOUR_KEY: hour,
-        MINUT_KEY: minut
-    }
-    data[ARCHIVAL_KEY] = settings
-    with open(FILE_PATH, 'w') as f:
-        json.dump(data, f, indent=2)
-
-def run_default_job():
-    config = get_archival_config()
-    __run_job(config[HOUR_KEY], config[MINUT_KEY])
-
-def run_specific_job(hour, minut):
-    if not isTimeFormat(str(hour) + ":" + str(minut)):
-        timer = get_archival_config()
-        hour = timer[HOUR_KEY]
-        minut = timer[MINUT_KEY]
-    set_archival_job_config(hour, minut)
-    __run_job(hour, minut)
-
-def __run_job(hour, minut):
-    for job in scheduler.get_jobs():
+def delete_job(ch_id):
+    job = scheduler.get_job(str(ch_id))
+    if job:
         job.remove()
-    scheduler.add_job(archival_job, "cron", hour=hour, minute=minut)
-    if scheduler.state != STATE_RUNNING:
-        scheduler.start()
 
-def archival_job():
+def is_valid_data(data):
+    if FORM_FREQ_KEY not in data \
+            or FORM_DAY_KEY not in data \
+            or FORM_HOUR_KEY not in data \
+            or FORM_MONTH_KEY not in data\
+            or not isTimeFormat(data[FORM_HOUR_KEY])\
+            or not isNumberBetween(data[FORM_MONTH_KEY], 1, 32)\
+            or not isNumberBetween(data[FORM_DAY_KEY], 1, 8)\
+            or not isNumberBetween(data[FORM_FREQ_KEY], float('-inf'), float('inf')) \
+            or int(data[FORM_FREQ_KEY]) not in FREQUENCIES:
+        return False
+    return True
+
+def start_jobs_from_db():
     sql_config = get_sqlalchemy_config()
     app = Flask(__name__)
     app.config[SQL_URI_KEY] = sql_config[0]
     app.config[SQL_TRACK_KEY] = sql_config[1]
     with app.app_context():
         db.init_app(app)
-        toArchive = db.session.query(Publishing)\
-            .filter(Publishing.date_until < datetime.now(), Publishing.state == 1)\
-            .all()
+        channels = db.session.query(Channel).all()
+        for ch in channels:
+            configure_job(ch.id, ch.archival_frequency, ch.archival_date)
+
+def configure_job(ch_id, freq, date):
+    if not isinstance(freq, int) \
+            or freq not in FREQUENCIES \
+            or not isinstance(date, datetime):
+        return None
+
+    if freq == -1: # none
+        delete_job(ch_id)
+        return (freq, date)
+
+    if freq == 0: # monthly
+        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
+                              day=date.day, hour=date.hour, minute=date.minute)
+    elif freq == 1: # weekly
+        day = date.weekday()
+        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
+                              day_of_week=day, hour=date.hour, minute=date.minute)
+    elif freq == 2: # daily
+        scheduler.add_job(archival_job, trigger="cron", args=[ch_id], id=str(ch_id), replace_existing=True,
+                              hour=date.hour, minute=date.minute)
+    return (freq, date)
+
+def configure_job_from_form(ch_id, data):
+    if not is_valid_data(data):
+        return None
+
+    freq = int(data[FORM_FREQ_KEY])
+
+    if freq == -1:
+        return configure_job(ch_id, freq, datetime.today())
+
+    timer = data[FORM_HOUR_KEY].split(":")
+    hour = int(timer[0])
+    minute = int(timer[1])
+
+    if freq == 1: # weekly
+        date = datetime(2018, 1, int(data[FORM_DAY_KEY]), hour, minute)  # since January 1, 2018 is a Monday
+    else: # daily, monthly
+        date = datetime(2018, 1, int(data[FORM_MONTH_KEY]), hour, minute)  # since January has 31 days
+
+    return configure_job(ch_id, freq, date)
+
+def archival_job(ch_id):
+    sql_config = get_sqlalchemy_config()
+    app = Flask(__name__)
+    app.config[SQL_URI_KEY] = sql_config[0]
+    app.config[SQL_TRACK_KEY] = sql_config[1]
+    with app.app_context():
+        db.init_app(app)
+        if ch_id == -1:
+            toArchive = db.session.query(Publishing)\
+                .filter(Publishing.date_until < datetime.now(), Publishing.state == 1)\
+                .all()
+        else:
+            toArchive = db.session.query(Publishing) \
+                .filter(Publishing.date_until < datetime.now(), Publishing.state == 1, Publishing.channel_id == ch_id) \
+                .all()
 
         for pub in toArchive:
             pub.state = 2
 
         db.session.commit()
 
-@archival_page.route('/set_new_archival_job', methods=['GET', 'POST'])
-@login_required(admin_required=True)
-def new_archival_job():
-    if request.method == 'POST':
-        timer = request.form['arch_time']
-        if not isTimeFormat(timer):
-            return redirect(url_for('posts.records'))
-        timer = timer.split(":")
-        hour = int(timer[0])
-        minut = int(timer[1])
-        run_specific_job(hour, minut)
-    return redirect(url_for('posts.records'))
 
 @archival_page.route('/update_archival_states', methods=['GET', 'POST'])
 @login_required(admin_required=True)
 def update_now():
-    archival_job()
+    archival_job(-1)
     return redirect(url_for('posts.records'))
+
+@archival_page.route('/download_some_records', methods=['POST'])
+def download_some_records():
+    ch_ids = []
+    data = request.form.getlist('download_cb')
+    for ch in data:
+        try:
+            ch_ids.append(int(ch))
+        except ValueError:
+            print("[Archival Module - ERR] : error with /download_some_records : cannot cast str to int")
+    return download_records(ch_ids)
+
+@archival_page.route('/get_all_records', methods=['GET', 'POST'])
+@login_required(admin_required=True)
+def download_all_records():
+    return download_records(None)
+
+def download_records(ch_ids):
+    sql_config = get_sqlalchemy_config()
+    app = Flask(__name__)
+    app.config[SQL_URI_KEY] = sql_config[0]
+    app.config[SQL_TRACK_KEY] = sql_config[1]
+    with app.app_context():
+        db.init_app(app)
+
+        if ch_ids is not None and len(ch_ids) > 0:
+            channels_objects = db.session.query(Channel).filter(Channel.id.in_(ch_ids)).all()
+            archived_p = db.session.query(Publishing).filter(Publishing.state == 2, Publishing.channel_id.in_(ch_ids)).all()
+        elif ch_ids is None:
+            channels_objects = db.session.query(Channel).all()
+            archived_p = db.session.query(Publishing).filter(Publishing.state == 2).all()
+        else:
+            channels_objects = []
+            archived_p = []
+
+        records = []
+        channels = []
+        for p in archived_p:
+            records.append(p.to_dict())
+        for c in channels_objects:
+            channels.append(c.to_dict())
+
+        json_content = {
+            'CHANNELS': channels,
+            'RECORDS': records
+        }
+        json_content = json.dumps(json_content, ensure_ascii=False, cls=DateTimeEncoder)
+
+        return Response(json_content,
+                        mimetype='application/json',
+                        headers={'Content-Disposition': 'attachment;filename=records.json'})
+
 
 def isTimeFormat(input):
     try:
@@ -114,3 +193,18 @@ def isTimeFormat(input):
         return True
     except ValueError:
         return False
+
+def isNumberBetween(s, a, b):
+    # check if a <= int(s) < b
+    try:
+        i = int(s)
+        return a <= i and i < b
+    except ValueError:
+        return False
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.isoformat()
+
+        return json.JSONEncoder.default(self, o)

@@ -1,4 +1,5 @@
 import json
+import os
 import random
 
 from flask import current_app
@@ -6,7 +7,7 @@ import superform.plugins.Twitter as Twitter
 from superform import app
 from superform.models import Publishing
 
-json_data =open('superform/config.json')
+json_data = open(os.path.dirname(os.path.abspath(__file__)) + '/../config.json')
 data = json.load(json_data)
 
 cha_conf = json.dumps({"Access token": data["TWITTER_TEST_ACESS TOKEN"],
@@ -70,42 +71,3 @@ def test_run_truncated():
         status = json.loads(str(twit.GetStatus(a["id"])))
         twit.DestroyStatus(a["id"])
         assert status["full_text"] == my_publy.description[0:280]
-
-
-def test_multiple_tweet():
-    with app.app_context():
-        title = "Why Twitter is better than Google+"
-        link_url = ""
-        message1 = "Une petite phrase pas piquée des hanetons."
-        message2 = "Un deuxième tweet sans rapport avec le premier."
-        message3 = "Le 3eme, car jamais 2 sans 3."
-        my_publy = Publish(0, title, message1+message2+message3, link_url,
-                           None, " 24-12-2018", "12-12-2222", {"tweet_list": [(0, message1), (1, message2), (2, message3)]})
-        a = Twitter.run(my_publy, cha_conf)
-        text = ""
-        for u in range(len(a)):
-            v = json.loads(str(a[u]))
-            status = json.loads(str(twit.GetStatus(v["id"])))
-            twit.DestroyStatus(v["id"])
-            text += status["full_text"]
-        assert text == my_publy.description
-
-def test_get_cha_conf():
-    with app.app_context():
-        title = "Why Twitter is better than Google+"
-        link_url = ""
-        message1 = "Une petite phrase pas piquée des hanetons."
-        message2 = "Un deuxième tweet sans rapport avec le premier."
-        message3 = "Le 3eme, car jamais 2 sans 3."
-        my_publy = Publish(0, title, message1+message2+message3, link_url,
-                           None, " 24-12-2018", "12-12-2222", Twitter.get_channel_fields({"tweet_1": message1,
-                                                                                          "tweet_2": message2,
-                                                                                          "tweet_3": message3}, None))
-        a = Twitter.run(my_publy, cha_conf)
-        text = ""
-        for u in range(len(a)):
-            v = json.loads(str(a[u]))
-            status = json.loads(str(twit.GetStatus(v["id"])))
-            twit.DestroyStatus(v["id"])
-            text += status["full_text"]
-        assert text == my_publy.description

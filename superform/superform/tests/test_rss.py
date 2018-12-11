@@ -97,6 +97,11 @@ def login(client, login):
             sess['user_id'] = login
 
 
+@pytest.fixture(autouse=True)
+def login_myself(client):
+    login(client, "myself")
+
+
 def test_get_module_rss():
     """
     Tests if the module rss is active
@@ -114,14 +119,7 @@ def test_post_to_rss(client):
     :param client:
     :return:
     """
-
-    login(client, "myself")
-
     data = client.get('/rss.xml').data.decode("utf-8")
-
-    # TODO: uncomment when we have a separate test database
-    # assert 'Test of rss' not in data
-    # assert 'RSS feed' not in data
 
     data_publish = get_dict_publish('Test of rss', 'RSS feed', 'http://www.test.com', 'image.jpg',
                                     datetime.date(2018, 1, 1), datetime.date(2019, 7, 1), 'RSS')
@@ -143,14 +141,7 @@ def test_post_to_rss_same_date(client):
     :param client:
     :return:
     """
-
-    login(client, "myself")
-
     data = client.get('/rss.xml').data.decode("utf-8")
-
-    # TODO: uncomment when we have a separate test database
-    # assert 'Test of rss same date' not in data
-    # assert 'RSS feed same date' not in data
 
     data_publish = get_dict_publish('Test of rss same date', 'RSS feed same date', 'http://www.test.com', 'image.jpg',
                                     datetime.datetime.now().date(), datetime.datetime.now().date(), 'RSS')

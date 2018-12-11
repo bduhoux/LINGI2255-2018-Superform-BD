@@ -14,9 +14,7 @@ from superform.feed import feed_page
 from superform.users import get_moderate_channels_for_user, is_moderator
 from superform.plugins.facebook import facebook_plugin
 from superform.search import search_page
-
-# for the archival module
-from superform.archival_module import archival_page, run_default_job
+from superform.archival_module import archival_page, start_jobs_from_db
 
 app = Flask(__name__)
 app.config.from_json("config.json")
@@ -72,4 +70,6 @@ def notfound(error):
 
 if __name__ == '__main__':
     app.run()
-    run_default_job()
+
+    # Archival Module : (start all jobs)
+    start_jobs_from_db()
