@@ -11,7 +11,7 @@ from superform import db
 
 from selenium.webdriver.support.wait import WebDriverWait
 
-from superform.models import Channel, Authorization, Post, Publishing
+from superform.models import Channel, Authorization, Post, Publishing, User
 from superform.utils import datetime_converter
 from _pytest.warning_types import RemovedInPytest4Warning
 from sqlalchemy.exc import InvalidRequestError
@@ -19,9 +19,15 @@ import warnings
 
 warnings.filterwarnings("ignore", category=RemovedInPytest4Warning)
 
+user_admin = 0   # Save if user is an admin
 
 @pytest.helpers.plugin.register
 def setup_db(channelName, pluginName):
+    global user_admin
+    myself_user = db.session.query(User).get('myself')
+    user_admin = myself_user.admin
+    myself_user.admin = 1
+
     id_channel = 0
 
     channel = Channel(id=id_channel, name=channelName, module=pluginName, config="{}")
@@ -47,6 +53,9 @@ def setup_db(channelName, pluginName):
 
 @pytest.helpers.plugin.register
 def teardown_db(id_channel, id_post):
+    global user_admin
+    myself_user = db.session.query(User).get('myself')
+    myself_user.admin = user_admin
     post = db.session.query(Post).filter(Post.id == id_post).first()
     channel = db.session.query(Channel).filter(Channel.id == id_channel).first()
     publishing = db.session.query(Publishing).filter(

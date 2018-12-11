@@ -9,9 +9,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from sqlalchemy.exc import InvalidRequestError
 
 from superform import db, app
-from superform.models import Authorization, Channel, Post, Publishing
+from superform.models import Authorization, Channel, Post, Publishing, User
 from superform.utils import datetime_converter
 
+user_admin = 0   # Save if user is an admin
 
 @pytest.fixture
 def client():
@@ -27,6 +28,11 @@ def client():
 
 
 def setup_db():
+    global user_admin
+    myself_user = db.session.query(User).get('myself')
+    user_admin = myself_user.admin
+    myself_user.admin = 1
+
     id_channels = [0, -1, -2]
     id_posts = [0, -1, -2]
     channel = Channel(id=id_channels[0], name="Test_channel_1", module="superform.plugins.Twitter", config="{}")
@@ -90,6 +96,9 @@ def setup_db():
 
 
 def teardown_db(id_channels, id_posts):
+    global user_admin
+    myself_user = db.session.query(User).get('myself')
+    myself_user.admin = user_admin
     for id_post in id_posts:
         post = db.session.query(Post).filter(Post.id == id_post).first()
         for id_channel in id_channels:
