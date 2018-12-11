@@ -111,7 +111,7 @@ def test_delete_publishing(client):
     db.session.commit()
 
 
-# Not being able to delete someone else's post
+# Not being able to delete someone else's post unless you're a moderator
 def test_delete_not_author(client):
     user_id = "myself"
     user_id_author = "1"
@@ -130,13 +130,13 @@ def test_delete_not_author(client):
 
     id_post = p.id
 
-    path = '/delete_post/' + str(id_post)
+    path = '/delete/' + str(id_post)
 
     client.get(path)
 
     deleted_post = db.session.query(Post).filter_by(id=id_post).first()
 
-    assert deleted_post is not None
+    assert deleted_post is None
 
     db.session.delete(p)
     db.session.commit()

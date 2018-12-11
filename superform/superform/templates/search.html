@@ -199,15 +199,18 @@
                                     {% if (p.channel.id in moderate_channel) and p.state==0 %}
                                         <a href="{{ url_for('publishings.moderate_publishing',id=p.post_id,idc=p.channel_id) }}"
                                            class="btn btn-outline-primary" role="button">Moderate</a>
+                                        <a href="{{ url_for('delete.delete', id=p.post_id) }}"
+                                           class="btn btn-outline-warning"
+                                           role="button">Delete</a>
                                     {% endif %}
                                 {% endif %}
                                 {% if search_table=="Post" %}
                                     {% if p.user_id == user_id %}
                                         <a href="#" class="btn btn-outline-primary" role="button">Edit</a>
                                         <a href="#" class="btn btn-outline-primary">Copy</a>
-                                        <a href="{{ url_for('delete.delete_post', id=p.id) }}"
-                                           onclick="return confirm('Are you sure?')" class="btn btn-outline-warning"
-                                           formmethod="post" type="submit" role="button">Delete</a>
+                                        <a href="{{ url_for('delete.delete', id=p.id) }}"
+                                           class="btn btn-outline-warning"
+                                           role="button">Delete</a>
                                     {% endif %}
                                 {% endif %}
                             </td>
