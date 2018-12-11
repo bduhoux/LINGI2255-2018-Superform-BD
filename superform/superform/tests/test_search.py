@@ -623,6 +623,7 @@ def test_time_period_search(client):
     filter_parameter["is_asc"] = True
     filter_parameter["date_from"] = "2017-05-07"
     filter_parameter["date_until"] = "2019-07-07"
+    filter_parameter['search_table'] = Publishing
     result = query_maker(filter_parameter)
     assert 3 == len(result)
     assert [2, 3, 5] == [pub.post_id for pub in result]
