@@ -279,7 +279,7 @@ def test_states_search(client):
 
     result = query_maker(filter_parameter)
     assert 4 == len(result)
-    assert [2, 3, 5, 11]== sorted([pub.post_id for pub in result])
+    assert [2, 3, 5, 11] == sorted([pub.post_id for pub in result])
 
 
 def test_content_search(client):
@@ -348,6 +348,7 @@ def test_content_title_keyboard_search(client):
     result = query_maker(filter_parameter)
     assert len(result) == 5
     assert [1, 2, 3, 8, 10] == sorted([pub.post_id for pub in result])
+
 
 def test_Post_basic(client):
     populate_db()
@@ -467,7 +468,6 @@ def test_post_content_title_keyboard_search(client):
     assert [2, 3] == sorted([pub.id for pub in result])
 
 
-
 def test_writer_empty_search(client):
     populate_db()
     filter_parameter = dict()
@@ -499,7 +499,6 @@ def test_writer_basic_search(client):
     result = query_maker(filter_parameter)
     assert 3 == len(result)
     assert [2, 3, 5] == sorted([pub.post_id for pub in result])
-
 
 
 def test_moderator_empty_search(client):
@@ -609,6 +608,7 @@ def test_time_period_search(client):
     assert 1 == len(result)
     assert [2] == [pub.post_id for pub in result]
 
+
 def test_time_period_search(client):
     populate_db()
     filter_parameter = dict()
@@ -649,6 +649,7 @@ def test_time_period_search(client):
     result = query_maker(filter_parameter)
     assert 1 == len(result)
     assert [2] == [pub.post_id for pub in result]
+
 
 def test_sql_injections(client):
     """
