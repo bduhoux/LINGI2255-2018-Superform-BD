@@ -15,8 +15,12 @@ setup(
         'facebook-sdk',
         'feedgen',
         'python-twitter',
+        'pytest-helpers-namespace',
+        'requests-mock',
+        'requests',
         'selenium',
+        'pytest-selenium',
         'pytest-flask',
-        'pytest-helpers-namespace'
+        'bond'
     ]
 )

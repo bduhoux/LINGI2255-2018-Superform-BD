@@ -114,12 +114,13 @@ def test_basic(client):
     id_channels, id_posts = setup_db()
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").send_keys("myself")
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
         driver.find_element_by_link_text("Search").click()
@@ -174,12 +175,13 @@ def test_search_date(client):
     id_channels, id_posts = setup_db()
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").send_keys("myself")
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
         driver.find_element_by_link_text("Search").click()
@@ -224,12 +226,13 @@ def test_search_status(client):
     id_channels, id_posts = setup_db()
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").send_keys("myself")
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
         driver.find_element_by_link_text("Search").click()
@@ -290,12 +293,13 @@ def test_search_searching_fields(client):
     id_channels, id_posts = setup_db()
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").send_keys("myself")
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
         driver.find_element_by_link_text("Search").click()
@@ -335,12 +339,13 @@ def test_search_order(client):
     id_channels, id_posts = setup_db()
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").send_keys("myself")
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
         driver.find_element_by_link_text("Search").click()
@@ -399,12 +404,13 @@ def test_search_channel(client):
     id_channels, id_posts = setup_db()
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").send_keys("myself")
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Search')))
         driver.find_element_by_link_text("Search").click()

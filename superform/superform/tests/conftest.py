@@ -1,3 +1,6 @@
+import time
+
+
 pytest_plugins = ['helpers_namespace']
 
 import json
@@ -68,7 +71,7 @@ def test_basic(client, channelName, pluginName, fieldTested):
     id_channel, id_post = setup_db(channelName, pluginName)
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         wait = WebDriverWait(driver, 10)
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").click()
@@ -79,6 +82,8 @@ def test_basic(client, channelName, pluginName, fieldTested):
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
+
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
         driver.find_element_by_link_text("New post").click()
@@ -92,7 +97,7 @@ def test_basic(client, channelName, pluginName, fieldTested):
             "Frontend")
         driver.find_element_by_id("linkurlpost").click()
         driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+        driver.find_element_by_id("linkurlpost").send_keys("http://localhost:5000/new")
         driver.find_element_by_id("datefrompost").click()
         driver.find_element_by_id("datefrompost").clear()
         driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
@@ -109,7 +114,7 @@ def test_basic(client, channelName, pluginName, fieldTested):
                 "value") == "Frontend"
         if "link" in fieldTested:
             assert driver.find_element_by_id(channelName + "_linkurlpost").get_attribute(
-                "value") == "http://127.0.0.1:5000/new"
+                "value") == "http://localhost:5000/new"
     except AssertionError as e:
         teardown_db(id_channel, id_post)
         driver.close()
@@ -127,7 +132,7 @@ def test_basic_moderate(client, channelName, pluginName, fieldTested):
     id_channel, id_post = setup_db(channelName, pluginName)
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         wait = WebDriverWait(driver, 10)
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").click()
@@ -138,6 +143,8 @@ def test_basic_moderate(client, channelName, pluginName, fieldTested):
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
+
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
         driver.find_element_by_link_text("New post").click()
@@ -151,7 +158,7 @@ def test_basic_moderate(client, channelName, pluginName, fieldTested):
             "Frontend")
         driver.find_element_by_id("linkurlpost").click()
         driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+        driver.find_element_by_id("linkurlpost").send_keys("http://localhost:5000/new")
         driver.find_element_by_id("datefrompost").click()
         driver.find_element_by_id("datefrompost").clear()
         driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
@@ -169,7 +176,7 @@ def test_basic_moderate(client, channelName, pluginName, fieldTested):
                          date_until=datetime_converter("2018-07-01"), extra=json.dumps(extra))
         db.session.add(pub)
         db.session.commit()
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
         driver.find_element_by_id("moderate_" + str(id_post)).click()
         if "title" in fieldTested:
@@ -180,7 +187,7 @@ def test_basic_moderate(client, channelName, pluginName, fieldTested):
                 "value") == "Frontend"
         if "link" in fieldTested:
             assert driver.find_element_by_id("linkurlpost").get_attribute(
-                "value") == "http://127.0.0.1:5000/new"
+                "value") == "http://localhost:5000/new"
     except AssertionError as e:
         teardown_db(id_channel, id_post)
         driver.close()
@@ -198,7 +205,7 @@ def test_basic_warning(client, channelName, pluginName):
     id_channel, id_post = setup_db(channelName, pluginName)
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         wait = WebDriverWait(driver, 10)
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").click()
@@ -209,6 +216,8 @@ def test_basic_warning(client, channelName, pluginName):
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
+
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'New post')))
         driver.find_element_by_link_text("New post").click()
@@ -222,7 +231,7 @@ def test_basic_warning(client, channelName, pluginName):
             "Frontend")
         driver.find_element_by_id("linkurlpost").click()
         driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+        driver.find_element_by_id("linkurlpost").send_keys("http://localhost:5000/new")
         driver.find_element_by_id("datefrompost").click()
         driver.find_element_by_id("datefrompost").clear()
         driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
@@ -240,7 +249,7 @@ def test_basic_warning(client, channelName, pluginName):
                          date_until=datetime_converter("2050-07-01"), extra=json.dumps(extra))
         db.session.add(pub)
         db.session.commit()
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
         driver.find_element_by_id("moderate_" + str(id_post)).click()
         driver.find_element_by_id("pub-button").click()
@@ -263,7 +272,7 @@ def test_basic_publish(client, channelName, pluginName, configuration, extra):
     id_channel, id_post = setup_db(channelName, pluginName)
     driver = webdriver.Firefox()
     try:
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         wait = WebDriverWait(driver, 10)
         driver.find_element_by_link_text("Login").click()
         driver.find_element_by_name("j_username").click()
@@ -274,6 +283,9 @@ def test_basic_publish(client, channelName, pluginName, configuration, extra):
         driver.find_element_by_name("j_password").send_keys("myself")
         driver.find_element_by_xpath(
             "(.//*[normalize-space(text()) and normalize-space(.)='Password:'])[1]/following::input[2]").click()
+        driver.switch_to.alert.accept()
+        time.sleep(0.3)
+        driver.get('http://localhost:5000/')
         wait = WebDriverWait(driver, 10)
         wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Channels")))
         driver.find_element_by_link_text("Channels").click()
@@ -299,7 +311,7 @@ def test_basic_publish(client, channelName, pluginName, configuration, extra):
             "Frontend")
         driver.find_element_by_id("linkurlpost").click()
         driver.find_element_by_id("linkurlpost").clear()
-        driver.find_element_by_id("linkurlpost").send_keys("http://127.0.0.1:5000/new")
+        driver.find_element_by_id("linkurlpost").send_keys("http://localhost:5000/new")
         driver.find_element_by_id("datefrompost").click()
         driver.find_element_by_id("datefrompost").clear()
         driver.find_element_by_id("datefrompost").send_keys("2020-11-21")
@@ -316,7 +328,7 @@ def test_basic_publish(client, channelName, pluginName, configuration, extra):
                          date_until=datetime_converter("2050-07-01"), extra=json.dumps(extra))
         db.session.add(pub)
         db.session.commit()
-        driver.get('http://127.0.0.1:5000/')
+        driver.get('http://localhost:5000/')
         # wait.until(EC.element_to_be_clickable((By.ID, "moderate_" + str(id_channel))))
         driver.find_element_by_id("moderate_" + str(id_post)).click()
         driver.find_element_by_id("pub-button").click()

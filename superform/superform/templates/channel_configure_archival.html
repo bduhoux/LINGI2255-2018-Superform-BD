@@ -1,0 +1,80 @@
+<div class="form-group" onload="update_form()">
+    <label for="arch_frequency">Archival service : Frequency</label>
+    <select class="form-control" id="arch_frequency" name="arch_frequency" onchange="update_form();">
+        {% for f, name in archival_f_dict.items() %}
+            <option value={{ f }} {% if archival_f ==  f %} selected="selected" {% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+    <small id="arch_fr_help" class="form-text text-muted">
+      The frequency at which the archival service will be launched for this channel.
+    </small>
+</div>
+
+<div id="day_of_month" class="form-group">
+    <label for="arch_date_month">Archival service : Day of the month</label>
+    <select class="form-control" id="arch_date_month" name="arch_date_month">
+        {% for i in range(1, 32) %}
+            <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div id="day_of_week" class="form-group">
+    <label for="arch_date_week">Archival service : Day of the week</label>
+    <select class="form-control" id="arch_date_week" name="arch_date_week">
+        <option value="1">Monday</option>
+        <option value="2">Tuesday</option>
+        <option value="3">Wednesday</option>
+        <option value="4">Thursday</option>
+        <option value="5">Friday</option>
+        <option value="6">Saturday</option>
+        <option value="7">Sunday</option>
+    </select>
+</div>
+
+<div id="hour" class="form-group">
+    <label for="arch_date_hour">Archival service : Hour</label>
+    <input class="form-control" type="time" id="arch_date_hour" name="arch_date_hour">
+</div>
+
+<script>
+    const month_input = document.getElementById("arch_date_month");
+    const day_input = document.getElementById("arch_date_week");
+    const hour_input = document.getElementById("arch_date_hour");
+
+    function update_form() {
+        const month_div = document.getElementById("day_of_month");
+        const week_div = document.getElementById("day_of_week");
+        const hour_div = document.getElementById("hour");
+        month_div.style.display = 'none';
+        week_div.style.display = 'none';
+        hour_div.style.display = 'none';
+        month_input.required = false;
+        day_input.required = false;
+        hour_input.required = false;
+        f = document.getElementById("arch_frequency").value;
+        if (f === '-1') {
+            return
+        }
+        hour_div.style.display = 'block';
+        hour_input.required = true;
+        if (f === '0') {
+            month_div.style.display = 'block';
+            month_input.required = true;
+        } else if (f === '1') {
+            week_div.style.display = 'block';
+            day_input.required = true;
+        }
+    }
+
+    update_form();
+
+    var date = new Date(Date.parse('{{archival_d}}'));
+    var hour = (date.getHours() < 10 ? "0" + date.getHours() : date.getHours())
+        + ":"
+        + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes());
+
+    hour_input.value = hour;
+    day_input.value = (date.getDay() === 0 ? 7 : date.getDay());
+    month_input.value = (date.getDate() > 28 ? 1 : date.getDate());
+</script>

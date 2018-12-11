@@ -69,12 +69,20 @@ class Publishing(db.Model):
     def get_author(self):
         return db.session.query(Post).get(self.post_id).user_id
 
+    # Archival Module :
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Channel(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     name = db.Column(db.Text, nullable=False)
     module = db.Column(db.String(100), nullable=False)
     config = db.Column(db.Text, nullable=False)
+    # Archival Module :
+    archival_frequency = db.Column(db.Integer, nullable=False, default=-1) # By default, no archival service
+    archival_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.today())
+    # End of Archival Module
 
     publishings = db.relationship("Publishing", backref="channel", lazy=True)
     authorizations = db.relationship("Authorization", cascade="all, delete", backref="channel", lazy=True)
@@ -83,6 +91,11 @@ class Channel(db.Model):
 
     def __repr__(self):
         return '<Channel {}>'.format(repr(self.id))
+
+    # Archival Module :
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 
 class Authorization(db.Model):
