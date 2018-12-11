@@ -53,7 +53,13 @@ def populate_db():
     Authorization.query.delete()
     authorization = Authorization(user_id="michouchou", channel_id=1, permission=1)
     db.session.add(authorization)
+    authorization = Authorization(user_id="admin", channel_id=1, permission=2)
+    db.session.add(authorization)
+    authorization = Authorization(user_id="admin", channel_id=2, permission=2)
+    db.session.add(authorization)
     authorization = Authorization(user_id="admin", channel_id=3, permission=2)
+    db.session.add(authorization)
+    authorization = Authorization(user_id="admin", channel_id=4, permission=2)
     db.session.add(authorization)
     authorization = Authorization(user_id="googleplusmoderator", channel_id=2, permission=2)
     db.session.add(authorization)
@@ -94,7 +100,7 @@ def populate_db():
                 link_url="http://instagram.com/", image_url="{}", date_from=datetime_converter("2018-11-20"),
                 date_until=datetime_converter("2018-11-21"))
     db.session.add(post)
-    post = Post(id=8, user_id="channelmoder", title="", description="",
+    post = Post(id=8, user_id="channelmoder", title="frè§iyu title", description="",
                 link_url="", image_url="", date_from=datetime_converter("2018-11-22"),
                 date_until=datetime_converter("2018-11-23"))
     db.session.add(post)
@@ -202,12 +208,11 @@ def test_admin_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = "first title"
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 3 == len(result)
-    assert [1, 5, 11] == [pub.post_id for pub in result]
+    assert [1, 5, 11] == sorted([pub.post_id for pub in result])
 
 
 def test_empty_search(client):
@@ -220,8 +225,7 @@ def test_empty_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = ""
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 12 == len(result)
@@ -237,12 +241,11 @@ def test_by_keyword_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = "title saw middleton"
     filter_parameter["search_by_keyword"] = True
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 8 == len(result)
-    assert [1, 2, 3, 4, 5, 8, 10, 11] == [pub.post_id for pub in result]
+    assert [1, 2, 3, 4, 5, 8, 10, 11] == sorted([pub.post_id for pub in result])
 
 
 def test_channels_search(client):
@@ -255,12 +258,11 @@ def test_channels_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = "title"
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 5 == len(result)
-    assert [1, 2, 3, 4, 5] == [pub.post_id for pub in result]
+    assert [1, 2, 3, 4, 5] == sorted([pub.post_id for pub in result])
 
 
 def test_states_search(client):
@@ -273,12 +275,11 @@ def test_states_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = "title"
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 4 == len(result)
-    assert [2, 3, 5, 11] == [pub.post_id for pub in result]
+    assert [2, 3, 5, 11]== sorted([pub.post_id for pub in result])
 
 
 def test_content_search(client):
@@ -291,12 +292,11 @@ def test_content_search(client):
     filter_parameter["search_in_content"] = True
     filter_parameter["searched_words"] = "or"
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 7 == len(result)
-    assert [1, 2, 3, 5, 8, 9, 10] == [pub.post_id for pub in result]
+    assert [1, 2, 3, 5, 8, 9, 10] == sorted([pub.post_id for pub in result])
 
 
 def test_content_keyword_search(client):
@@ -309,12 +309,11 @@ def test_content_keyword_search(client):
     filter_parameter["search_in_content"] = True
     filter_parameter["searched_words"] = "drawings any"
     filter_parameter["search_by_keyword"] = True
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 3 == len(result)
-    assert [1, 3, 10] == [pub.post_id for pub in result]
+    assert [1, 3, 10] == sorted([pub.post_id for pub in result])
 
 
 def test_content_title_search(client):
@@ -327,12 +326,11 @@ def test_content_title_search(client):
     filter_parameter["search_in_content"] = True
     filter_parameter["searched_words"] = "first title"
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 4 == len(result)
-    assert [1, 2, 5, 11] == [pub.post_id for pub in result]
+    assert [1, 2, 5, 11] == sorted([pub.post_id for pub in result])
 
 
 def test_content_title_keyboard_search(client):
@@ -345,102 +343,129 @@ def test_content_title_keyboard_search(client):
     filter_parameter["search_in_content"] = True
     filter_parameter["searched_words"] = "drawings any middleton saw"
     filter_parameter["search_by_keyword"] = True
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
-    assert 5 == len(result)
-    assert [1, 2, 3, 8, 10] == [pub.post_id for pub in result]
+    assert len(result) == 5
+    assert [1, 2, 3, 8, 10] == sorted([pub.post_id for pub in result])
 
-
-def test_order_title_search(client):
+def test_Post_basic(client):
     populate_db()
     filter_parameter = dict()
-    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
-    filter_parameter["channels"] = [1]
-    filter_parameter["states"] = [0, 2]
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "channelwriter").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = "men instrument"
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter['search_table'] = Post
+
+    result = query_maker(filter_parameter)
+    assert len(result) == 2
+    assert [9, 10] == sorted([pub.id for pub in result])
+
+
+def test_post_empty_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "channelwriter").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = True
+    filter_parameter["search_in_content"] = False
+    filter_parameter["searched_words"] = ""
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter['search_table'] = Post
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+
+
+def test_post_by_keyword_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "channelmoder").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
     filter_parameter["search_in_title"] = True
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = "title"
     filter_parameter["search_by_keyword"] = True
-    filter_parameter["order_by"] = "title"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Post
 
     result = query_maker(filter_parameter)
     assert 3 == len(result)
-    assert [1, 4, 3] == [pub.post_id for pub in result]
+    assert [1, 4, 8] == sorted([pub.id for pub in result])
 
 
-def test_order_description_search(client):
+def test_post_content_search(client):
     populate_db()
     filter_parameter = dict()
-    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
-    filter_parameter["channels"] = [4]
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "michouchou").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
     filter_parameter["states"] = [0, 1, 2]
-    filter_parameter["search_in_title"] = True
-    filter_parameter["search_in_content"] = False
-    filter_parameter["searched_words"] = ""
+    filter_parameter["search_in_title"] = False
+    filter_parameter["search_in_content"] = True
+    filter_parameter["searched_words"] = "or"
+    filter_parameter["search_by_keyword"] = False
+    filter_parameter['search_table'] = Post
+
+    result = query_maker(filter_parameter)
+    assert 3 == len(result)
+    assert sorted([pub.id for pub in result]) == [2, 3, 5]
+
+
+def test_post_content_keyword_search(client):
+    populate_db()
+    filter_parameter = dict()
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "channelmoder").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
+    filter_parameter["states"] = [0, 1, 2]
+    filter_parameter["search_in_title"] = False
+    filter_parameter["search_in_content"] = True
+    filter_parameter["searched_words"] = "him it"
     filter_parameter["search_by_keyword"] = True
-    filter_parameter["order_by"] = "description"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Post
 
     result = query_maker(filter_parameter)
-    assert 3 == len(result)
-    assert [10, 9, 11] == [pub.post_id for pub in result]
+    assert 2 == len(result)
+    assert [4, 7] == sorted([pub.id for pub in result])
 
 
-def test_order_date_from_search(client):
+def test_post_content_title_search(client):
     populate_db()
     filter_parameter = dict()
-    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
-    filter_parameter["channels"] = [4]
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "michouchou").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
     filter_parameter["states"] = [0, 1, 2]
     filter_parameter["search_in_title"] = True
-    filter_parameter["search_in_content"] = False
-    filter_parameter["searched_words"] = ""
+    filter_parameter["search_in_content"] = True
+    filter_parameter["searched_words"] = "first title"
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "date_from"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Post
 
     result = query_maker(filter_parameter)
-    assert 3 == len(result)
-    assert [9, 10, 11] == [pub.post_id for pub in result]
+    assert 2 == len(result)
+    assert [2, 5] == sorted([pub.id for pub in result])
 
 
-def test_order_date_until_search(client):
+def test_post_content_title_keyboard_search(client):
     populate_db()
     filter_parameter = dict()
-    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
-    filter_parameter["channels"] = [4]
+    filter_parameter["user"] = db.session.query(User).filter(User.id == "michouchou").first()
+    filter_parameter["channels"] = [1, 2, 3, 4]
     filter_parameter["states"] = [0, 1, 2]
     filter_parameter["search_in_title"] = True
-    filter_parameter["search_in_content"] = False
-    filter_parameter["searched_words"] = ""
-    filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "date_until"
-    filter_parameter["is_asc"] = True
+    filter_parameter["search_in_content"] = True
+    filter_parameter["searched_words"] = "drawings any middleton saw"
+    filter_parameter["search_by_keyword"] = True
+    filter_parameter['search_table'] = Post
 
     result = query_maker(filter_parameter)
-    assert 3 == len(result)
-    assert [9, 10, 11] == [pub.post_id for pub in result]
+    assert 2 == len(result)
+    assert [2, 3] == sorted([pub.id for pub in result])
 
-
-def test_order_desc_search(client):
-    populate_db()
-    filter_parameter = dict()
-    filter_parameter["user"] = db.session.query(User).filter(User.id == "admin").first()
-    filter_parameter["channels"] = [4]
-    filter_parameter["states"] = [0, 1, 2]
-    filter_parameter["search_in_title"] = True
-    filter_parameter["search_in_content"] = False
-    filter_parameter["searched_words"] = ""
-    filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "date_until"
-    filter_parameter["is_asc"] = False
-
-    result = query_maker(filter_parameter)
-    assert 3 == len(result)
-    assert [11, 10, 9] == [pub.post_id for pub in result]
 
 
 def test_writer_empty_search(client):
@@ -453,8 +478,7 @@ def test_writer_empty_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = ""
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 0 == len(result)
@@ -470,12 +494,11 @@ def test_writer_basic_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = ""
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 3 == len(result)
-    assert [2, 3, 5] == [pub.post_id for pub in result]
+    assert [2, 3, 5] == sorted([pub.post_id for pub in result])
 
 
 
@@ -489,8 +512,7 @@ def test_moderator_empty_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = ""
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 0 == len(result)
@@ -506,12 +528,11 @@ def test_writer_basic2_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = ""
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 3 == len(result)
-    assert [9, 10, 11] == [pub.post_id for pub in result]
+    assert [9, 10, 11] == sorted([pub.post_id for pub in result])
 
 
 def test_moderator_writer_basic_search(client):
@@ -524,12 +545,11 @@ def test_moderator_writer_basic_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = ""
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 9 == len(result)
-    assert [1, 1, 2, 3, 4, 4, 5, 7, 8] == [pub.post_id for pub in result]
+    assert [1, 1, 2, 3, 4, 4, 5, 7, 8] == sorted([pub.post_id for pub in result])
 
 
 def test_empty_db_search(client):
@@ -542,11 +562,11 @@ def test_empty_db_search(client):
     filter_parameter["search_in_content"] = False
     filter_parameter["searched_words"] = ""
     filter_parameter["search_by_keyword"] = False
-    filter_parameter["order_by"] = "post_id"
-    filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
 
     result = query_maker(filter_parameter)
     assert 0 == len(result)
+
 
 def test_time_period_search(client):
     populate_db()
@@ -560,11 +580,12 @@ def test_time_period_search(client):
     filter_parameter["search_by_keyword"] = False
     filter_parameter["order_by"] = "post_id"
     filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
     filter_parameter["date_from"] = "2017-05-07"
     filter_parameter["date_until"] = "2019-07-07"
     result = query_maker(filter_parameter)
     assert 3 == len(result)
-    assert [2, 3, 5] == [pub.post_id for pub in result]
+    assert [2, 3, 5] == sorted([pub.post_id for pub in result])
     filter_parameter["date_from"] = "2020-05-07"
     filter_parameter["date_until"] = "2021-07-07"
     result = query_maker(filter_parameter)
@@ -645,5 +666,6 @@ def test_sql_injections(client):
     filter_parameter["search_by_keyword"] = False
     filter_parameter["order_by"] = "post_id"
     filter_parameter["is_asc"] = True
+    filter_parameter['search_table'] = Publishing
     result = query_maker(filter_parameter)
     assert 0 == len(result)

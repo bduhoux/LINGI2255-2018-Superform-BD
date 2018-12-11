@@ -24,8 +24,8 @@ function getCharCounter(channelName) {
             $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
             $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "']").append('<a href="#" data-toggle="popover" title="Content too long" data-content="Too many characters for one tweet"><i class="fas fa-exclamation-circle" style="color:orange"></i></a>');
             $("." + channelName + "_status_too_many_chars").remove();
-            $("#" + channelName + "_card_body").append('<div class="' + channelName + '_status_too_many_chars"> Too many characters for one tweet! </div>');
-            $("#card_body").append('<div class="' + channelName + '_status_too_many_chars">' + channelName + ': Too many characters for one tweet! </div>');
+            $("#" + channelName + "_card_body").append('<span class="' + channelName + '_status_too_many_chars" id="status_too_many_chars"> Too many characters for one tweet! </span>');
+            $("#card_body").append('<span class="' + channelName + '_status_too_many_chars" >' + channelName + ': Too many characters for one tweet! </span>');
             $('[data-toggle="popover"]').popover();
         } else {
             $("label[for='" + channelName + "_" + $('#descriptionpost').attr('id') + "'] > a").remove();
@@ -96,7 +96,7 @@ function getTweetCharCounter(channelName) {
  */
 function getTweetHtml(text, channelName, i, numberOfTweets) {
     var html = `<div class="form-group tweet-preview">
-                    <label for="${channelName}_tweet_${i}"> <span class="${channelName}-tweet-number"> Tweet ${i}/${numberOfTweets} </span> <span class="tweet-char-counter" style="font-style: italic"></span></label>
+                    <label for="${channelName}_tweet_${i}"> <span class="${channelName}-tweet-number"> Tweet ${i}/${numberOfTweets} </span> <span id="NumberCharacters_${i}" class="tweet-char-counter" style="font-style: italic"></span></label>
                     <input type="button" value="Remove" onclick="removePreviewTweet('${channelName}', ${i})"><br> 
                     <textarea class="form-control" rows="4" id="${channelName}_tweet_${i}" name="${channelName}_tweet_${i}">${text}</textarea>
                 </div>`;

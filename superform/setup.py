@@ -5,6 +5,7 @@ setup(
     packages=['superform'],
     include_package_data=True,
     install_requires=[
+        'slackclient',
         'apscheduler',
         'flask',
         'python3-saml',
@@ -13,6 +14,9 @@ setup(
         'pytest',
         'facebook-sdk',
         'feedgen',
-        'python-twitter'
+        'python-twitter',
+        'selenium',
+        'pytest-flask',
+        'pytest-helpers-namespace'
     ]
 )
