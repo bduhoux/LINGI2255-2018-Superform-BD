@@ -37,7 +37,7 @@ def login(client, login):
             sess['user_id'] = login
 
 
-def test_delete_publishing(client):
+def test_delete_post(client):
     user_id = "myself"
     login(client, user_id)
 
@@ -54,13 +54,61 @@ def test_delete_publishing(client):
 
     id_post = p.id
 
-    path = '/delete/' + str(id_post)
+    path = '/delete_post/' + str(id_post)
 
     client.get(path)
 
-    deleted_publishings = db.session.query(Publishing).filter(Publishing.post_id == id_post)
-    for pub in deleted_publishings:
-        assert pub is None
+    deleted_post = db.session.query(Post).filter_by(id=id_post).first()
+
+    assert deleted_post is None
+
+
+def test_delete_publishing(client):
+    user_id = "myself"
+    login(client, user_id)
+
+    title_post = "title_test"
+    descr_post = "description"
+    link_post = "link"
+    image_post = "img"
+    date_from = datetime_converter("2018-01-01")
+    date_until = datetime_converter("2018-01-10")
+    p = Post(user_id=user_id, title=title_post, description=descr_post, link_url=link_post, image_url=image_post,
+             date_from=date_from, date_until=date_until)
+    db.session.add(p)
+    db.session.commit()
+
+    id_post = p.id
+    id_channel = 1
+
+    # Try with a publishing submitted for review (state=0)
+    pub1 = Publishing(post_id=id_post, channel_id=id_channel, state=0, title=title_post, description=descr_post,
+                     link_url=link_post, image_url=image_post, date_from=date_from, date_until=date_until)
+    db.session.add(pub1)
+    db.session.commit()
+
+    path = '/delete_publishing/' + str(id_post) + '/' + str(id_channel)
+
+    client.get(path)
+
+    deleted_publishing = db.session.query(Publishing).filter(Publishing.post_id == id_post).first()
+    assert deleted_publishing is None
+
+    # Try with a publishing already posted (state=1)
+    pub2 = Publishing(post_id=id_post, channel_id=id_channel, state=1, title=title_post, description=descr_post,
+                      link_url=link_post, image_url=image_post, date_from=date_from, date_until=date_until)
+    db.session.add(pub2)
+    db.session.commit()
+
+    path = '/delete_publishing/' + str(id_post) + '/' + str(id_channel)
+
+    client.get(path)
+
+    deleted_publishing = db.session.query(Publishing).filter(Publishing.post_id == id_post).first()
+    assert deleted_publishing is None
+
+    db.session.delete(p)
+    db.session.commit()
 
 
 # Not being able to delete someone else's post
@@ -82,10 +130,13 @@ def test_delete_not_author(client):
 
     id_post = p.id
 
-    path = '/delete/' + str(id_post)
+    path = '/delete_post/' + str(id_post)
 
     client.get(path)
 
     deleted_post = db.session.query(Post).filter_by(id=id_post).first()
 
     assert deleted_post is not None
+
+    db.session.delete(p)
+    db.session.commit()

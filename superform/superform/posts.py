@@ -58,15 +58,18 @@ def create_a_publishing(post, chn, form):
 @login_required()
 def new_post():
     user_id = session.get("user_id", "") if session.get("logged_in", False) else -1
+    module = []
     list_of_channels = channels_available_for_user(user_id)
     for elem in list_of_channels:
+        module = {"name":elem.name, "module":elem.module}
         m = elem.module
         clas = get_instance_from_module_path(m)
         unaivalable_fields = ','.join(clas.FIELDS_UNAVAILABLE)
         setattr(elem, "unavailablefields", unaivalable_fields)
 
     if request.method == "GET":
-        return render_template('new.html', l_chan=list_of_channels)
+        #v = db.session.query(Channel).filter(Channel.name == elem.channel_id).first()
+        return render_template('new.html', l_chan=list_of_channels, modules=module)
     else:
         create_a_post(request.form)
         return redirect(url_for('index'))

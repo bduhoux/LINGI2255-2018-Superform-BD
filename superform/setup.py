@@ -19,5 +19,6 @@ setup(
         'selenium',
         'pytest-selenium',
         'pytest-flask',
+        'bond'
     ]
 )
