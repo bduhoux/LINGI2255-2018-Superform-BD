@@ -13,7 +13,7 @@ from superform.utils import get_module_full_name
 @pytest.fixture
 def firefox_options(firefox_options, pytestconfig):
     # Don't open the browser during the tests
-    firefox_options.add_argument('-headless')
+    #firefox_options.add_argument('-headless')
     return firefox_options
 
 

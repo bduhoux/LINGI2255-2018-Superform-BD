@@ -72,7 +72,7 @@ def new_post():
         return render_template('new.html', l_chan=list_of_channels, modules=module)
     else:
         create_a_post(request.form)
-        return redirect(url_for('index'))
+        return redirect(url_for('archival.update_now'))
 
 
 @posts_page.route('/publish', methods=['POST'])

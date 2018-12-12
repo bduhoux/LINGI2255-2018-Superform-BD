@@ -2,10 +2,10 @@ import json
 import os
 import random
 
-from flask import current_app
 import superform.plugins.Twitter as Twitter
 from superform import app
 from superform.models import Publishing
+
 
 json_data = open(os.path.dirname(os.path.abspath(__file__)) + '/../config.json')
 data = json.load(json_data)

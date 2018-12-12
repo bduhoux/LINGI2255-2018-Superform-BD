@@ -32,7 +32,7 @@ def delete(id):
         post = db.session.query(Post).filter_by(id=id).first()
         if post is not None:
             post_user_id = post.user_id
-            if post_user_id == user.id:
+            if post_user_id == user.id or user.is_mod:
                 publishings = db.session.query(Publishing).filter(Publishing.post_id == id).all()
                 for pub in publishings:
                     # The publishing is a draft
@@ -86,10 +86,11 @@ def delete_post(id):
     user = User.query.get(session.get("user_id", "")) if session.get("logged_in", False) else None
 
     if user is not None:
+        setattr(user, 'is_mod', is_moderator(user))
         post = db.session.query(Post).filter_by(id=id).first()
         if post is not None:
             post_user_id = post.user_id
-            if post_user_id == user.id:
+            if post_user_id == user.id or user.is_mod:
                 publishings = db.session.query(Publishing).filter(Publishing.post_id == id).all()
                 post_del_cond = True
                 for _ in publishings:
@@ -121,10 +122,11 @@ def delete_publishing(post_id, channel_id):
     user = User.query.get(session.get("user_id", "")) if session.get("logged_in", False) else None
 
     if user is not None:
+        setattr(user, 'is_mod', is_moderator(user))
         post = db.session.query(Post).filter_by(id=post_id).first()
         if post is not None:
             post_user_id = post.user_id
-            if post_user_id == user.id:
+            if post_user_id == user.id or user.is_mod:
                 publishings = db.session.query(Publishing).filter(Publishing.post_id == post_id).all()
                 channel = db.session.query(Channel).filter(Channel.id == channel_id).first()
                 for pub in publishings:

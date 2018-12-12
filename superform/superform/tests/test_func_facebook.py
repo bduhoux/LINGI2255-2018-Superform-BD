@@ -32,6 +32,7 @@ def client():
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
 
+
 def test_facebook_functional(client):
     assert True == True
     login(driver)

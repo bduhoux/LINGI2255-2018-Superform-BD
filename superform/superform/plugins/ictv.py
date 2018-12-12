@@ -1,6 +1,5 @@
 from flask import current_app
 import json
-from superform import app
 import requests
 import requests_mock
 from datetime import datetime
