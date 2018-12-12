@@ -27,14 +27,14 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
         api = get_api(cfg)
 
         msg = get_message(publishing)
-        link = get_link(publishing)
+        pub_link = get_link(publishing)
         image = get_image(publishing)
 
         status1 = api.put_object(
             parent_object="me",
             connection_name="feed",
             message=msg,
-            link=link
+            link=pub_link
         )
         put_extra(publishing, status1['id'])
 

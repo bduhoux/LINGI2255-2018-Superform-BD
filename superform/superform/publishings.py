@@ -18,6 +18,17 @@ def moderate_publishing(id, idc):
     pub.date_until = str_converter(pub.date_until)
 
     if request.method == "GET":
+        date_f = pub.date_from
+        date_u = pub.date_until
+        pub.date_from = datetime_converter(pub.date_from)
+        pub.date_until = datetime_converter(pub.date_until)
+        v = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
+        pub.date_from = date_f
+        pub.date_until = date_u
+        if v.module == "superform.plugins.facebook":
+            session["facebook_running"] = True
+        else:
+            session["facebook_running"] = False
         if pub.extra is not None:
             pub.extra = json.loads(pub.extra)
         return render_template('moderate_post.html', pub=pub, chan=chan)
