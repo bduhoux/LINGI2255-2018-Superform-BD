@@ -37,7 +37,7 @@ def client():
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
 
-@pytest.mark.bug
+
 def test_wiki_functional(client):
     assert True == True
     login(driver)
