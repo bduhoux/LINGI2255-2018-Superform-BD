@@ -99,8 +99,12 @@ def delete(post_id):
     try:
         api = get_api(get_config(get_page_id(), fb_token))
         api.delete_object(post_id)
-    except:
-        raise RunPluginException('Please check your internet connection or if this post still exists on your facebook page!')
+    except facebook.GraphAPIError as e:
+        if "Unsupported delete request." in e.message:
+            raise RunPluginException('This post don\'t exist anymore on your facebook page!')
+        else:
+            raise RunPluginException('You are not connected to facebook!')
+
 
 
 def put_extra(publishing, post_id):
