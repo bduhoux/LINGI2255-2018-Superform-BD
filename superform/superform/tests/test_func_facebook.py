@@ -38,13 +38,13 @@ def test_facebook_functional(client):
     login(driver)
 
 
-    create_post(driver, "test", "test fonctionnel delete unpublished post de facebook", 'superform.plugins.facebook')
-    time.sleep(2)
-    pub_id = db.session.query(Publishing).order_by(Publishing.post_id.desc()).first().post_id
-    driver.get('http://localhost:5000/delete/' + str(pub_id))
-    time.sleep(2)
-    driver.get('http://localhost:5000/delete_publishing/' + str(pub_id) + '/1')
-    time.sleep(2)
+    # create_post(driver, "test", "test fonctionnel delete unpublished post de facebook", 'superform.plugins.facebook')
+    # time.sleep(2)
+    # pub_id = db.session.query(Publishing).order_by(Publishing.post_id.desc()).first().post_id
+    # driver.get('http://localhost:5000/delete/' + str(pub_id))
+    # time.sleep(2)
+    # driver.get('http://localhost:5000/delete_publishing/' + str(pub_id) + '/1')
+    # time.sleep(2)
 
     time.sleep(2)
     create_post(driver, "test", "test fonctionnel delete post de facebook", 'superform.plugins.facebook')
