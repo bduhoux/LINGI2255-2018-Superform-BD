@@ -150,10 +150,11 @@ def delete_publishing(post_id, channel_id):
                                 elif channel.module == "superform.plugins.wiki":
                                         wiki_delete(pub.title, channel.config)
                             except RunPluginException as e:
-                                flash(str(e))
                                 if "This post" in str(e):
                                     db.session.delete(pub)
                                     db.session.commit()
+                                else:
+                                    flash(str(e))
                                 return redirect(url_for('delete.delete', id=post_id))
 
                         if fb_connected:
