@@ -151,6 +151,9 @@ def delete_publishing(post_id, channel_id):
                                         wiki_delete(pub.title, channel.config)
                             except RunPluginException as e:
                                 flash(str(e))
+                                if "This post" in str(e):
+                                    db.session.delete(pub)
+                                    db.session.commit()
                                 return redirect(url_for('delete.delete', id=post_id))
 
                         if fb_connected:

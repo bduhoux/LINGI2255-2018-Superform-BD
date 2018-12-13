@@ -101,7 +101,7 @@ def delete(post_id):
         api.delete_object(post_id)
     except facebook.GraphAPIError as e:
         if "Unsupported delete request." in e.message:
-            raise RunPluginException('This post don\'t exist anymore on your facebook page!')
+            raise RunPluginException('This post doesn\'t exist anymore on your facebook page!')
         else:
             raise RunPluginException('You are not connected to facebook!')
 
