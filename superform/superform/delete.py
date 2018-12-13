@@ -47,16 +47,21 @@ def delete(id):
 
                     # The publishing has been posted
                     elif pub.state == 1:
-                        posted.append(pub)
-                        has_posted = True
 
                         channel = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
                         # The channel is Facebook
                         if channel.module == "superform.plugins.facebook":
+                            posted.append((pub, "fb"))
+                            has_posted = True
                             is_facebook = True
                         # The channel is Wiki
                         elif channel.module == "superform.plugins.wiki":
+                            posted.append((pub, "wiki"))
+                            has_posted = True
                             is_wiki = True
+                        else:
+                            posted.append((pub, "0"))
+                            has_posted = True
 
                     # The publishing has been archived
                     else:
