@@ -149,9 +149,8 @@ def delete_publishing(post_id, channel_id):
                                 # It is posted on Wiki
                                 elif channel.module == "superform.plugins.wiki":
                                         wiki_delete(pub.title, channel.config)
-                            except RunPluginException as e:
-                                flash(str(e))
-                                return redirect(url_for('delete.delete', id=post_id))
+                            except RunPluginException:
+                                flash('The post does not exist on Facebook! Removed from the database')
 
                         if fb_connected:
                             db.session.delete(pub)
