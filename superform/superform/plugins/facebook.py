@@ -1,6 +1,8 @@
 from flask import request, jsonify, Blueprint, url_for, redirect, abort, session
 import json
 import facebook
+
+from superform.run_plugin_exception import RunPluginException
 from superform.models import db, Post, Publishing, Channel
 
 # facebook_plugin = Blueprint("facebook_plugin", __name__)
@@ -30,13 +32,17 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
         pub_link = get_link(publishing)
         image = get_image(publishing)
 
-        status1 = api.put_object(
-            parent_object="me",
-            connection_name="feed",
-            message=msg,
-            link=pub_link
-        )
-        put_extra(publishing, status1['id'])
+        try:
+            status1 = api.put_object(
+                parent_object="me",
+                connection_name="feed",
+                message=msg,
+                link=pub_link
+            )
+
+            put_extra(publishing, status1['id'])
+        except:
+            raise RunPluginException('Please check your connection to facebook!')
 
 
 @facebook_plugin.route('/appid')
@@ -90,8 +96,11 @@ def get_image(publishing):
 
 
 def delete(post_id):
-    api = get_api(get_config(get_page_id(), fb_token))
-    api.delete_object(post_id)
+    try:
+        api = get_api(get_config(get_page_id(), fb_token))
+        api.delete_object(post_id)
+    except:
+        raise RunPluginException('Please check your internet connection or if this post still exist on your facebook page!')
 
 
 def put_extra(publishing, post_id):
