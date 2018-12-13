@@ -135,7 +135,6 @@ def delete_publishing(post_id, channel_id):
                         if pub.state == 1:
                             # It is posted on Facebook
                             if channel.module == "superform.plugins.facebook":
-                                print("ALERT")
                                 from superform.plugins.facebook import fb_token
                                 if fb_token == 0:
                                     # User is not connected on Facebook
