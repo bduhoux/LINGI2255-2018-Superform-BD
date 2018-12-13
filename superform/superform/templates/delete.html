@@ -139,7 +139,7 @@
                     </thead>
 
                     <tbody>
-                    {% for p in posted_pubs %}
+                    {% for (p, c) in posted_pubs %}
                         <tr>
                             <td>
                                 {{ p.channel.name }}
@@ -157,9 +157,9 @@
                             </td>
                             <td>
                                 <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" >Delete</a>
-                                {% if is_facebook %}
+                                {% if c == "fb" %}
                                     <div>
-                                        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                                        <fb:login-button class="fb_iframe_widget" scope="public_profile,email" onlogin="checkLoginState();">
                                         </fb:login-button>
                                         <p id="status"></p>
                                     </div>

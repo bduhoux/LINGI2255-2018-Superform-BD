@@ -24,9 +24,6 @@ def delete(id):
     has_unmoderated = False
     has_posted = False
 
-    is_facebook = False
-    is_wiki = False
-
     if user is not None:
         setattr(user, 'is_mod', is_moderator(user))
         post = db.session.query(Post).filter_by(id=id).first()
@@ -47,16 +44,19 @@ def delete(id):
 
                     # The publishing has been posted
                     elif pub.state == 1:
-                        posted.append(pub)
-                        has_posted = True
 
                         channel = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
                         # The channel is Facebook
                         if channel.module == "superform.plugins.facebook":
-                            is_facebook = True
+                            posted.append((pub, "fb"))
+                            has_posted = True
                         # The channel is Wiki
                         elif channel.module == "superform.plugins.wiki":
-                            is_wiki = True
+                            posted.append((pub, "wiki"))
+                            has_posted = True
+                        else:
+                            posted.append((pub, "0"))
+                            has_posted = True
 
                     # The publishing has been archived
                     else:
@@ -73,9 +73,8 @@ def delete(id):
 
     if has_draft or has_unmoderated or has_posted:
         return render_template("delete.html", user=user, post=post, draft_pubs=drafts,
-                               unmoderated_pubs=unmoderated, posted_pubs=posted, is_facebook=is_facebook,
-                               is_wiki=is_wiki, has_draft=has_draft, has_unmoderated=has_unmoderated,
-                               has_posted=has_posted)
+                               unmoderated_pubs=unmoderated, posted_pubs=posted, has_draft=has_draft,
+                               has_unmoderated=has_unmoderated, has_posted=has_posted)
     else:
         return delete_post(id)
 

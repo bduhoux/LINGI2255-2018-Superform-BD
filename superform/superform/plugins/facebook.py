@@ -6,7 +6,7 @@ from superform.models import db, Post, Publishing, Channel
 # facebook_plugin = Blueprint("facebook_plugin", __name__)
 facebook_plugin = Blueprint("facebook_plugin", "superform.plugins.facebook")
 
-FIELDS_UNAVAILABLE = ['Title', 'Description']  # list of field names that are not used by your module
+FIELDS_UNAVAILABLE = []  # list of field names that are not used by your module
 
 CONFIG_FIELDS = ["page_id", "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.
 
@@ -27,14 +27,14 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
         api = get_api(cfg)
 
         msg = get_message(publishing)
-        link = get_link(publishing)
+        pub_link = get_link(publishing)
         image = get_image(publishing)
 
         status1 = api.put_object(
             parent_object="me",
             connection_name="feed",
             message=msg,
-            link=link
+            link=pub_link
         )
         put_extra(publishing, status1['id'])
 
