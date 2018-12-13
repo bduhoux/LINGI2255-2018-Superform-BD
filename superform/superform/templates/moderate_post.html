@@ -13,15 +13,24 @@
         <form method="POST" action="">
             <div class="row">
                 <div class="col-md-12">
+                    {% set module_name = chan.module.split('.')[2].lower() %}
+                    {% set template = 'plugins/' + module_name + '/moderate_top.html' %}
+                    {% include template ignore missing %}
                     <div class="form-group">
                         <label for="titlepost">Title</label><br>
                         <input type="text" name="titlepost" id="titlepost" class="form-control" value="{{ pub.title }}">
                     </div>
                     <div class="form-group">
                         <label for="descrpost">Description</label><br>
+                        {% set module_name = chan.module.split('.')[2].lower() %}
+                        {% set template = 'plugins/' + module_name + '/moderate_description.html' %}
+                        {% include template ignore missing %}
                         <textarea class="form-control" rows="5" id="descrpost"
                                   name="descrpost">{{ pub.description }}</textarea>
                     </div>
+                    {% set module_name = chan.module.split('.')[2].lower() %}
+                    {% set template = 'plugins/' + module_name + '/moderate_after_description.html' %}
+                    {% include template ignore missing %}
                     <div class="form-group">
                         <label for="linkurlpost">Link</label><br>
                         <input type="text" name="linkurlpost" id="linkurlpost" class="form-control"
@@ -50,7 +59,7 @@
                     </div>
 
                     {% set module_name = chan.module.split('.')[2].lower() %}
-                    {% set template = 'plugins/' + module_name + '/moderate.html' %}
+                    {% set template = 'plugins/' + module_name + '/moderate_bottom.html' %}
                     {% include template ignore missing %}
 
                 </div>

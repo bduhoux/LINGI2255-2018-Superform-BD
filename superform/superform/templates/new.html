@@ -109,6 +109,9 @@
                             <div class="col-md-8">
                                 <div class="row">
                                     <div class="col-md-12">
+                                        {% set module_name = chan.module.split('.')[2].lower() %}
+                                        {% set template = 'plugins/' + module_name + '/new_top.html' %}
+                                        {% include template ignore missing %}
                                         <div class="form-group">
                                             <label for="{{ chan.name }}_titlepost">Title</label><br>
                                             <input type="text" name="{{ chan.name }}_titlepost"
@@ -116,9 +119,15 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="{{ chan.name }}_descriptionpost">Description</label><br>
+                                            {% set module_name = chan.module.split('.')[2].lower() %}
+                                            {% set template = 'plugins/' + module_name + '/new_description.html' %}
+                                            {% include template ignore missing %}
                                             <textarea class="form-control" rows="5" id="{{ chan.name }}_descriptionpost"
                                                       name="{{ chan.name }}_descriptionpost" ></textarea>
                                         </div>
+                                        {% set module_name = chan.module.split('.')[2].lower() %}
+                                        {% set template = 'plugins/' + module_name + '/new_after_description.html' %}
+                                        {% include template ignore missing %}
                                         <div class="form-group">
                                             <label for="{{ chan.name }}_linkurlpost">Link</label><br>
                                             <input type="text" name="{{ chan.name }}_linkurlpost"
@@ -149,7 +158,7 @@
                                             </div>
                                         </div>
                                         {% set module_name = chan.module.split('.')[2].lower() %}
-                                        {% set template = 'plugins/' + module_name + '/new.html' %}
+                                        {% set template = 'plugins/' + module_name + '/new_bottom.html' %}
                                         {% include template ignore missing %}
                                     </div>
                                 </div>
