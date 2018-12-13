@@ -10,7 +10,7 @@ from superform import app, db
 from superform.models import Channel
 
 
-new_channel_config = "{\"Author\": \"myself\", \"Wiki's url\": \"http://localhost:8001/pmwiki.php\"}"
+new_channel_config = "{\"Author\": \"myself\", \"Wiki's url\": \"http://localhost:8001/pmwiki.php\", \"Publication's group\": \"Test\"}"
 channel = Channel(name="newWikiChannel", module="superform.plugins.wiki", config=new_channel_config)
 
 
@@ -30,7 +30,7 @@ def client():
 def test_wiki_create(client):
     create_channel()
     url = get_url_wiki()
-    post_fields = {'n': "PmWiki.WikiDumbPageForTestingSuperform2018", 'text': "violet", 'action': 'edit', 'post': 1}
+    post_fields = {'n': "Test.WikiDumbPageForTestingSuperform2018", 'text': "violet", 'action': 'edit', 'post': 1}
     request = Request(url, urlencode(post_fields).encode())
     response = urlopen(request)
     mybytes = response.read()
@@ -43,7 +43,7 @@ def test_wiki_create(client):
 
 def test_wiki_edit(client):
     url = get_url_wiki()
-    post_fields = {'n': "PmWiki.WikiDumbPageForTestingSuperform2018", 'text': "Magenta", 'action': 'edit', 'post': 1}
+    post_fields = {'n': "Test.WikiDumbPageForTestingSuperform2018", 'text': "Magenta", 'action': 'edit', 'post': 1}
     request = Request(url, urlencode(post_fields).encode())
     response = urlopen(request)
     mybytes = response.read()
@@ -58,7 +58,7 @@ def test_wiki_edit(client):
 
 def test_wiki_delete(client):
     url = get_url_wiki()
-    post_fields = {'n': "PmWiki.WikiDumbPageForTestingSuperform2018", 'text': "delete", 'action': 'edit', 'post': 1}
+    post_fields = {'n': "Test.WikiDumbPageForTestingSuperform2018", 'text': "delete", 'action': 'edit', 'post': 1}
     request = Request(url, urlencode(post_fields).encode())
     with pytest.raises(urllib.error.HTTPError):
         urlopen(request)
