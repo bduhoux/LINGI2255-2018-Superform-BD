@@ -116,9 +116,9 @@ def delete_post(id):
     return redirect(url_for('index'))
 
 
-@delete_page.route('/delete_publishing/<int:post_id>/<int:channel_id>/<drafts>/<unmoderated>/<posted>/<has_draft>/<has_unmoderated>/<has_posted>', methods=['GET', 'POST'])
+@delete_page.route('/delete_publishing/<int:post_id>/<int:channel_id>', methods=['GET', 'POST'])
 @login_required()
-def delete_publishing(post_id, channel_id, drafts, unmoderated, posted, has_draft, has_unmoderated, has_posted):
+def delete_publishing(post_id, channel_id):
     user = User.query.get(session.get("user_id", "")) if session.get("logged_in", False) else None
 
     if user is not None:
@@ -134,19 +134,9 @@ def delete_publishing(post_id, channel_id, drafts, unmoderated, posted, has_draf
                         fb_connected = True
                         # The publishing has been posted
                         if pub.state == 1:
-                            # It is posted on Facebook
-                            if channel.module == "superform.plugins.facebook":
-                                from superform.plugins.facebook import fb_token
-                                if fb_token == 0:
-                                    # User is not connected on Facebook
-                                    flash("You are not connected on Facebook!")
-                                    fb_connected = False
-                                else:
-                                    extra = json.loads(pub.extra)
-                                    fb_delete(extra["facebook_post_id"])
                             try:
+                                # It is posted on Facebook
                                 if channel.module == "superform.plugins.facebook":
-                                    print("ALERT")
                                     from superform.plugins.facebook import fb_token
                                     if fb_token == 0:
                                         # User is not connected on Facebook
@@ -156,22 +146,13 @@ def delete_publishing(post_id, channel_id, drafts, unmoderated, posted, has_draf
                                         extra = json.loads(pub.extra)
                                         fb_delete(extra["facebook_post_id"])
 
-
                                 # It is posted on Wiki
                                 elif channel.module == "superform.plugins.wiki":
                                         wiki_delete(pub.title, channel.config)
                             except RunPluginException as e:
                                 flash(str(e))
-                                print(drafts)
-                                print(unmoderated)
-                                print(posted)
-                                print(has_draft)
-                                print(has_unmoderated)
-                                print(has_posted)
-                                return render_template("delete.html", user=user, post=post, draft_pubs=drafts,
-                                                       unmoderated_pubs=unmoderated, posted_pubs=posted,
-                                                       has_draft=has_draft,
-                                                       has_unmoderated=has_unmoderated, has_posted=has_posted)
+                                return redirect(url_for('delete.delete', id=post_id))
+
                         if fb_connected:
                             db.session.delete(pub)
                             db.session.commit()

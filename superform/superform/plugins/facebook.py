@@ -100,7 +100,7 @@ def delete(post_id):
         api = get_api(get_config(get_page_id(), fb_token))
         api.delete_object(post_id)
     except:
-        raise RunPluginException('Please check your internet connection or if this post still exist on your facebook page!')
+        raise RunPluginException('Please check your internet connection or if this post still exists on your facebook page!')
 
 
 def put_extra(publishing, post_id):
