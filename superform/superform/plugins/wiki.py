@@ -7,16 +7,17 @@ from superform.run_plugin_exception import RunPluginException
 
 FIELDS_UNAVAILABLE = [] #list of field names that are not used by your module
 
-CONFIG_FIELDS = ["Author", "Wiki's url"]  # This lets the manager of your module enter data that are used to communicate with other services.
+CONFIG_FIELDS = ["Author", "Wiki's url", "Publication's group"]  # This lets the manager of your module enter data that are used to communicate with other services.
 
 
 # appelé dans publishings.py
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
-    author = get_author(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
-    url = get_url(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
+    author = get_author(channel_config)
+    url = get_url(channel_config)
+    group = get_pubblication_group(channel_config)
 
     title = get_title(publishing)
-    page = 'PmWiki.'+title
+    page = group + '.' + title
     description = get_description(publishing)
 
     picture = get_image(publishing)
@@ -38,6 +39,10 @@ def get_author(config):
 def get_url(config):
     json_data = json.loads(config)
     return json_data["Wiki's url"]
+
+def get_pubblication_group(config):
+    json_data = json.loads(config)
+    return json_data["Publication's group"]
 
 
 def get_title(publishing):

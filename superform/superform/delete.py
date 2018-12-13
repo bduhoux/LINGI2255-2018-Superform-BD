@@ -73,12 +73,6 @@ def delete(id):
         return render_template('403.html'), 403
 
     if has_draft or has_unmoderated or has_posted:
-        print(drafts)
-        print(unmoderated)
-        print(posted)
-        print(has_draft)
-        print(has_unmoderated)
-        print(has_posted)
         return render_template("delete.html", user=user, post=post, draft_pubs=drafts,
                                unmoderated_pubs=unmoderated, posted_pubs=posted, has_draft=has_draft,
                                has_unmoderated=has_unmoderated, has_posted=has_posted)
@@ -141,6 +135,15 @@ def delete_publishing(post_id, channel_id, drafts, unmoderated, posted, has_draf
                         # The publishing has been posted
                         if pub.state == 1:
                             # It is posted on Facebook
+                            if channel.module == "superform.plugins.facebook":
+                                from superform.plugins.facebook import fb_token
+                                if fb_token == 0:
+                                    # User is not connected on Facebook
+                                    flash("You are not connected on Facebook!")
+                                    fb_connected = False
+                                else:
+                                    extra = json.loads(pub.extra)
+                                    fb_delete(extra["facebook_post_id"])
                             try:
                                 if channel.module == "superform.plugins.facebook":
                                     print("ALERT")

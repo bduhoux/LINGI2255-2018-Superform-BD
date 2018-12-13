@@ -2,5 +2,5 @@
 
 clear
 
-echo "Le serveur pmwiki est lancé en localhost:8001."
+echo "Le serveur pmwiki est lancé en http://localhost:8001."
 php -S localhost:8001
