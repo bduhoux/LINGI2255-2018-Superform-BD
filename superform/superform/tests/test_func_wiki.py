@@ -10,8 +10,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from superform.models import db, Publishing, Post
 
-web_driver_location = os.getcwd() + '/superform/static/plugins/facebook/chromedriver'
-#web_driver_location = os.getcwd() + '/superform/superform/static/plugins/facebook/chromedriver'
+#web_driver_location = os.getcwd() + '/superform/static/plugins/facebook/chromedriver'
+web_driver_location = os.getcwd() + '/superform/superform/static/plugins/facebook/chromedriver'
 
 
 
