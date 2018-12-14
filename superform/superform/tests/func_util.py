@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 from datetime import timedelta
-from superform.models import db, Publishing, Channel
+from superform.models import db, Publishing
 
 
 from selenium.webdriver.common.by import By
@@ -74,15 +74,11 @@ def login_fb(driver):
     driver.switch_to.window(window_before)
 
 
-def create_post_wiki(driver, title, description, module):
+def create_post_wiki(driver, title, description):
     driver.find_element(By.XPATH, "//a[@href='/new']").click()
     driver.find_element(By.XPATH, "//input[@id='titlepost']").send_keys(title)
     driver.find_element(By.XPATH, "//textarea[@id='descriptionpost']").send_keys(description)
 
-
-    # wiki_chan = db.session.query(Channel).filter(Channel.module == 'superform.plugins.wiki').first()
-    # chan_name = wiki_chan.name
-    # driver.find_element(By.XPATH, "//input[@data-namechan='chan_name']").click() # marche pas evidemment mais cmt faire??!!!
     driver.find_element(By.XPATH, "//input[@data-module='superform.plugins.wiki']").click()
 
     now = datetime.now()
