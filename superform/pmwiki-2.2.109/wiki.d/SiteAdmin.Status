@@ -8,5 +8,5 @@ name=SiteAdmin.Status
 rev=25
 targets=
 text=(:Summary: PmWiki version {$Version} (VersionNum={$VersionNum}):)%0a(:comment Any local edits to this page may be lost!:)%0a%0aThis site is running {$Version} (VersionNum={$VersionNum}).%0a
-time=1541361782
+time=1544783524
 updatedto=2002109
