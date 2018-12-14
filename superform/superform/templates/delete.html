@@ -3,17 +3,18 @@
 {% block content %}
 
     <h1>Delete Post</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger"><strong>Warning!: </strong>{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     {% if session.logged_in %}
 
         <div class="row">
         <div class="col-md-12">
-            {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    {{ message }}
-                </div>
-            {% endfor %}
             {% if has_draft %}
                 <h2>Drafts</h2>
                 <table class="table table-bordered">
@@ -56,7 +57,7 @@
                             {{ p.get_author() }}
                         </td>
                         <td>
-                            <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" >Delete</a>
+                            <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id, drafts=draft_pubs, unmoderated=unmoderated_pubs, posted=posted_pubs, has_draft=has_draft, has_unmoderated=has_unmoderated, has_posted=has_posted) }}" class="btn btn-outline-warning" role="button" >Delete</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -106,7 +107,7 @@
                             {{ p.get_author() }}
                         </td>
                         <td>
-                            <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button">Delete</a>
+                            <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id, drafts=draft_pubs, unmoderated=unmoderated_pubs, posted=posted_pubs, has_draft=has_draft, has_unmoderated=has_unmoderated, has_posted=has_posted) }}" class="btn btn-outline-warning" role="button">Delete</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -156,7 +157,7 @@
                                 {{ p.get_author() }}
                             </td>
                             <td>
-                                <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id) }}" class="btn btn-outline-warning" role="button" >Delete</a>
+                                <a href="{{ url_for('delete.delete_publishing', post_id=p.post_id, channel_id=p.channel.id, drafts=draft_pubs, unmoderated=unmoderated_pubs, posted=posted_pubs, has_draft=has_draft, has_unmoderated=has_unmoderated, has_posted=has_posted) }}" class="btn btn-outline-warning" role="button" >Delete</a>
                                 {% if c == "fb" %}
                                     <div>
                                         <fb:login-button class="fb_iframe_widget" scope="public_profile,email" onlogin="checkLoginState();">

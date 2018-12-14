@@ -1,16 +1,4 @@
-/*  Copyright 2004-2015 Patrick R. Michaud (pmichaud@pobox.com)
-    This file is part of PmWiki; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published
-    by the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.  See pmwiki.php for full details.
 
-    This file provides Javascript functions to support WYSIWYG-style
-    editing.  The concepts are borrowed from the editor used in Wikipedia,
-    but the code has been rewritten from scratch to integrate better with
-    PHP and PmWiki's codebase.
-    
-    Script maintained by Petko Yotov www.pmwiki.org/petko
-*/
 
 function buttonsAfterTextarea() {
     let tid = arguments[0].id;
@@ -242,15 +230,19 @@ function replace_center(str) {
     return str;
 }
 
-function insButton(mopen, mclose, mtext, mlabel, mkey) {
-    console.log("insButton");
-    if (mkey > '') { mkey = 'accesskey="' + mkey + '" ' }
-    document.write("<a tabindex='-1' "+ mkey + "onclick=\"insMarkup('"
-        + mopen + "','"
-        + mclose + "','"
-        + mtext + "');\">"
-        + mlabel + "</a>");
-}
+/*  Copyright 2004-2015 Patrick R. Michaud (pmichaud@pobox.com)
+    This file is part of PmWiki; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published
+    by the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.  See pmwiki.php for full details.
+
+    This file provides Javascript functions to support WYSIWYG-style
+    editing.  The concepts are borrowed from the editor used in Wikipedia,
+    but the code has been rewritten from scratch to integrate better with
+    PHP and PmWiki's codebase.
+
+    Script maintained by Petko Yotov www.pmwiki.org/petko
+*/
 
 function insMarkup() {
     var func = false, tid='wiki_descriptionpost', mopen = '', mclose = '', mtext = '';

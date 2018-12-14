@@ -6,6 +6,7 @@ from superform.users import is_moderator
 
 from superform.plugins.facebook import delete as fb_delete
 from superform.plugins.wiki import delete as wiki_delete
+from superform.run_plugin_exception import RunPluginException
 
 import json
 
@@ -133,21 +134,29 @@ def delete_publishing(post_id, channel_id):
                         fb_connected = True
                         # The publishing has been posted
                         if pub.state == 1:
-                            # It is posted on Facebook
-                            if channel.module == "superform.plugins.facebook":
-                                print("ALERT")
-                                from superform.plugins.facebook import fb_token
-                                if fb_token == 0:
-                                    # User is not connected on Facebook
-                                    flash("You are not connected on Facebook!")
-                                    fb_connected = False
-                                else:
-                                    extra = json.loads(pub.extra)
-                                    fb_delete(extra["facebook_post_id"])
+                            try:
+                                # It is posted on Facebook
+                                if channel.module == "superform.plugins.facebook":
+                                    from superform.plugins.facebook import fb_token
+                                    if fb_token == 0:
+                                        # User is not connected on Facebook
+                                        flash("You are not connected on Facebook!")
+                                        fb_connected = False
+                                    else:
+                                        extra = json.loads(pub.extra)
+                                        fb_delete(extra["facebook_post_id"])
 
-                            # It is posted on Wiki
-                            elif channel.module == "superform.plugins.wiki":
-                                wiki_delete(pub.title, channel.config)
+                                # It is posted on Wiki
+                                elif channel.module == "superform.plugins.wiki":
+                                        wiki_delete(pub.title, channel.config)
+                            except RunPluginException as e:
+                                if "This post" in str(e):
+                                    db.session.delete(pub)
+                                    db.session.commit()
+                                else:
+                                    flash(str(e))
+                                return redirect(url_for('delete.delete', id=post_id))
+
                         if fb_connected:
                             db.session.delete(pub)
                             db.session.commit()

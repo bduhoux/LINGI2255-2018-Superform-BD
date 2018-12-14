@@ -199,6 +199,8 @@
                                     {% if (p.channel.id in moderate_channel) and p.state==0 %}
                                         <a href="{{ url_for('publishings.moderate_publishing',id=p.post_id,idc=p.channel_id) }}"
                                            class="btn btn-outline-primary" role="button">Moderate</a>
+                                    {% endif %}
+                                    {% if (p.channel.id in moderate_channel) and (p.state==1 or p.state==0) %}
                                         <a href="{{ url_for('delete.delete', id=p.post_id) }}"
                                            class="btn btn-outline-warning"
                                            role="button">Delete</a>
