@@ -65,7 +65,7 @@ def login_fb(driver):
     try:
         window_after = driver.window_handles[1]
         driver.switch_to.window(window_after)
-        driver.find_element(By.XPATH, "//input[@id='email']").send_keys("guiste10@hotmail.be")
+        driver.find_element(By.XPATH, "//input[@id='email']").send_keys("lingi2255jean@gmail.com")
         driver.find_element(By.XPATH, "//input[@id='pass']").send_keys("soft@123")
         driver.find_element(By.XPATH, "//input[@value='Log In']").click()
     except(IndexError):

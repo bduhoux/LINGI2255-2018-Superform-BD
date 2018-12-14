@@ -2,6 +2,7 @@ import json
 import re
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from superform.run_plugin_exception import RunPluginException
 
 
 FIELDS_UNAVAILABLE = [] #list of field names that are not used by your module
@@ -24,7 +25,10 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
 
     post_fields = {'n': page, 'text': description+links, 'action': 'edit', 'post': 1, 'author': author}
     request = Request(url, urlencode(post_fields).encode())
-    response = urlopen(request)
+    try:
+        response = urlopen(request)
+    except:
+        raise RunPluginException('Please check your pmwiki server!')
 
 
 def get_author(config):
@@ -75,4 +79,4 @@ def delete(titre, channel_config):
     try:
         urlopen(request)
     except:
-        pass
+        raise RunPluginException('Please check your pmwiki server and if the page still exist!')
