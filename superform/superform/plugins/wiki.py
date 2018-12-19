@@ -69,10 +69,11 @@ def get_image(publishing):
     return publishing.image_url
 
 
-def delete(titre, channel_config):
+def delete(title, channel_config):
     author = get_author(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
     url = get_url(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
-    page = get_publication_group(channel_config) + '.' +titre
+    title = re.sub('[^A-Za-z0-9]+', '', title)
+    page = get_publication_group(channel_config) + '.' +title
 
     post_fields = {'n': page, 'text': "delete", 'action': 'edit', 'post': 1, 'author': author}
     request = Request(url, urlencode(post_fields).encode())
