@@ -16,14 +16,14 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     url = get_url(channel_config)
     group = get_publication_group(channel_config)
 
-    title = get_title(publishing)
-    page = group + '.' + title
+    title_without_spaces, title = get_title(publishing)
+    page = group + '.' + title_without_spaces
     description = get_description(publishing)
 
     picture = get_image(publishing)
     links = get_links(publishing)
 
-    post_fields = {'n': page, 'text': description+links, 'action': 'edit', 'post': 1, 'author': author}
+    post_fields = {'n': page, 'text': '(:title '+ title + ':)\n'+ description+links, 'action': 'edit', 'post': 1, 'author': author}
     request = Request(url, urlencode(post_fields).encode())
     try:
         response = urlopen(request)
@@ -48,8 +48,8 @@ def get_publication_group(config):
 
 def get_title(publishing):
     title = publishing.title
-    title = re.sub('[^A-Za-z0-9]+', '', title)
-    return title
+    title_without_spaces = re.sub('[^A-Za-z0-9]+', '', title)
+    return title_without_spaces, title
 
 
 def get_description(publishing):
