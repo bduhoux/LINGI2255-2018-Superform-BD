@@ -14,7 +14,7 @@ CONFIG_FIELDS = ["Author", "Wiki's url", "Publication's group"]  # This lets the
 def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
     author = get_author(channel_config)
     url = get_url(channel_config)
-    group = get_pubblication_group(channel_config)
+    group = get_publication_group(channel_config)
 
     title = get_title(publishing)
     page = group + '.' + title
@@ -40,7 +40,8 @@ def get_url(config):
     json_data = json.loads(config)
     return json_data["Wiki's url"]
 
-def get_pubblication_group(config):
+
+def get_publication_group(config):
     json_data = json.loads(config)
     return json_data["Publication's group"]
 
@@ -71,12 +72,12 @@ def get_image(publishing):
 def delete(titre, channel_config):
     author = get_author(channel_config)  # data sur le sender ds channelconfig(= dictionnaire)
     url = get_url(channel_config)  # data sur le receiver ds channelconfig(= dictionnaire)
-    page = 'PmWiki.'+titre
+    page = get_publication_group(channel_config) + '.' +titre
 
     post_fields = {'n': page, 'text': "delete", 'action': 'edit', 'post': 1, 'author': author}
     request = Request(url, urlencode(post_fields).encode())
-
     try:
         urlopen(request)
     except:
-        raise RunPluginException('Please check your pmwiki server and if the page still exist!')
+        pass
+
