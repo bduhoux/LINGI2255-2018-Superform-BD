@@ -2,7 +2,7 @@ import os
 import tempfile
 import pytest
 import time
-from superform.tests.func_util import create_post, create_post_wiki, login, publish_wiki
+from superform.tests.func_util import create_post_wiki, login, publish_wiki
 
 
 from superform import app
@@ -10,22 +10,16 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from superform.models import db, Publishing, Post
 
-#web_driver_location = os.getcwd() + '/superform/static/plugins/facebook/chromedriver'
-web_driver_location = os.getcwd() + '/superform/superform/static/plugins/facebook/chromedriver'
-
-
+web_driver_location = os.getcwd() + '/superform/static/plugins/facebook/chromedriver'
+#web_driver_location = os.getcwd() + '/superform/superform/static/plugins/facebook/chromedriver'
 
 driver = webdriver.Chrome(web_driver_location)
-# chrome_options = webdriver.ChromeOptions()
-# chrome_options.add_argument("--incognito")
-#driver = webdriver.Chrome(web_driver_location, chrome_options)
-
 
 
 @pytest.fixture
 def client():
     app.app_context().push()
-    db_fd, app.config['DATABASE'] = tempfile.mkstemp() # database = database au path retourné
+    db_fd, app.config['DATABASE'] = tempfile.mkstemp()
     app.config['TESTING'] = True
     client = app.test_client()
 
