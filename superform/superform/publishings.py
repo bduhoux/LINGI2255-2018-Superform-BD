@@ -4,7 +4,7 @@ from flask import Blueprint, url_for, request, redirect, render_template, flash,
 
 from superform.utils import login_required, datetime_converter, str_converter
 from superform.models import db, Publishing, Channel
-
+from superform.run_plugin_exception import RunPluginException
 
 pub_page = Blueprint('publishings', __name__)
 
@@ -18,6 +18,17 @@ def moderate_publishing(id, idc):
     pub.date_until = str_converter(pub.date_until)
 
     if request.method == "GET":
+        date_f = pub.date_from
+        date_u = pub.date_until
+        pub.date_from = datetime_converter(pub.date_from)
+        pub.date_until = datetime_converter(pub.date_until)
+        v = db.session.query(Channel).filter(Channel.id == pub.channel_id).first()
+        pub.date_from = date_f
+        pub.date_until = date_u
+        if v.module == "superform.plugins.facebook":
+            session["facebook_running"] = True
+        else:
+            session["facebook_running"] = False
         if pub.extra is not None:
             pub.extra = json.loads(pub.extra)
         return render_template('moderate_post.html', pub=pub, chan=chan)
@@ -66,13 +77,12 @@ def moderate_publishing(id, idc):
             return render_template('moderate_post.html', pub=pub, chan=chan)
         from importlib import import_module
         plugin = import_module(plugin_name)
-        plugin.run(pub, c_conf)
         try:
-            pass
-        except KeyError:
+            plugin.run(pub, c_conf)
+        except RunPluginException as e:
             pub.state = 0
             db.session.commit()
-            flash('Please configure the channel first')
+            flash(str(e))
             pub.date_from = str_converter(pub.date_from)
             pub.date_until = str_converter(pub.date_until)
             if pub.extra is not None:

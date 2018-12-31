@@ -1,0 +1,19 @@
+
+
+<div id="form-wiki-buttons" class="form-group">
+    <label for="{{ chan.name }}_titlepost">Editing</label><br>
+    <a tabindex="-1" onclick="insMarkup('\'\'','\'\'','Emphasized',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/em.gif" title="Emphasized (italic)" style="border:0px;"></a>
+    <a tabindex="-1" onclick="insMarkup('\'\'\'','\'\'\'','Strong',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/strong.gif" title="Strong (bold)" style="border:0px;"></a>
+    <a tabindex="-1" onclick="insMarkup('[[',']]','Page link',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/pagelink.gif" title="Link to internal page" style="border:0px;"></a>
+{#    <a tabindex="-1" onclick="insMarkup('[[ ',' ]]','http:// | link text',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/extlink.gif" title="Link to external page" style="border:0px;"></a>#}
+    <a tabindex="-1" onclick="insMarkup(' \'+ ',' +\' ','Big text',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/big.gif" title="Big text" style="border:0px;"></a>
+    <a tabindex="-1" onclick="insMarkup(' \'- ',' -\' ','Small text',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/small.gif" title="Small text" style="border:0px;"></a>
+    <a tabindex="-1" onclick="insMarkup(' \'^ ',' ^\' ','Superscript',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/sup.gif" title="Superscript" style="border:0px;"></a>
+    <a tabindex="-1" onclick="insMarkup(' \'_ ',' _\' ','Subscript',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/sub.gif" title="Subscript" style="border:0px;"></a>
+{#    <a tabindex="-1" onclick="insMarkup('\n!! ' ,'\n','Heading',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/h.gif" title="Heading" style="border:0px;"></a>#}
+{#    <a tabindex="-1" onclick="insMarkup('%center% ','','',{{ chan.name }}_descriptionpost);"><img src="../../../static/image/center.gif" title="Center" style="border:0px;"></a>#}
+    <button href="#" name="previewButton" id="previewButton" type="button" onclick="previewFunction({{ chan.name }}_descriptionpost);">Preview</button>
+</div>
+
+<script type="text/javascript" src="../../../static/js/wiki_button_handler.js"></script>
+

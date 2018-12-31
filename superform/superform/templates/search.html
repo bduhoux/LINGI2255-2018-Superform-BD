@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}Search{% endblock %}
 {% block content %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <h1>Search</h1>
     <form method="post" id="search_form" action="">
         <div class="tab-content">
@@ -15,15 +16,6 @@
                         <div id="advanced_search" class="d-none" style="width: 80%">
                             <div class="row" style="width: 100%">
                                 <div class="col-md-6" style="width: 100%">
-                                    <div class="form-group">
-                                        <label for="order_loc">Order field</label><br>
-                                        <select class="select-order-loc" style="width: 100%" name="order_loc"
-                                                id="order_loc">
-                                            <option value="title">Title</option>
-                                            <option value="date_from">Date</option>
-                                            <option value="description">Description</option>
-                                        </select>
-                                    </div>
                                     <div class="form-group">
                                         <label for="date_from">Date from</label>
                                         <input type="date" name="date_from" id="date_from" class="form-control">
@@ -47,23 +39,20 @@
                                         <select class="select-loc" style="width: 100%" name="search_loc"
                                                 id="search_loc"
                                                 multiple>
-                                            <option value="title" >Title</option>
-                                            <option value="description" >Description</option>
+                                            <option value="title">Title</option>
+                                            <option value="description">Description</option>
                                             <option value="url">Url</option>
                                         </select>
                                     </div>
-
-
+                                    <div class="form-group">
+                                        <input type="radio" name="search_table" value="Publishing"
+                                                {% if search_table!="Post" %} checked{% endif %}> Publishing
+                                        <input type="radio" name="search_table" value="Post"
+                                                {% if search_table=="Post" %}
+                                               checked{% endif %}> Post
+                                    </div>
                                 </div>
                                 <div class="col-md-6" style="width: 100%">
-                                    <div class="form-group">
-                                        <label for="search_order">Searching order</label><br>
-                                        <select class="select-order" style="width: 100%" name="search_order"
-                                                id="search_order">
-                                            <option value="ascending">Ascending</option>
-                                            <option value="descending">Descending</option>
-                                        </select>
-                                    </div>
                                     <div class="form-group">
                                         <label for="date_until">Date until</label>
                                         <input type="date" name="date_until" id="date_until" class="form-control">
@@ -73,9 +62,10 @@
                                         <select class="select-status" style="width: 100%" name="post_status"
                                                 id="post_status"
                                                 multiple>
-                                            <option value="2" >Archived</option>
-                                            <option value="1" >Published</option>
-                                            <option value="0" >Waiting for approval</option>
+                                            <option value="2">Archived</option>
+                                            <option value="1">Published</option>
+                                            <option value="0">Waiting for approval</option>
+                                            <option value="-1">Incomplete</option>
                                         </select>
                                     </div>
 
@@ -87,7 +77,6 @@
                                             <option value="complete">Complete search</option>
                                         </select>
                                     </div>
-
 
                                 </div>
                             </div>
@@ -117,20 +106,58 @@
         <div class="row">
             <div class="col-md-12">
                 <h2>Search results</h2>
-                <table class="table table-bordered">
+                <table id="result_tab" class="table table-bordered">
                     <thead>
                     <tr>
-                        <th>
-                            Channel
-                        </th>
-                        <th>
+                        {% if search_table=="Publishing" %}
+                            <th onclick="sortTable(0)">
+                                <span style="display: none" id="arrow_0_desc"
+                                      class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                                <span style="display: none" id="arrow_0_asc"
+                                      class="glyphicon glyphicon-triangle-top search_arrow"></span>
+                                Channel
+
+                            </th>
+                        {% endif %}
+                        {% if search_table=="Post" %}
+                            <th onclick="sortTable(-1)">
+                                <span style="display: none" id="arrow_0_desc"
+                                      class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                                <span style="display: none" id="arrow_0_asc"
+                                      class="glyphicon glyphicon-triangle-top search_arrow"></span>
+                                #
+                            </th>
+                        {% endif %}
+                        <th onclick="sortTable(1)">
+                            <span style="display: none" id="arrow_1_desc"
+                                  class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                            <span style="display: none" id="arrow_1_asc"
+                                  class="glyphicon glyphicon-triangle-top search_arrow"></span>
                             Subject
                         </th>
-                        <th>
+                        <th onclick="sortTable(2)">
+                            <span style="display: none" id="arrow_2_desc"
+                                  class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                            <span style="display: none" id="arrow_2_asc"
+                                  class="glyphicon glyphicon-triangle-top search_arrow"></span>
                             Body
                         </th>
-                        <th>
+                        <th onclick="sortTable(3)">
+                            <span style="display: none" id="arrow_3_desc"
+                                  class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                            <span style="display: none" id="arrow_3_asc"
+                                  class="glyphicon glyphicon-triangle-top search_arrow"></span>
                             Author
+                        </th>
+                        <th onclick="sortTable(4)">
+                            <span style="display: none" id="arrow_4_desc"
+                                  class="glyphicon glyphicon-triangle-bottom search_arrow"></span>
+                            <span style="display: none" id="arrow_4_asc"
+                                  class="glyphicon glyphicon-triangle-top search_arrow"></span>
+                            Date
+                        </th>
+                        <th>
+                            Action
                         </th>
                     </tr>
                     </thead>
@@ -139,8 +166,14 @@
                     {% for p in publishing %}
                         <tr>
                             <td>
-                                {{ p.channel.name }}
+                                {% if search_table=="Publishing" %}
+                                    {{ p.channel.name }}
+                                {% endif %}
+                                {% if search_table=="Post" %}
+                                    {{ p.id }}
+                                {% endif %}
                             </td>
+
                             <td>
                                 {{ p.title }}
                             </td>
@@ -150,7 +183,38 @@
                                 </div>
                             </td>
                             <td>
-                                {{ p.get_author() }}
+                                {% if search_table=="Publishing" %}
+                                    {{ p.get_author() }}
+                                {% endif %}
+                                {% if search_table=="Post" %}
+                                    {{ p.user_id }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ p.date_from.strftime('%d/%m/%Y') }}
+                            </td>
+
+                            <td>
+                                {% if search_table=="Publishing" %}
+                                    {% if (p.channel.id in moderate_channel) and p.state==0 %}
+                                        <a href="{{ url_for('publishings.moderate_publishing',id=p.post_id,idc=p.channel_id) }}"
+                                           class="btn btn-outline-primary" role="button">Moderate</a>
+                                    {% endif %}
+                                    {% if (p.channel.id in moderate_channel) and (p.state==1 or p.state==0) %}
+                                        <a href="{{ url_for('delete.delete', id=p.post_id) }}"
+                                           class="btn btn-outline-warning"
+                                           role="button">Delete</a>
+                                    {% endif %}
+                                {% endif %}
+                                {% if search_table=="Post" %}
+                                    {% if p.user_id == user_id %}
+                                        <a href="#" class="btn btn-outline-primary" role="button">Edit</a>
+                                        <a href="#" class="btn btn-outline-primary">Copy</a>
+                                        <a href="{{ url_for('delete.delete', id=p.id) }}"
+                                           class="btn btn-outline-warning"
+                                           role="button">Delete</a>
+                                    {% endif %}
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -165,19 +229,21 @@
 
 
 {% endblock %}
-
 {% block scripts %}
     <script>
+        var order = ["asc", "asc", "asc", "asc", "asc"];
+        $(document).ready(function () {
+            sortTable(2);
+        });
         let fields = [
             'search_word',
             'search_chan',
             'post_status',
             'search_loc',
             'search_type',
-            'order_loc',
-            'search_order',
             'date_from',
-            'date_until'
+            'date_until',
+            'search_table'
         ];
         let multiple_fields = {
             'search_word': false,
@@ -185,8 +251,6 @@
             'post_status': true,
             'search_loc': true,
             'search_type': false,
-            'order_loc': false,
-            'search_order': false,
             'date_from': false,
             'date_until': false
         }; // key is the id of the element and the value is true only if the element is multiple select
@@ -194,17 +258,15 @@
             'search_chan': null,
             'post_status': null,
             'search_loc': null,
-            'search_type:': 'keyword',
-            'order_loc': 'title',
-            'search_order': 'ascending'
+            'search_type:': 'keyword'
+
         };
         $(function () {
             $('.select-chan').select2();
             $('.select-status').select2();
             $('.select-loc').select2();
             $('.select-search-type').select2();
-            $('.select-order').select2();
-            $('.select-order-loc').select2();
+            $('.search_table').select2();
 
             preselect(); // preselect all options selected in a previous post request
 
@@ -266,6 +328,88 @@
                 $('#advanced_search_button').text('Hide advanced search');
             }
             advanced_search_displayed = !advanced_search_displayed;
+        }
+
+        function sortTable(n) {
+            var number = false;
+            if (n == -1) {
+                number = true;
+                n = 0;
+            }
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("result_tab");
+            switching = true;
+            //Set the sorting direction to ascending:
+            dir = order[n];
+            /*Make a loop that will continue until
+            no switching has been done:*/
+            while (switching) {
+                //start by saying: no switching is done:
+                switching = false;
+                rows = table.rows;
+                /*Loop through all table rows (except the
+                first, which contains table headers):*/
+                for (i = 1; i < (rows.length - 1); i++) {
+                    //start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /*Get the two elements you want to compare,
+                    one from current row and one from the next:*/
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    /*check if the two rows should switch place,
+                    based on the direction, asc or desc:*/
+                    if (number) {
+                        var elemX = parseInt(x.innerHTML)
+                        var elemY = parseInt(y.innerHTML)
+                    } else if (n == 4) {
+                        var partsx = x.innerHTML.toLowerCase().split('/');
+                        var partsy = y.innerHTML.toLowerCase().split('/');
+                        var elemX = new Date(Date.UTC(partsx[0], partsx[1] - 1, partsx[2]))
+                        var elemY = new Date(Date.UTC(partsy[0], partsy[1] - 1, partsy[2]))
+                    } else {
+                        var elemX = x.innerHTML.toLowerCase()
+                        var elemY = y.innerHTML.toLowerCase()
+                    }
+                    if (dir == "asc") {
+                        if (elemX > elemY) {
+                            //if so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (elemX < elemY) {
+                            //if so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+
+                }
+                if (shouldSwitch) {
+                    /*If a switch has been marked, make the switch
+                    and mark that a switch has been done:*/
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    //Each time a switch is done, increase this count by 1:
+                    switchcount++;
+                }
+            }
+            elementArray = document.getElementsByClassName("search_arrow")
+            for (var i = 0; i < elementArray.length; i++) {
+                elementArray[i].style.display = 'none';
+            }
+            document.getElementById("arrow_" + n + "_" + dir).style.display = '';
+            for (var i = 0; i < 5; i++) {
+                if (i == n) {
+                    if (order[i] == "asc") {
+                        order[i] = "desc";
+                    } else {
+                        order[i] = "asc";
+                    }
+                } else {
+                    order[i] = "asc";
+                }
+            }
         }
     </script>
 {% endblock %}

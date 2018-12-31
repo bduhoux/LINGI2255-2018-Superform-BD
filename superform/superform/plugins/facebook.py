@@ -1,12 +1,14 @@
-from flask import request, jsonify, Blueprint, url_for, redirect, abort
+from flask import request, jsonify, Blueprint, url_for, redirect, abort, session
 import json
 import facebook
+
+from superform.run_plugin_exception import RunPluginException
 from superform.models import db, Post, Publishing, Channel
 
 # facebook_plugin = Blueprint("facebook_plugin", __name__)
 facebook_plugin = Blueprint("facebook_plugin", "superform.plugins.facebook")
 
-FIELDS_UNAVAILABLE = ['Title', 'Description']  # list of field names that are not used by your module
+FIELDS_UNAVAILABLE = []  # list of field names that are not used by your module
 
 CONFIG_FIELDS = ["page_id", "app_id"]  # This lets the manager of your module enter data that are used to communicate with other services.
 
@@ -27,16 +29,20 @@ def run(publishing, channel_config):  # publishing:DB channelconfig:DB channel
         api = get_api(cfg)
 
         msg = get_message(publishing)
-        link = get_link(publishing)
+        pub_link = get_link(publishing)
         image = get_image(publishing)
 
-        status1 = api.put_object(
-            parent_object="me",
-            connection_name="feed",
-            message=msg,
-            link=link
+        try:
+            status1 = api.put_object(
+                parent_object="me",
+                connection_name="feed",
+                message=msg,
+                link=pub_link
+            )
 
-        )
+            put_extra(publishing, status1['id'])
+        except:
+            raise RunPluginException('Please check your connection to facebook!')
 
 
 @facebook_plugin.route('/appid')
@@ -87,3 +93,31 @@ def get_link(publishing):
 
 def get_image(publishing):
     return publishing.image_url
+
+
+def delete(post_id):
+    try:
+        api = get_api(get_config(get_page_id(), fb_token))
+        api.delete_object(post_id)
+    except facebook.GraphAPIError as e:
+        if "Unsupported delete request." in e.message:
+            raise RunPluginException('This post doesn\'t exist anymore on your facebook page!')
+        else:
+            raise RunPluginException('You are not connected to facebook!')
+
+
+
+def put_extra(publishing, post_id):
+    pub = db.session.query(Publishing).filter(Publishing.post_id == publishing.post_id, Publishing.channel_id == publishing.channel_id).first()
+    pub.date_from = publishing.date_from
+    pub.date_until = publishing.date_until
+    pub.title = publishing.title
+    pub.description = publishing.description
+    pub.link_url = publishing.link_url
+    pub.image_url = publishing.image_url
+    extra = dict()
+    extra['facebook_post_id'] = post_id
+    pub.extra = json.dumps(extra)
+    db.session.commit()
+
+
